@@ -342,30 +342,35 @@
         .fab-top:hover { border-color: var(--text-secondary); color: #fff; }
         .fab-top.visible { opacity: 1; transform: translateY(0); }
 
-        /* ================== 5. 全屏侧边栏系统 (工具提取) ================== */
+        /* ================== 5. 侧边栏系统 (局部展开版) ================== */
         .sidebar-wrapper {
             position: fixed;
             top: 0;
-            right: -100vw; /* 默认完全隐藏在屏幕右侧外 */
-            width: 100vw; /* 展开时全屏宽度 */
+            /* 设置一个固定的宽度，比如 400px，并将其隐藏在屏幕右侧外 */
+            right: -400px; 
+            width: 400px; 
+            max-width: 100vw;
             height: 100vh;
             background: rgba(15, 23, 42, 0.98); 
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
+            border-left: 1px solid var(--border-light); /* 增加左侧边框与主内容区分 */
             z-index: 2000;
             transition: right 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
             display: flex;
             flex-direction: column;
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5); /* 增加阴影提升层级感 */
         }
 
         .sidebar-wrapper.open {
-            right: 0; /* 展开状态：铺满屏幕 */
+            right: 0; /* 展开状态：滑出设定宽度，而非全屏 */
         }
 
-        /* 工具提取：侧边栏唤出与关闭按钮 */
+        /* 侧边栏唤出与关闭按钮 */
         .sidebar-toggle {
             position: absolute;
-            left: -44px; /* 伸出屏幕左侧，即显示在网页最右边 */
+            top: 50%; /* 垂直居中 */
+            left: -44px; /* 附着在侧边栏左侧边缘 */
             width: 44px;
             padding: 16px 0;
             background: rgba(30, 41, 59, 0.9);
@@ -381,7 +386,7 @@
             color: var(--text-secondary);
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
-            transform: translateY(-50%);
+            transform: translateY(-50%); /* 配合 top:50% 实现精准垂直居中 */
             z-index: 2001;
         }
 
@@ -406,30 +411,22 @@
             font-weight: 500;
         }
 
-        /* 隐藏在全屏模式下的纯关闭图标 */
+        /* 隐藏的纯关闭图标 */
         .icon-close {
             display: none;
             width: 20px;
             height: 20px;
         }
 
-        /* ========= 全屏展开后的按钮状态（变成左上角关闭按钮） ========= */
+        /* ========= 侧边栏展开后的按钮状态（原位变成关闭按钮） ========= */
         .sidebar-wrapper.open .sidebar-toggle {
-            left: 20px; /* 移到全屏页面的左上角 */
-            top: 20px !important; /* 强制改变高度位置 */
-            transform: none; /* 移除居中偏移 */
-            width: 44px;
-            height: 44px;
-            padding: 0;
-            border-radius: 50%;
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #fff;
+            /* 保持原位，仅改变图标内容和颜色为红色警示 */
+            color: #ef4444; 
         }
         .sidebar-wrapper.open .sidebar-toggle:hover {
-            background: #ef4444; /* 红色警告色 */
-            border-color: #ef4444;
-            transform: rotate(90deg); /* 酷炫旋转动画 */
+            background: rgba(30, 41, 59, 1);
+            color: #f87171;
+            /* 移除原本的 90 度旋转动画，让关闭动作显得更沉稳 */
         }
         .sidebar-wrapper.open .toggle-content { display: none; }
         .sidebar-wrapper.open .icon-close { display: block; }
@@ -581,14 +578,14 @@
     </footer>
 
     <aside class="sidebar-wrapper" id="rightSidebar1">
-        <div class="sidebar-toggle" style="top: 35%;" onclick="toggleSidebar('rightSidebar1', event)" title="展开/收起">
+        <div class="sidebar-toggle" onclick="toggleSidebar('rightSidebar1', event)" title="展开/收起">
             <div class="toggle-content">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
                     <polyline points="2 17 12 22 22 17"></polyline>
                     <polyline points="2 12 12 17 22 12"></polyline>
                 </svg>
-                <span class="toggle-text">留言</span>
+          
             </div>
             <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
