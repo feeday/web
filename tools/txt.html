@@ -157,7 +157,7 @@ input[type="file"]::file-selector-button:hover { background: rgba(255,255,255,0.
 .tts-checkbox { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 10px;}
 input[type="checkbox"] { accent-color: var(--theme-blue); width: 14px; height: 14px; cursor: pointer; }
 
-/* 折叠面板 (Collapsible) */
+/* 折叠面板 */
 .collapsible-header { cursor: pointer; user-select: none; transition: color 0.2s; }
 .collapsible-header:hover { color: var(--theme-blue); }
 .collapsible-header::after { content: '▼'; font-size: 0.6rem; transition: transform 0.3s; margin-left: 5px;}
@@ -178,7 +178,7 @@ input[type="checkbox"] { accent-color: var(--theme-blue); width: 14px; height: 1
 
 .workspace-view { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; min-height: 0; background: rgba(0, 0, 0, 0.2); border: 1px solid var(--border-light); border-radius: 12px; }
 
-/* 左侧内部控制条 (Header) */
+/* 视图 1：文本视图 */
 .view-header {
     display: flex; justify-content: space-between; align-items: center; gap: 15px;
     padding: 10px 15px; background: rgba(0,0,0,0.3); border-bottom: 1px solid var(--border-light);
@@ -186,7 +186,6 @@ input[type="checkbox"] { accent-color: var(--theme-blue); width: 14px; height: 1
 .view-header-title { font-size: 0.9rem; font-weight: 600; color: var(--theme-blue); display: flex; align-items: center; gap: 8px; white-space: nowrap;}
 .view-header-controls { display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;}
 
-/* 视图 1：文本视图 */
 #textarea {
     flex: 1; width: 100%; height: 100%; resize: none; background: transparent; 
     border: none; padding: 20px; color: var(--text-primary); font-family: monospace; 
@@ -249,7 +248,7 @@ input[type="checkbox"] { accent-color: var(--theme-blue); width: 14px; height: 1
             <div id="replace-count">替换：<span>0</span></div>
             <div id="regex-replace-count">正则：<span>0</span></div>
         </div>
-        <input type="password" id="globalApiKey" class="global-key-input" placeholder="输入全局 API 密钥 (poixe-xxx)"> 
+        <input type="password" id="globalApiKey" class="global-key-input" placeholder="输入全局 API 密钥 (sk-...或poixe-...)"> 
         <a href="https://poixe.com/i/feeday" target="_blank" class="tag-btn">获取API</a>
         <button class="tag-btn" onclick="window.location.href='/'">返回主页 ➔</button>
     </div>
@@ -471,6 +470,22 @@ window.addEventListener('load', () => {
     clearApiLogs();
 });
 
+document.getElementById('globalApiKey').addEventListener('change', (e) => {
+    localStorage.setItem('datxy_global_api_key', e.target.value.trim());
+});
+
+// 全局监听左右键切图
+window.addEventListener('keydown', (e) => {
+    const viewMedia = document.getElementById('view-media');
+    if (viewMedia.style.display !== 'none' && isFrameMode) {
+        if (e.key === 'ArrowLeft') {
+            if (currentImageIndex > 0) { currentImageIndex--; displayExtractedFrame(); }
+        } else if (e.key === 'ArrowRight') {
+            if (currentImageIndex < extractedImages.length - 1) { currentImageIndex++; displayExtractedFrame(); }
+        }
+    }
+});
+
 function switchTab(tabId) {
     document.querySelectorAll('.editor-tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.workspace-view').forEach(v => v.style.display = 'none');
@@ -491,18 +506,6 @@ function showError(msg) {
     errorMsg.style.display = "block";
     setTimeout(() => { errorMsg.style.display = "none"; }, 4000);
 }
-
-// 全局监听左右键切图
-window.addEventListener('keydown', (e) => {
-    const viewMedia = document.getElementById('view-media');
-    if (viewMedia.style.display !== 'none' && isFrameMode) {
-        if (e.key === 'ArrowLeft') {
-            if (currentImageIndex > 0) { currentImageIndex--; displayExtractedFrame(); }
-        } else if (e.key === 'ArrowRight') {
-            if (currentImageIndex < extractedImages.length - 1) { currentImageIndex++; displayExtractedFrame(); }
-        }
-    }
-});
 
 /* ===== 1. API 调试日志处理 ===== */
 function logApiCall(type, endpoint, reqData, resData, isError = false) {
@@ -533,10 +536,10 @@ function appendChatMessage(role, content) {
     history.scrollTop = history.scrollHeight;
 }
 
-// 清空对话逻辑
+// 清空对话
 document.getElementById('clearChatBtn').addEventListener('click', () => {
     chatContext = [{ role: "system", content: "你是一个得力的 AI 助手，请简明扼要地回答问题。" }];
-    document.getElementById('chatHistory').innerHTML = '<div style="color: var(--text-tertiary); text-align: center; margin-top: 50px; font-size: 0.9rem;">对话记忆已清空。请在下方输入问题，上方可自由切换模型。</div>';
+    document.getElementById('chatHistory').innerHTML = '<div style="color: var(--text-tertiary); text-align: center; margin-top: 50px; font-size: 0.9rem;">对话记忆已清空。请在下方输入问题。</div>';
 });
 
 document.getElementById('chatInput').addEventListener('keydown', (e) => {
@@ -560,17 +563,17 @@ document.getElementById('sendChatBtn').addEventListener('click', async () => {
     
     // UI 更新
     appendChatMessage('user', text);
-    // 净化传入上下文格式
-    chatContext.push({ role: "user", content: String(text) });
+    // 去除了隐式转换，确保纯净的数组和对象传递
+    chatContext.push({ role: "user", content: text });
     
     inputEl.value = "";
     inputEl.disabled = true;
     btn.disabled = true;
     btn.innerText = "思考中";
 
-    const safeMessages = chatContext.map(msg => ({ role: String(msg.role), content: String(msg.content) }));
-    // 必须加入 max_tokens 以防部分接口报错
-    const reqPayload = { model: model, messages: safeMessages, temperature: 0.7, max_tokens: 2000 };
+    // 不强制带有 max_tokens，并加上 stream: false
+    const safeMessages = chatContext.map(msg => ({ role: msg.role, content: msg.content }));
+    const reqPayload = { model: model, messages: safeMessages, stream: false };
 
     try {
         const res = await fetch("https://api.poixe.com/v1/chat/completions", {
@@ -590,7 +593,7 @@ document.getElementById('sendChatBtn').addEventListener('click', async () => {
         if (result.choices && result.choices[0] && result.choices[0].message) {
             const aiMsg = result.choices[0].message.content;
             appendChatMessage('ai', aiMsg);
-            chatContext.push({ role: "assistant", content: String(aiMsg) });
+            chatContext.push({ role: "assistant", content: aiMsg });
         } else {
             throw new Error('API 返回数据缺失 choices 节点');
         }
@@ -598,7 +601,7 @@ document.getElementById('sendChatBtn').addEventListener('click', async () => {
         showError("❌ 对话失败: " + e.message);
         appendChatMessage('ai', `❌ 请求失败，请检查 API Key 或网络 (${e.message})`);
         logApiCall('智能对话', 'https://api.poixe.com/v1/chat/completions', reqPayload, { error: e.message }, true);
-        chatContext.pop(); // 回退用户提问，保证下次能重试
+        chatContext.pop(); 
     } finally {
         inputEl.disabled = false;
         btn.disabled = false;
@@ -615,17 +618,17 @@ document.getElementById('aiProcessTextBtn').addEventListener('click', async () =
     const btn = document.getElementById('aiProcessTextBtn');
 
     if (!apiKey) return showError("❌ 请输入全局 API Key");
-    if (!text) return showError("❌ 文本编辑区内容为空");
+    if (!text) return showError("❌ 请在左侧文本区输入请求内容");
 
     localStorage.setItem('datxy_global_api_key', apiKey);
+    switchTab('text');
     btn.disabled = true;
     btn.innerText = "⏳ 正在处理...";
 
     const reqPayload = {
         model: model,
-        messages: [{ role: "system", content: "你是一个文本处理助手。如果用户给出了明确指令，请执行；如果只是一段文字，请进行排版优化并总结。回复不超500字。" }, { role: "user", content: text }],
-        temperature: 0.7,
-        max_tokens: 2000
+        messages: [{ role: "system", content: "你是一个文本处理助手。回复不超500字。" }, { role: "user", content: text }],
+        stream: false
     };
 
     try {
@@ -704,11 +707,13 @@ document.getElementById('generateBtn').addEventListener('click', async () => {
         const data = await response.json();
         
         let logData = JSON.parse(JSON.stringify(data));
-        if(logData.candidates && logData.candidates[0] && logData.candidates[0].content && logData.candidates[0].content.parts){
-            logData.candidates[0].content.parts.forEach(p => {
-                if(p.inlineData && p.inlineData.data) p.inlineData.data = "[Base64 Data Truncated For Log...]";
-            });
-        }
+        try {
+            if(logData.candidates && logData.candidates[0] && logData.candidates[0].content && logData.candidates[0].content.parts){
+                logData.candidates[0].content.parts.forEach(p => {
+                    if(p.inlineData && p.inlineData.data) p.inlineData.data = "[Base64 Data Truncated For Log...]";
+                });
+            }
+        } catch(e){}
         logApiCall('图像生成', `https://api.poixe.com/v1beta/models/${model}:generateContent`, requestBody, logData, false);
 
         if (data.candidates && data.candidates.length > 0) {
@@ -790,18 +795,12 @@ document.getElementById('btnFromB64').addEventListener('click', () => {
     const frameContainer = document.getElementById('frameDisplayContainer');
     const wrapper = document.getElementById('mediaPlayerWrapper');
 
-    // Reset
-    wrapper.innerHTML = "";
-    playerContainer.style.display = 'none';
-    frameContainer.style.display = 'none';
-    currentFilter = '';
-    isFrameMode = false;
+    wrapper.innerHTML = ""; playerContainer.style.display = 'none'; frameContainer.style.display = 'none';
+    currentFilter = ''; isFrameMode = false;
 
     if(mime.startsWith('image/')){
         const img = document.getElementById('frameDisplayedImage');
-        img.src = s;
-        currentMediaImage = img;
-        img.style.filter = currentFilter;
+        img.src = s; currentMediaImage = img; img.style.filter = currentFilter;
         document.getElementById('mediaToolbar').style.display = 'flex';
         document.querySelectorAll('.frame-btn').forEach(el => el.style.display = 'none'); 
         document.getElementById('framePager').style.display = 'none';
@@ -809,8 +808,7 @@ document.getElementById('btnFromB64').addEventListener('click', () => {
     } else if(mime.startsWith('audio/') || mime.startsWith('video/')){
         const media = document.createElement(mime.startsWith('audio/') ? 'audio' : 'video');
         media.controls = true; media.src = s; media.preload = 'metadata';
-        wrapper.appendChild(media);
-        currentMediaDataURL = s;
+        wrapper.appendChild(media); currentMediaDataURL = s;
         playerContainer.style.display = 'flex';
     } else {
         showError("⚠️ 不支持预览的媒体格式，保留在文本区");
@@ -826,7 +824,7 @@ document.getElementById('btnDownloadMedia').addEventListener('click', () => {
     a.href = currentMediaDataURL; a.download = `media_decode.${ext}`; a.click();
 });
 
-// 视频抽帧逻辑
+// 视频抽帧
 function seekTo(vid, t) {
     return new Promise(resolve => {
         const handler = () => { vid.removeEventListener('seeked', handler); resolve(); };
@@ -849,10 +847,7 @@ document.getElementById('btnFrames').addEventListener('click', async () => {
     video.preload = 'metadata'; video.src = objectURL;
 
     video.onloadedmetadata = async () => {
-        extractedImages = [];
-        currentImageIndex = -1;
-        currentFilter = '';
-        isFrameMode = true;
+        extractedImages = []; currentImageIndex = -1; currentFilter = ''; isFrameMode = true;
 
         switchTab('media');
         document.getElementById('mediaPlaceholder').style.display = 'none';
@@ -880,7 +875,7 @@ document.getElementById('btnFrames').addEventListener('click', async () => {
         if(extractedImages.length > 0){
             currentImageIndex = 0; displayExtractedFrame();
         } else {
-            showError('❌ 未能提取到任何帧');
+            showError('❌ 提取失败');
         }
     };
 });
@@ -889,9 +884,7 @@ function displayExtractedFrame() {
     if(currentImageIndex < 0 || currentImageIndex >= extractedImages.length) return;
     const f = extractedImages[currentImageIndex];
     const img = document.getElementById('frameDisplayedImage');
-    img.src = f.url;
-    currentMediaImage = img;
-    img.style.filter = currentFilter;
+    img.src = f.url; currentMediaImage = img; img.style.filter = currentFilter;
     document.getElementById('framePager').textContent = `[ ${currentImageIndex + 1} / ${extractedImages.length} ] 时间轴: ${f.time.toFixed(2)} 秒`;
 }
 
