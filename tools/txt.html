@@ -66,7 +66,7 @@ border: 1px solid rgba(56, 189, 248, 0.2); display: flex; align-items: center; w
 .tag-btn {
 background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-primary);
 padding: 6px 16px; border-radius: 8px; font-size: 0.85rem;
-font-weight: 600; cursor: pointer; transition: all 0.3s; white-space: nowrap; flex-shrink: 0;
+font-weight: 600; cursor: pointer; transition: all 0.3s; white-space: nowrap; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center;
 }
 .tag-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.15); border-color: rgba(255, 255, 255, 0.25); box-shadow: 0 4px 10px rgba(0,0,0,0.2);}
 
@@ -83,7 +83,7 @@ display: flex; overflow: hidden; animation: fadeUp 0.6s ease backwards;
 .editor-panel {
 flex: 1; padding: 20px; display: flex; flex-direction: column; position: relative;
 background: radial-gradient(circle at top left, rgba(30, 41, 59, 0.3) 0%, transparent 70%);
-overflow: hidden; /* 保证左侧边界 */
+overflow: hidden; 
 }
 
 /* 右侧：控制面板 */
@@ -94,7 +94,7 @@ overflow-y: auto; overflow-x: hidden;
 }
 
 /* 统一滚动条样式 */
-::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar { width: 6px; height: 6px;}
 ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
 
@@ -131,6 +131,7 @@ input[type="file"]::file-selector-button:hover { background: rgba(255,255,255,0.
 .btn {
 padding: 8px 10px; border-radius: 8px; font-size: 0.85rem; font-weight: 600;
 cursor: pointer; transition: all 0.2s; text-align: center; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+flex-shrink: 0; /* 强制按钮防挤压 */
 }
 .btn:active { transform: translateY(0); }
 
@@ -181,8 +182,6 @@ box-shadow: inset 0 2px 10px rgba(0,0,0,0.2); transition: border-color 0.3s;
 }
 #textarea:focus { border-color: rgba(56, 189, 248, 0.4); outline: none; }
 
-/* 视图 2：图像生成预览 (已整合到主覆盖层) */
-
 /* 视图 3：媒体解析与抽帧预览 */
 .preview-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-tertiary); gap: 15px; }
 .preview-placeholder svg { width: 64px; height: 64px; opacity: 0.2; }
@@ -190,6 +189,12 @@ box-shadow: inset 0 2px 10px rgba(0,0,0,0.2); transition: border-color 0.3s;
 .media-image-display { max-width: 100%; max-height: calc(100vh - 350px); object-fit: contain; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); flex-shrink: 0;}
 .media-time { color: var(--text-secondary); margin-top: 10px; font-size: 0.85rem; flex-shrink: 0;}
 #mediaPlayerWrapper video, #mediaPlayerWrapper audio { max-width: 100%; max-height: calc(100vh - 300px); border-radius: 12px; outline: none; }
+
+/* 媒体操作横向滚动栏 (统合帧控制与滤镜) */
+.media-toolbar {
+    display: none; flex-wrap: nowrap; overflow-x: auto; gap: 8px; margin-top: 15px; 
+    max-width: 100%; padding-bottom: 8px; flex-shrink: 0;
+}
 
 /* 悬浮进度 & 图像结果层 */
 .progress-overlay {
@@ -237,8 +242,9 @@ backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); padding: 20px;
 <div id="replace-count">替换：<span>0</span></div>
 <div id="regex-replace-count">正则：<span>0</span></div>
 </div>
-<input type="password" id="globalApiKey" class="glass-input" placeholder="输入全局 API 密钥" style="width: 200px; margin-bottom: 0; padding: 6px 10px;"> <button class="tag-btn" onclick="window.location.href='/'">获取API</button>
-<button class="tag-btn" onclick="window.location.href='https://poixe.com/i/realfake'">返回主页 ➔</button>
+<input type="password" id="globalApiKey" class="glass-input" placeholder="输入全局 API 密钥" style="width: 200px; margin-bottom: 0; padding: 6px 10px;"> 
+<a href="https://poixe.com/i/feeday" target="_blank" class="tag-btn">获取API</a>
+<button class="tag-btn" onclick="window.location.href='/'">返回主页 ➔</button>
 
 </div>
 </div>
@@ -281,23 +287,21 @@ backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); padding: 20px;
 <button class="btn btn-glass" id="btnDownloadMedia" style="color: var(--theme-green);">⬇️ 下载媒体文件</button>
 </div>
 
-<div id="frameDisplayContainer" style="display: none; flex-direction: column; align-items: center; width: 100%; height: 100%;">
+<div id="frameDisplayContainer" style="display: none; flex-direction: column; align-items: center; width: 100%; height: 100%; overflow: hidden;">
 <img id="frameDisplayedImage" class="media-image-display" src="" alt="Extracted Frame" />
-<div id="frameTimeLabel" class="media-time"></div>
+<div id="framePager" style="color: var(--text-tertiary); font-size: 0.8rem; margin-top: 10px; display: none; flex-shrink: 0;">0 / 0</div>
 
-<div id="frameControls" style="display: none; gap: 10px; margin-top: 15px; flex-shrink: 0;">
-<button class="btn btn-glass" id="prevButton">⬅️ 上一帧</button>
-<button class="btn btn-glass" id="btnDownloadFrame" style="color: var(--theme-green);">⬇️ 保存此图</button>
-<button class="btn btn-glass" id="nextButton">下一帧 ➡️</button>
+<div id="mediaToolbar" class="media-toolbar">
+    <button class="btn btn-glass frame-btn" id="prevButton">⬅️ 上一帧</button>
+    <button class="btn btn-glass frame-btn" id="nextButton">下一帧 ➡️</button>
+    <button class="btn btn-glass frame-btn" id="btnDownloadFrame" style="color: var(--theme-green);">⬇️ 保存此图</button>
+    <div class="frame-btn" style="width: 1px; background: rgba(255,255,255,0.2); margin: 0 4px; flex-shrink: 0;"></div>
+    <button class="btn btn-glass" id="btnInvert">反色处理</button>
+    <button class="btn btn-glass" id="btnGray">去色黑白</button>
+    <button class="btn btn-glass" id="btnRestore">原图还原</button>
+    <button class="btn btn-glass" id="btnDownloadEditedImage">保存图像</button>
 </div>
-<div id="framePager" style="color: var(--text-tertiary); font-size: 0.8rem; margin-top: 5px; display: none; flex-shrink: 0;">0 / 0</div>
 
-<div id="editButtons" style="display: flex; gap: 10px; margin-top: 15px; flex-shrink: 0;">
-<button class="btn btn-glass" id="btnInvert">反色</button>
-<button class="btn btn-glass" id="btnGray">去色</button>
-<button class="btn btn-glass" id="btnRestore">还原</button>
-<button class="btn btn-glass" id="btnDownloadEditedImage">保存图像</button>
-</div>
 </div>
 </div>
 
@@ -426,6 +430,18 @@ updateStats();
 
 document.getElementById('globalApiKey').addEventListener('change', (e) => {
 localStorage.setItem('datxy_global_api_key', e.target.value.trim());
+});
+
+// 全局监听左右键切图
+window.addEventListener('keydown', (e) => {
+    const viewMedia = document.getElementById('view-media');
+    if (viewMedia.style.display !== 'none' && isFrameMode) {
+        if (e.key === 'ArrowLeft') {
+            if (currentImageIndex > 0) { currentImageIndex--; displayExtractedFrame(); }
+        } else if (e.key === 'ArrowRight') {
+            if (currentImageIndex < extractedImages.length - 1) { currentImageIndex++; displayExtractedFrame(); }
+        }
+    }
 });
 
 function switchTab(tabId) {
@@ -607,6 +623,10 @@ document.getElementById('btnToB64').addEventListener('click', () => {
 const file = document.getElementById('fileInput').files[0];
 if(!file) return showError('❌ 请选择一个文件');
 
+if (file.type.startsWith('video/') && file.size > 5 * 1024 * 1024) {
+    return showError('❌ 视频文件大于5MB，不支持直接转码');
+}
+
 showOverlay('转码 Base64 中...');
 const reader = new FileReader();
 reader.onload = e => {
@@ -644,10 +664,9 @@ const img = document.getElementById('frameDisplayedImage');
 img.src = s;
 currentMediaImage = img;
 img.style.filter = currentFilter;
-document.getElementById('frameControls').style.display = 'none';
+document.getElementById('mediaToolbar').style.display = 'flex';
+document.querySelectorAll('.frame-btn').forEach(el => el.style.display = 'none'); // 隐藏帧特有按钮
 document.getElementById('framePager').style.display = 'none';
-document.getElementById('frameTimeLabel').textContent = '';
-document.getElementById('editButtons').style.display = 'flex';
 frameContainer.style.display = 'flex';
 } else if(mime.startsWith('audio/') || mime.startsWith('video/')){
 const media = document.createElement(mime.startsWith('audio/') ? 'audio' : 'video');
@@ -700,8 +719,9 @@ switchTab('media');
 document.getElementById('mediaPlaceholder').style.display = 'none';
 document.getElementById('mediaPlayerContainer').style.display = 'none';
 document.getElementById('frameDisplayContainer').style.display = 'flex';
-document.getElementById('frameControls').style.display = 'flex';
-document.getElementById('editButtons').style.display = 'flex';
+
+document.getElementById('mediaToolbar').style.display = 'flex';
+document.querySelectorAll('.frame-btn').forEach(el => el.style.display = 'inline-flex'); // 恢复帧特有按钮
 document.getElementById('framePager').style.display = 'block';
 
 const frameDuration = 1 / fps;
@@ -734,8 +754,8 @@ const img = document.getElementById('frameDisplayedImage');
 img.src = f.url;
 currentMediaImage = img;
 img.style.filter = currentFilter;
-document.getElementById('frameTimeLabel').textContent = `时间轴: ${f.time.toFixed(2)} 秒`;
-document.getElementById('framePager').textContent = `${currentImageIndex + 1} / ${extractedImages.length}`;
+// 更新进度与时间，合并在一行显示
+document.getElementById('framePager').textContent = `[ ${currentImageIndex + 1} / ${extractedImages.length} ] 时间轴: ${f.time.toFixed(2)} 秒`;
 }
 
 document.getElementById('prevButton').addEventListener('click', () => { if(currentImageIndex > 0) { currentImageIndex--; displayExtractedFrame(); } });
@@ -941,5 +961,3 @@ window.speechSynthesis.onvoiceschanged = listVoices;
 <script>LA.init({id:"JRHGRBPWC7lJIaXq",ck:"JRHGRBPWC7lJIaXq"})</script>
 </body>
 </html>
-
-
