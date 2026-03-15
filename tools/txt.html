@@ -1024,7 +1024,7 @@ tempInput.select(); document.execCommand("copy"); document.body.removeChild(temp
 
 // UI 反馈
 const originalText = this.innerHTML;
-this.innerHTML = "✅ 已复制";
+this.innerHTML = "已复";
 setTimeout(() => { this.innerHTML = originalText; }, 2000);
 });
 
@@ -1035,7 +1035,7 @@ updateStats();
 
 // UI 反馈
 const originalText = this.innerHTML;
-this.innerHTML = "✅ 已粘贴";
+this.innerHTML = "已粘";
 setTimeout(() => { this.innerHTML = originalText; }, 2000);
 }).catch(err => {
 showError("❌ 无法访问剪贴板，请手动粘贴");
