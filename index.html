@@ -81,14 +81,12 @@
         }
 
         /* ================== 搜索栏终极优化版 ================== */
-        
-        /* 容器：加宽，圆角更圆，背景更深 */
         .search-wrapper { 
             position: relative; 
             width: 380px; 
-            height: 44px; /* 稍微加高一点，手感更好 */
+            height: 44px; 
             border-radius: var(--radius-pill);
-            background: rgba(15, 23, 42, 0.6); /* 更深的背景，突出质感 */
+            background: rgba(15, 23, 42, 0.6); 
             border: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             align-items: center;
@@ -98,7 +96,6 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
         
-        /* 聚焦时的光效 */
         .search-wrapper:focus-within { 
             width: 420px; 
             background: rgba(15, 23, 42, 0.8);
@@ -106,7 +103,6 @@
             box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.15);
         }
 
-        /* 左侧下拉触发器：紧凑布局 */
         .custom-select {
             position: relative;
             height: 100%;
@@ -114,14 +110,13 @@
             align-items: center;
             cursor: pointer;
             padding-left: 8px;
-            /* 去掉 min-width，改为自适应，消灭右侧留白 */
             -webkit-user-select: none; user-select: none;
         }
 
         .select-trigger {
             display: flex;
             align-items: center;
-            gap: 6px; /* 文字和箭头的间距 */
+            gap: 6px; 
             height: 100%;
             color: #e2e8f0;
             font-size: 0.9rem;
@@ -137,24 +132,20 @@
         }
         .custom-select.active .arrow-icon { transform: rotate(180deg); }
 
-        /* 分割线：更细更淡，紧贴内容 */
         .search-inner-divider {
             width: 1px; height: 18px; 
             background: rgba(255,255,255,0.1); 
-            margin: 0 10px; /* 控制分割线左右间距 */
+            margin: 0 10px; 
             flex-shrink: 0;
         }
 
-        /* 输入框：字体调大 */
         .search-input {
             flex: 1; border: none; background: transparent;
             color: #fff; font-size: 0.95rem; padding: 0; height: 100%;
-            min-width: 0; /* 防止溢出 */
+            min-width: 0; 
         }
-        /* placeholder 颜色淡一点 */
         .search-input::placeholder { color: rgba(148, 163, 184, 0.5); }
         
-        /* 清除按钮 */
         .search-clear {
             width: 20px; height: 20px; line-height: 20px; text-align: center;
             border-radius: 50%; background: rgba(255,255,255,0.1); 
@@ -163,12 +154,10 @@
         }
         .search-clear:hover { background: rgba(255,255,255,0.25); }
 
-        /* 搜索按钮：改为圆形高亮按钮 */
         .external-search-btn {
             width: 34px; height: 34px; 
             display: flex; align-items: center; justify-content: center;
             border-radius: 50%;
-            /* 默认灰色 */
             background: rgba(255,255,255,0.05); 
             color: var(--text-secondary);
             cursor: pointer;
@@ -179,20 +168,18 @@
         
         .external-search-btn svg { width: 16px; height: 16px; stroke-width: 2.5; }
         
-        /* 悬停效果 */
         .external-search-btn:hover {
-            background: #38bdf8; /* 亮蓝色 */
+            background: #38bdf8; 
             color: #0f172a;
             transform: scale(1.05);
             box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
         }
         .external-search-btn:active { transform: scale(0.95); }
 
-        /* 下拉菜单样式微调 */
         .select-options {
             position: absolute;
             top: 50px; left: 0;
-            width: 140px; /* 菜单稍微宽一点 */
+            width: 140px; 
             background: rgba(15, 23, 42, 0.95); 
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -215,15 +202,8 @@
             transition: all 0.2s;
             cursor: pointer;
         }
-        .option-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-        }
-        .option-item.selected {
-            background: rgba(56, 189, 248, 0.15); 
-            color: #38bdf8;
-            font-weight: 600;
-        }
+        .option-item:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+        .option-item.selected { background: rgba(56, 189, 248, 0.15); color: #38bdf8; font-weight: 600; }
 
         .divider { width: 1px; height: 20px; background: rgba(255,255,255,0.1); margin: 0 4px; }
 
@@ -254,18 +234,17 @@
         }
 
         .tag-btn.active { 
-            color: #fff; font-weight: 600;
-            text-shadow: 0 0 10px rgba(255,255,255,0.3);
+            color: #fff; font-weight: 600; text-shadow: 0 0 10px rgba(255,255,255,0.3);
             background: transparent; box-shadow: none;
         }
         .tag-btn:hover:not(.active) { color: #fff; }
 
 
         /* ================== 3. 资源网格 ================== */
-        .main-content { padding: 0 2rem; flex: 1; }
+        .main-content { padding: 0 2rem; flex: 1; display: flex; flex-direction: column;}
 
         .resource-grid {
-            display: grid; gap: 20px; max-width: 1400px; margin: 0 auto;
+            display: grid; gap: 20px; max-width: 1400px; width: 100%; margin: 0 auto;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
         }
 
@@ -275,6 +254,8 @@
             border-radius: var(--radius-card); padding: 24px;
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
             position: relative; display: flex; flex-direction: column; overflow: hidden;
+            /* 移除原本固定的加载延迟，改为由JS统一控制 */
+            animation: fadeUp 0.5s ease backwards;
         }
         
         .card:hover, .card.active-focus { 
@@ -298,7 +279,6 @@
             border: 1px solid rgba(255,255,255,0.05);
         }
         
-        /* 置顶图标样式 */
         .pin-icon {
             position: absolute; top: 0; left: 0;
             width: 32px; height: 32px;
@@ -326,13 +306,19 @@
         }
         .card-link:hover { background: var(--text-primary); color: #000; border-color: #fff; }
         
-        /* 抖动动画 */
         @keyframes shake { 0%,100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* 触底加载指示器区域 */
+        .loading-sentinel {
+            width: 100%; height: 40px; margin-top: 20px;
+            display: flex; justify-content: center; align-items: center;
+            color: var(--text-tertiary); font-size: 0.9rem;
+        }
+
         /* ================== 4. Footer ================== */
         .site-footer {
-            margin-top: 6rem; padding: 4rem 1rem;
+            margin-top: auto; padding: 4rem 1rem;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
             background: linear-gradient(to bottom, rgba(2, 6, 23, 0) 0%, rgba(2, 6, 23, 1) 100%);
         }
@@ -377,13 +363,11 @@
         <div class="sticky-inner">
             
             <div class="search-wrapper">
-                
                 <div class="custom-select" id="customSelect">
                     <div class="select-trigger" onclick="toggleSelect(event)">
                         <span id="currentEngineText">Google</span>
                         <svg class="arrow-icon" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
                     </div>
-                    
                     <input type="hidden" id="searchEngineValue" value="https://www.google.com/search?q=">
 
                     <div class="select-options" id="selectOptions">
@@ -400,8 +384,7 @@
                 
                 <div class="search-inner-divider"></div>
 
-                <input type="text" class="search-input" id="searchInput" placeholder="搜索链接或关键字..." autocomplete="off">
-                
+                <input type="text" class="search-input" id="searchInput" placeholder="搜索标题或简介..." autocomplete="off">
                 <span class="search-clear" id="searchClear" onmousedown="event.preventDefault()" onclick="clearSearch()">✕</span>
                 
                 <div class="external-search-btn" id="externalSearchBtn" title="搜索">
@@ -427,6 +410,7 @@
 
     <div class="main-content">
         <div id="grid" class="resource-grid"></div>
+        <div id="scrollSentinel" class="loading-sentinel"></div>
     </div>
 
     <footer class="site-footer">
@@ -453,32 +437,64 @@
     <div class="fab-top" id="fabTop" onclick="scrollToTop()">↑</div>
 
     <script>
-        // 1. 初始化空数组，用于存放从 JSON 获取的数据
-        let resources = [];
+        // 1. 全局数据存储与分页配置
+        let resources = [];         // 存放从 JSON 得到的所有原始数据
+        let currentDataList = [];   // 存放当前正在显示（包括过滤或搜索后）的数据集
+        let visibleCards = [];      // 存放当前在DOM中渲染出的卡片元素
+        
+        let currentPage = 0;
+        const pageSize = 24;        // 每次下拉加载的数量 (可根据一屏的容量自行调整)
+        let selectedCardIndex = -1;
 
         const grid = document.getElementById('grid');
         const searchInput = document.getElementById('searchInput');
         const searchClear = document.getElementById('searchClear');
+        const scrollSentinel = document.getElementById('scrollSentinel');
 
-        let visibleCards = [];
-        let selectedCardIndex = -1;
-
-        // 2. 渲染卡片的核心函数
-        function render(list) {
+        // 2. 初始化渲染 (每次搜索或点击分类时调用)
+        function initRender(list) {
             grid.innerHTML = '';
             visibleCards = []; 
             selectedCardIndex = -1;
-
-            list.sort((a, b) => {
+            currentPage = 0;
+            
+            // 每次接手新数组时，确保置顶逻辑生效
+            currentDataList = list.sort((a, b) => {
                 if (a.isTop && !b.isTop) return -1;
                 if (!a.isTop && b.isTop) return 1;
                 return 0;
             });
 
-            list.forEach((item, index) => {
+            // 如果数据为空，清空底部提示
+            if (currentDataList.length === 0) {
+                scrollSentinel.innerText = "没有找到匹配的资源";
+                return;
+            }
+
+            // 加载第一页
+            loadMore();
+        }
+
+        // 3. 加载下一页数据的核心逻辑
+        function loadMore() {
+            const startIndex = currentPage * pageSize;
+            const endIndex = startIndex + pageSize;
+            const sliceToRender = currentDataList.slice(startIndex, endIndex);
+
+            if (sliceToRender.length === 0) {
+                // 没有更多数据了
+                if(currentDataList.length > 0) scrollSentinel.innerText = "到底啦，没有更多资源了~";
+                return;
+            }
+            
+            scrollSentinel.innerText = "下拉加载更多...";
+
+            sliceToRender.forEach((item, indexInSlice) => {
+                const globalIndex = startIndex + indexInSlice; // 用于键盘导航追踪
                 const el = document.createElement('div');
                 el.className = 'card';
-                el.style.animation = `fadeUp 0.6s ease backwards ${index * 0.04}s`;
+                // 让新加载的每一批卡片都有轻微的渐现延迟
+                el.style.animationDelay = `${indexInSlice * 0.03}s`;
 
                 let tagClass = '';
                 if(item.cat==='tool') tagClass='tag-tool'; 
@@ -510,25 +526,43 @@
                     <a href="${item.url}" target="${target}" class="card-link">${item.cat === 'tool' ? '立即使用' : '访问官网'} →</a>
                 `;
                 
-                el.addEventListener('mouseenter', () => { updateSelection(index); });
+                el.addEventListener('mouseenter', () => { updateSelection(globalIndex); });
                 grid.appendChild(el);
                 visibleCards.push(el); 
             });
+
+            currentPage++;
+            
+            // 检查是否已经加载完所有数据
+            if (currentPage * pageSize >= currentDataList.length) {
+                scrollSentinel.innerText = "到底啦，没有更多资源了~";
+            }
         }
-        
-        // 3. 异步获取数据并初始化渲染
+
+        // 4. 交叉观察器 (IntersectionObserver) 实现超高性能的下拉加载
+        const observer = new IntersectionObserver((entries) => {
+            // 如果页面滚动到底部的哨兵元素进入视口，则触发加载
+            if (entries[0].isIntersecting) {
+                loadMore();
+            }
+        }, { rootMargin: '200px' }); // 距离底部还有 200px 时就提前开始加载，体验更好
+
+        observer.observe(scrollSentinel);
+
+        // 5. 异步获取数据
         fetch('resources.json')
             .then(response => {
                 if (!response.ok) throw new Error('网络响应失败');
                 return response.json();
             })
             .then(data => {
-                resources = data; // 赋值给全局变量
-                render(resources); // 数据加载完成后执行首次渲染
+                resources = data; 
+                initRender(resources); 
             })
             .catch(error => {
                 console.error('获取资源文件失败:', error);
-                grid.innerHTML = '<div style="color:#ef4444; text-align:center; width:100%; padding: 2rem;">数据加载失败，请检查 resources.json 文件是否存在或格式是否正确。<br><br>⚠️ 注意：由于浏览器安全策略限制，在本地直接双击打开 HTML 可能无法读取外部 JSON 文件。请将文件上传至服务器，或在本地开启 HTTP 服务（如 VS Code 的 Live Server）进行测试。</div>';
+                grid.innerHTML = '<div style="color:#ef4444; text-align:center; width:100%; padding: 2rem;">数据加载失败，请检查 resources.json 文件是否存在或格式是否正确。<br><br>⚠️ 注意：由于浏览器安全策略限制，在本地直接双击打开 HTML 可能无法读取外部 JSON 文件。请将文件上传至服务器，或在本地开启 HTTP 服务进行测试。</div>';
+                scrollSentinel.style.display = 'none';
             });
 
         // ================== 滑块逻辑 ==================
@@ -544,8 +578,8 @@
                 btnElement.classList.add('active');
                 moveGlider(btnElement);
             }
-            if(type === 'all') render(resources);
-            else render(resources.filter(i => i.cat === type));
+            if(type === 'all') initRender(resources);
+            else initRender(resources.filter(i => i.cat === type));
             window.scrollTo({top: 0, behavior: 'smooth'});
         }
         window.addEventListener('load', () => { const activeBtn = document.querySelector('.tag-btn.active'); if(activeBtn) moveGlider(activeBtn); });
@@ -553,39 +587,32 @@
 
         // ================== 核心交互逻辑 ==================
         
-        // 1. 下拉框开关
         function toggleSelect(e) {
             e.stopPropagation(); 
             const wrapper = document.getElementById('customSelect');
             wrapper.classList.toggle('active');
         }
 
-        // 2. 默认引擎配置
         const DEFAULT_ENGINE = "http://regurl.cn/?s=";
 
-        // 3. 引擎选择逻辑
         function selectEngine(value, name, element) {
             document.getElementById('searchEngineValue').value = value;
             document.getElementById('currentEngineText').innerText = name;
             
-            // 更新选中样式
             document.querySelectorAll('.option-item').forEach(item => item.classList.remove('selected'));
             element.classList.add('selected');
             
-            // 关闭下拉框
             document.getElementById('customSelect').classList.remove('active');
             
-            // 更改提示词，优化体验
             const input = document.getElementById('searchInput');
             if (value === DEFAULT_ENGINE) {
-                input.placeholder = "筛选资源...";
+                input.placeholder = "搜索标题或简介...";
             } else {
                 input.placeholder = `回车搜索 ${name}...`;
             }
             input.focus();
         }
 
-        // 4. 执行搜索
         function performSearch() {
             const engine = document.getElementById('searchEngineValue').value; 
             const query = document.getElementById('searchInput').value;
@@ -605,7 +632,6 @@
             }
         }
 
-        // 点击其他区域关闭下拉框
         document.addEventListener('click', (e) => {
             const wrapper = document.getElementById('customSelect');
             if (!wrapper.contains(e.target)) {
@@ -613,31 +639,31 @@
             }
         });
 
-        // 5. 绑定点击搜索
         document.getElementById('externalSearchBtn').addEventListener('click', performSearch);
 
-        // 6. 实时筛选 (本地)
+        // ================== 本地搜索逻辑优化 ==================
         searchInput.addEventListener('input', (e) => {
             const val = e.target.value;
             searchClear.style.display = val.length > 0 ? 'block' : 'none';
             const k = val.toLowerCase();
             
-            render(resources.filter(i => 
+            // 仅根据 标题(title) 和 简介(desc) 匹配，并重新初始化渲染（触发分页逻辑）
+            const filtered = resources.filter(i => 
                 i.title.toLowerCase().includes(k) || 
-                i.desc.toLowerCase().includes(k) || 
-                i.cat.includes(k) ||
-                i.url.toLowerCase().includes(k) 
-            ));
+                i.desc.toLowerCase().includes(k)
+            );
+            
+            initRender(filtered);
         });
 
         function clearSearch() {
             searchInput.value = '';
             searchClear.style.display = 'none';
-            render(resources);
+            initRender(resources);
             searchInput.focus();
         }
         
-        // 7. 键盘交互 & 智能回车
+        // ================== 键盘交互 ==================
         function updateSelection(index) {
             visibleCards.forEach(c => c.classList.remove('active-focus'));
             if (index >= 0 && index < visibleCards.length) {
@@ -653,27 +679,22 @@
                 if (e.key === 'Enter') {
                     const engine = document.getElementById('searchEngineValue').value;
                     
-                    // 情况A: 选了外部引擎 -> 直接全网搜
                     if (engine !== DEFAULT_ENGINE) {
                         e.preventDefault();
                         performSearch();
                         return;
                     }
-
-                    // 情况B: 默认引擎 + Shift -> 强制全网搜
                     if (e.shiftKey) {
                         e.preventDefault();
                         performSearch();
                         return;
                     }
 
-                    // 情况C: 默认引擎 -> 打开本地结果
                     if (visibleCards.length > 0) {
                         searchInput.blur();
                         const link = visibleCards[0].querySelector('a');
                         if (link) link.click();
                     } else {
-                         // 没本地结果 -> 全网搜
                          performSearch();
                     }
                     return;
@@ -691,6 +712,7 @@
                 return;
             }
 
+            // 支持通过键盘下键不断滚动到底部，触发懒加载
             if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
                 e.preventDefault(); 
                 if (visibleCards.length === 0) return;
