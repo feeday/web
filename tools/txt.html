@@ -248,8 +248,9 @@ input[type="checkbox"] { accent-color: var(--theme-blue); width: 14px; height: 1
             <div id="replace-count">替换：<span>0</span></div>
             <div id="regex-replace-count">正则：<span>0</span></div>
         </div>
-        <input type="password" id="globalApiKey" class="global-key-input" placeholder="输入全局 API 密钥 (sk-...或poixe-...)"> 
+        <input type="password" id="globalApiKey" class="global-key-input" placeholder="输入全局 API 密钥 (poixe-xxx)"> 
         <a href="https://poixe.com/i/feeday" target="_blank" class="tag-btn">获取API</a>
+        <button class="tag-btn" id="btnClearOutput" style="color: #fca5a5; border-color: rgba(239,68,68,0.3);">🗑️ 清除缓存</button>
         <button class="tag-btn" onclick="window.location.href='/'">返回主页 ➔</button>
     </div>
 </div>
@@ -379,11 +380,10 @@ input[type="checkbox"] { accent-color: var(--theme-blue); width: 14px; height: 1
             <input type="file" id="fileInput" class="glass-input" accept="image/*,audio/*,video/*">
             <input type="number" id="intervalInput" class="glass-input" min="1" placeholder="视频抽帧：输入提取帧率 (FPS)">
 
-            <div class="btn-grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="btn-grid" style="grid-template-columns: repeat(3, 1fr);">
                 <button class="btn btn-glass" id="btnToB64">文件 ➔ Base64</button>
                 <button class="btn btn-glass" id="btnFromB64">Base64 ➔ 媒体</button>
                 <button class="btn btn-glass" id="btnFrames">🎞️ 提取视频帧</button>
-                <button class="btn btn-glass" id="btnClearOutput" style="color: #fca5a5; border-color: rgba(239,68,68,0.3);">🗑️ 清除缓存</button>
             </div>
         </div>
 
@@ -563,17 +563,15 @@ document.getElementById('sendChatBtn').addEventListener('click', async () => {
     
     // UI 更新
     appendChatMessage('user', text);
-    // 去除了隐式转换，确保纯净的数组和对象传递
-    chatContext.push({ role: "user", content: text });
+    chatContext.push({ role: "user", content: String(text) });
     
     inputEl.value = "";
     inputEl.disabled = true;
     btn.disabled = true;
     btn.innerText = "思考中";
 
-    // 不强制带有 max_tokens，并加上 stream: false
     const safeMessages = chatContext.map(msg => ({ role: msg.role, content: msg.content }));
-    const reqPayload = { model: model, messages: safeMessages, stream: false };
+    const reqPayload = { model: model, messages: safeMessages, stream: false, max_tokens: 1000 };
 
     try {
         const res = await fetch("https://api.poixe.com/v1/chat/completions", {
@@ -593,7 +591,7 @@ document.getElementById('sendChatBtn').addEventListener('click', async () => {
         if (result.choices && result.choices[0] && result.choices[0].message) {
             const aiMsg = result.choices[0].message.content;
             appendChatMessage('ai', aiMsg);
-            chatContext.push({ role: "assistant", content: aiMsg });
+            chatContext.push({ role: "assistant", content: String(aiMsg) });
         } else {
             throw new Error('API 返回数据缺失 choices 节点');
         }
@@ -628,7 +626,8 @@ document.getElementById('aiProcessTextBtn').addEventListener('click', async () =
     const reqPayload = {
         model: model,
         messages: [{ role: "system", content: "你是一个文本处理助手。回复不超500字。" }, { role: "user", content: text }],
-        stream: false
+        stream: false,
+        max_tokens: 1000
     };
 
     try {
@@ -795,12 +794,18 @@ document.getElementById('btnFromB64').addEventListener('click', () => {
     const frameContainer = document.getElementById('frameDisplayContainer');
     const wrapper = document.getElementById('mediaPlayerWrapper');
 
-    wrapper.innerHTML = ""; playerContainer.style.display = 'none'; frameContainer.style.display = 'none';
-    currentFilter = ''; isFrameMode = false;
+    // Reset
+    wrapper.innerHTML = "";
+    playerContainer.style.display = 'none';
+    frameContainer.style.display = 'none';
+    currentFilter = '';
+    isFrameMode = false;
 
     if(mime.startsWith('image/')){
         const img = document.getElementById('frameDisplayedImage');
-        img.src = s; currentMediaImage = img; img.style.filter = currentFilter;
+        img.src = s;
+        currentMediaImage = img;
+        img.style.filter = currentFilter;
         document.getElementById('mediaToolbar').style.display = 'flex';
         document.querySelectorAll('.frame-btn').forEach(el => el.style.display = 'none'); 
         document.getElementById('framePager').style.display = 'none';
@@ -808,7 +813,8 @@ document.getElementById('btnFromB64').addEventListener('click', () => {
     } else if(mime.startsWith('audio/') || mime.startsWith('video/')){
         const media = document.createElement(mime.startsWith('audio/') ? 'audio' : 'video');
         media.controls = true; media.src = s; media.preload = 'metadata';
-        wrapper.appendChild(media); currentMediaDataURL = s;
+        wrapper.appendChild(media);
+        currentMediaDataURL = s;
         playerContainer.style.display = 'flex';
     } else {
         showError("⚠️ 不支持预览的媒体格式，保留在文本区");
@@ -824,7 +830,7 @@ document.getElementById('btnDownloadMedia').addEventListener('click', () => {
     a.href = currentMediaDataURL; a.download = `media_decode.${ext}`; a.click();
 });
 
-// 视频抽帧
+// 视频抽帧逻辑
 function seekTo(vid, t) {
     return new Promise(resolve => {
         const handler = () => { vid.removeEventListener('seeked', handler); resolve(); };
@@ -847,7 +853,10 @@ document.getElementById('btnFrames').addEventListener('click', async () => {
     video.preload = 'metadata'; video.src = objectURL;
 
     video.onloadedmetadata = async () => {
-        extractedImages = []; currentImageIndex = -1; currentFilter = ''; isFrameMode = true;
+        extractedImages = [];
+        currentImageIndex = -1;
+        currentFilter = '';
+        isFrameMode = true;
 
         switchTab('media');
         document.getElementById('mediaPlaceholder').style.display = 'none';
@@ -868,14 +877,16 @@ document.getElementById('btnFrames').addEventListener('click', async () => {
             canvas.width = video.videoWidth; canvas.height = video.videoHeight;
             canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
             extractedImages.push({ url: canvas.toDataURL('image/png'), time: currentTime });
+            document.getElementById('progressText').innerText = `抽帧中: ${i+1}/${total}`;
             currentTime += frameDuration;
         }
 
+        hideOverlay();
         btn.innerText = "🎞️ 提取视频帧";
         if(extractedImages.length > 0){
             currentImageIndex = 0; displayExtractedFrame();
         } else {
-            showError('❌ 提取失败');
+            showError('❌ 未能提取到任何帧');
         }
     };
 });
@@ -884,7 +895,9 @@ function displayExtractedFrame() {
     if(currentImageIndex < 0 || currentImageIndex >= extractedImages.length) return;
     const f = extractedImages[currentImageIndex];
     const img = document.getElementById('frameDisplayedImage');
-    img.src = f.url; currentMediaImage = img; img.style.filter = currentFilter;
+    img.src = f.url;
+    currentMediaImage = img;
+    img.style.filter = currentFilter;
     document.getElementById('framePager').textContent = `[ ${currentImageIndex + 1} / ${extractedImages.length} ] 时间轴: ${f.time.toFixed(2)} 秒`;
 }
 
@@ -918,7 +931,9 @@ document.getElementById('btnClearOutput').addEventListener('click', () => {
     document.getElementById('mediaPlayerContainer').style.display = 'none';
     document.getElementById('frameDisplayContainer').style.display = 'none';
     document.getElementById('mediaPlayerWrapper').innerHTML = '';
-    switchTab('text');
+    
+    // 清除缓存也清除全局错误信息
+    document.getElementById('errorMsg').style.display = "none";
 });
 
 /* ===== 6. 文本正则与编辑区 ===== */
@@ -994,11 +1009,25 @@ document.getElementById("copy-btn").addEventListener("click", function() {
     const tempInput = document.createElement("textarea");
     document.body.appendChild(tempInput); tempInput.value = textToCopy;
     tempInput.select(); document.execCommand("copy"); document.body.removeChild(tempInput);
-    showError("✅ 复制成功！");
+    
+    // UI 反馈
+    const originalText = this.innerHTML;
+    this.innerHTML = "✅ 已复制";
+    setTimeout(() => { this.innerHTML = originalText; }, 2000);
 });
 
 document.getElementById("paste-btn").addEventListener("click", function() {
-    navigator.clipboard.readText().then(clipText => { textarea.value = clipText; updateStats(); }).catch(err => {});
+    navigator.clipboard.readText().then(clipText => { 
+        textarea.value = clipText; 
+        updateStats(); 
+        
+        // UI 反馈
+        const originalText = this.innerHTML;
+        this.innerHTML = "✅ 已粘贴";
+        setTimeout(() => { this.innerHTML = originalText; }, 2000);
+    }).catch(err => {
+        showError("❌ 无法访问剪贴板，请手动粘贴");
+    });
 });
 
 // 7. Web Speech Synthesis (TTS)
