@@ -42,35 +42,25 @@
         }
         a { text-decoration: none; color: inherit; transition: 0.2s; }
 
-        /* ================== 2. 顶部统计导航栏 ================== */
+        /* ================== 2. 顶部导航 ================== */
         .sticky-header-wrapper {
             width: 100%; display: flex; justify-content: center;
             padding: 15px 20px; z-index: 999;
         }
         .filter-bar { 
-            display: flex; gap: 15px; align-items: center; background: rgba(0, 0, 0, 0.3); padding: 8px 15px; 
-            border-radius: 14px; border: 1px solid rgba(255,255,255,0.08); 
+            display: flex; gap: 4px; align-items: center; background: rgba(0, 0, 0, 0.3); padding: 6px; 
+            border-radius: var(--radius-pill); border: 1px solid rgba(255,255,255,0.08); 
             width: 100%; max-width: 1600px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
         }
-        
-        #stats { 
-            display: flex; flex-wrap: wrap; gap: 8px; flex: 1;
-        }
-        #stats div { 
-            font-size: 0.8rem; font-weight: 600; color: var(--theme-blue); 
-            background: rgba(56, 189, 248, 0.1); padding: 4px 10px; border-radius: 8px; 
-            border: 1px solid rgba(56, 189, 248, 0.2); display: flex; align-items: center; white-space: nowrap;
-        }
-        #stats div span { color: #fff; margin-left: 4px; font-weight: 700;} 
-
         .tag-btn { 
-            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-primary); 
-            padding: 6px 16px; border-radius: 8px; font-size: 0.85rem; 
+            background: transparent; border: none; color: var(--text-secondary); 
+            padding: 8px 20px; border-radius: var(--radius-pill); font-size: 0.95rem; 
             font-weight: 600; cursor: pointer; transition: all 0.3s; white-space: nowrap; 
         }
-        .tag-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.15); border-color: rgba(255, 255, 255, 0.25); box-shadow: 0 4px 10px rgba(0,0,0,0.2);}
+        .tag-btn.active { color: #fff; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .tag-btn:hover:not(.active) { color: #fff; background: rgba(255, 255, 255, 0.05); }
 
-        /* ================== 3. 宽屏工作台布局 ================== */
+        /* ================== 3. 工作台布局 ================== */
         .workspace {
             width: 100%; max-width: 1600px; flex: 1; margin-bottom: 20px;
             background: var(--bg-card); border: 1px solid var(--border-light);
@@ -81,13 +71,13 @@
 
         /* 左侧：工作与预览面板 */
         .editor-panel {
-            flex: 1; padding: 20px; display: flex; flex-direction: column; position: relative;
+            flex: 1; padding: 20px; display: flex; flex-direction: column;
             background: radial-gradient(circle at top left, rgba(30, 41, 59, 0.3) 0%, transparent 70%);
         }
 
         /* 右侧：控制面板 */
         .control-panel {
-            flex: 0 0 380px; padding: 25px; display: flex; flex-direction: column; gap: 20px;
+            flex: 0 0 400px; padding: 20px 25px; display: flex; flex-direction: column; gap: 20px;
             border-left: 1px solid var(--border-light); background: var(--bg-panel);
             overflow-y: auto;
         }
@@ -115,11 +105,16 @@
         select.glass-input option { background-color: #0f172a; color: #fff; }
         select.glass-input:disabled { background-color: rgba(255, 255, 255, 0.02); color: var(--text-tertiary); cursor: not-allowed; border-color: transparent; }
 
+        /* 文件上传按钮特别处理 */
+        input[type="file"].glass-input { padding: 6px 12px; color: var(--text-secondary); cursor: pointer; }
+        input[type="file"]::file-selector-button { background: rgba(255,255,255,0.1); border: none; padding: 6px 12px; border-radius: 6px; color: #fff; margin-right: 10px; cursor: pointer; transition: 0.2s;}
+        input[type="file"]::file-selector-button:hover { background: rgba(255,255,255,0.2); }
+
         /* 统一简约按钮风格 */
         .btn-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
         .btn { 
             padding: 8px 10px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; 
-            cursor: pointer; transition: all 0.2s; text-align: center; border: none;
+            cursor: pointer; transition: all 0.2s; text-align: center; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
         }
         .btn:active { transform: translateY(0); }
         
@@ -141,48 +136,67 @@
         .tts-checkbox { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 10px;}
         input[type="checkbox"] { accent-color: var(--theme-blue); width: 16px; height: 16px; cursor: pointer; }
 
-        /* ================== 5. 左侧内容区 & 图像覆盖层 ================== */
+        /* ================== 5. 左侧内容区 & Tab 切换 ================== */
+        .editor-tabs { display: flex; gap: 10px; margin-bottom: 15px; }
+        .editor-tab { 
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-secondary); padding: 8px 20px; border-radius: 8px;
+            cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: 0.2s;
+        }
+        .editor-tab.active { background: var(--theme-blue); color: #0f172a; border-color: var(--theme-blue); }
+        .editor-tab:hover:not(.active) { background: rgba(255,255,255,0.1); color: #fff; }
+        
+        .workspace-view { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative;}
+
+        /* 视图 1：文本视图 */
+        #stats { 
+            display: flex; flex-wrap: wrap; gap: 10px; padding: 12px 20px; margin-bottom: 15px;
+            background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255,255,255,0.05); 
+            border-radius: 12px;
+        }
+        #stats div { font-size: 0.85rem; font-weight: 600; color: var(--theme-blue); background: rgba(56, 189, 248, 0.1); padding: 4px 12px; border-radius: 6px; }
+        #stats div span { color: #fff; margin-left: 4px; } 
+
         #textarea { 
-            flex: 1; width: 100%; height: 100%; resize: none; background: rgba(0, 0, 0, 0.3); 
+            flex: 1; height: 100%; resize: none; background: rgba(0, 0, 0, 0.3); 
             border: 1px solid var(--border-light); border-radius: 12px; padding: 20px; 
             color: var(--text-primary); font-family: monospace; font-size: 0.95rem; line-height: 1.6;
             box-shadow: inset 0 2px 10px rgba(0,0,0,0.2); transition: border-color 0.3s;
         }
         #textarea:focus { border-color: rgba(56, 189, 248, 0.4); outline: none; }
 
-        /* 生成进度悬浮条 */
+        /* 视图 2：图像生成预览 */
+        .preview-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-tertiary); gap: 15px; }
+        .preview-placeholder svg { width: 64px; height: 64px; opacity: 0.2; }
+        
+        .result-image-wrapper { width: 100%; height: 100%; display: none; flex-direction: column; align-items: center; justify-content: center; position: relative;}
+        .result-image { max-width: 100%; max-height: calc(100% - 80px); object-fit: contain; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); }
+
+        /* 视图 3：媒体解析与抽帧预览 */
+        .media-image-display { max-width: 100%; max-height: calc(100% - 100px); object-fit: contain; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); }
+        .media-time { color: var(--text-secondary); margin-top: 10px; font-size: 0.85rem; }
+        #mediaPlayerWrapper video, #mediaPlayerWrapper audio { max-width: 100%; max-height: 50vh; border-radius: 12px; outline: none; }
+
+        /* 进度提示与弹窗 */
         .progress-overlay {
-            position: absolute; top: 40px; left: 50%; transform: translateX(-50%);
+            position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
             background: rgba(15, 23, 42, 0.85); border: 1px solid var(--theme-blue);
             padding: 10px 25px; border-radius: 30px; display: none; align-items: center; gap: 10px;
             color: var(--theme-blue); font-weight: 600; font-size: 0.9rem; z-index: 20;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
         }
-        .loader-spinner {
-            width: 18px; height: 18px; border: 2px solid rgba(56, 189, 248, 0.3); 
-            border-top-color: var(--theme-blue); border-radius: 50%; animation: spin 1s linear infinite;
-        }
-
-        /* 图像结果覆盖层 */
-        .result-image-wrapper { 
-            position: absolute; top: 20px; left: 20px; right: 20px; bottom: 20px;
-            background: rgba(15, 23, 42, 0.95); border-radius: 12px; border: 1px solid var(--border-light);
-            display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 10;
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-        }
-        .result-image { max-width: 95%; max-height: calc(100% - 80px); object-fit: contain; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); }
+        .loader-spinner { width: 18px; height: 18px; border: 2px solid rgba(56, 189, 248, 0.3); border-top-color: var(--theme-blue); border-radius: 50%; animation: spin 1s linear infinite; }
         
-        .action-row { display: flex; gap: 15px; margin-top: 20px; }
         .error-msg { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; padding: 12px 24px; border-radius: 8px; font-weight: 500; font-size: 0.9rem; display: none; z-index: 30;}
-        
+
         @keyframes spin { 100% { transform: rotate(360deg); } }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
         @media (max-width: 1024px) {
             .workspace { flex-direction: column-reverse; overflow-y: auto; }
-            .control-panel { flex: none; border-left: none; border-top: 1px solid var(--border-light); }
+            .control-panel { flex: none; border-left: none; border-top: 1px solid var(--border-light); width: 100%;}
             #textarea { height: 400px; flex: none; }
-            .result-image-wrapper { top: 0; left: 0; right: 0; bottom: 0; position: fixed; border-radius: 0; z-index: 9999;}
+            .result-image-wrapper { height: 400px; }
         }
     </style>
 </head>
@@ -190,17 +204,8 @@
 
     <div class="sticky-header-wrapper">
         <div class="filter-bar">
-            <div id="stats">
-                <div id="total">总数：<span>0</span></div>
-                <div id="chinese">汉字：<span>0</span></div>
-                <div id="punctuation">标点：<span>0</span></div>
-                <div id="alphabet">字母：<span>0</span></div>
-                <div id="numbers">数字：<span>0</span></div>
-                <div id="duplicate">重复：<span>0</span></div>
-                <div id="replace-count">替换：<span>0</span></div>
-                <div id="regex-replace-count">正则：<span>0</span></div>
-            </div>
-            <button class="tag-btn" onclick="window.location.href='/'">返回主页 ➔</button>
+            <button class="tag-btn active" style="cursor: default;">✨ 综合 AI 工作台</button>
+            <button class="tag-btn" onclick="window.location.href='/'" style="margin-left: auto;">返回主页 ➔</button>
         </div>
     </div>
 
@@ -208,22 +213,75 @@
         
         <div class="editor-panel">
             
-            <textarea id="textarea" placeholder="非数字：[^0-9]*&#10;n位的数字：\d{n}&#10;至少n位的数字：\d{n,}&#10;匹配多行文本中每行的最后的两个字符:.{2}(?=\n|$)&#10;匹配多行文本中每行的开始的两个字符:(?<=^|\n).{2}&#10;中文字符的正则表达式：[\u4e00-\u9fa5]&#10;英文和数字：[A-Za-z0-9]+ 或 [A-Za-z0-9]{4,40}&#10;长度为3-20的所有字符：.{3,20}&#10;由数字和26个英文字母组成的字符串：[A-Za-z0-9]+&#10;由数字、26个英文字母或者下划线组成的字符串：\w+ 或 \w{3,20}&#10;&#10;curl.exe -o NUL http://speedtest.tele2.net/10GB.zip&#10;curl -s -o ~/x https://raw.githubusercontent.com/olegos2/mobox/main/install && . ~/x&#10;curl -sSL https://dokploy.com/install.sh | sudo sh&#10;&#10;sudo passwd root&#10;&#10;conda create -n python38 python=3.8 # 创建虚拟环境&#10;conda activate python38  # 切换虚拟环境&#10;conda remove -n python38 --all # 删除虚拟环境&#10;conda create -n python38 --clone old_python38 # 克隆虚拟环境&#10;conda list # 列出已安装的包&#10;conda env list # 列出所有虚拟环境&#10;&#10;cd /f/d&#10;export HF_ENDPOINT=https://hf-mirror.com&#10;./hfd.sh datxy/file --dataset --local-dir ./dataset&#10;&#10;Get-ChildItem -Recurse -File | Select-String -Pattern # 双引号 Windows 搜索&#10;tracert baidu.cn&#10;grep -rn 'py' /home/&#10;rm -rf /*"></textarea>
-            
-            <div id="progressOverlay" class="progress-overlay">
-                <div class="loader-spinner"></div>
-                <span id="progressText">AI 正在绘制图像...</span>
+            <div class="editor-tabs">
+                <button class="editor-tab active" id="tab-text" onclick="switchTab('text')">📝 文本处理区</button>
+                <button class="editor-tab" id="tab-image" onclick="switchTab('image')">🖼️ 图像生成区</button>
+                <button class="editor-tab" id="tab-media" onclick="switchTab('media')">🎬 媒体解析区</button>
             </div>
 
-            <div id="resultWrapper" class="result-image-wrapper">
-                <img id="resultImage" class="result-image" alt="生成的图片">
-                <div class="action-row">
-                    <button class="btn btn-glass" style="background: rgba(52, 211, 153, 0.2); color: var(--theme-green); border-color: rgba(52, 211, 153, 0.4);" onclick="downloadImage()">⬇️ 保存高清原图</button>
-                    <button class="btn btn-glass" onclick="hideImagePreview()">✖ 返回文本区</button>
+            <div id="progressOverlay" class="progress-overlay">
+                <div class="loader-spinner"></div>
+                <span id="progressText">处理中...</span>
+            </div>
+            <div class="error-msg" id="errorMsg"></div>
+
+            <div id="view-text" class="workspace-view" style="display: flex;">
+                <div id="stats">
+                    <div id="total">总数：<span>0</span></div>
+                    <div id="chinese">汉字：<span>0</span></div>
+                    <div id="punctuation">标点：<span>0</span></div>
+                    <div id="alphabet">字母：<span>0</span></div>
+                    <div id="numbers">数字：<span>0</span></div>
+                    <div id="duplicate">重复：<span>0</span></div>
+                    <div id="replace-count">替换：<span>0</span></div>
+                    <div id="regex-replace-count">正则：<span>0</span></div>
+                </div>
+                <textarea id="textarea" placeholder="在这里输入文本、正则规则或 Base64 数据..."></textarea>
+            </div>
+
+            <div id="view-image" class="workspace-view" style="display: none; align-items: center; justify-content: center;">
+                <div class="preview-placeholder" id="imagePlaceholder">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    <p>AI 图像将在这里呈现</p>
+                </div>
+                <div class="result-image-wrapper" id="aiResultWrapper">
+                    <img id="aiResultImage" class="result-image" alt="生成的图片">
+                    <div style="margin-top: 15px;">
+                        <button class="btn btn-glass" style="color: var(--theme-green); border-color: rgba(52, 211, 153, 0.3);" onclick="downloadAiImage()">⬇️ 保存高清原图</button>
+                    </div>
                 </div>
             </div>
 
-            <div class="error-msg" id="errorMsg"></div>
+            <div id="view-media" class="workspace-view" style="display: none; align-items: center; justify-content: center;">
+                <div class="preview-placeholder" id="mediaPlaceholder">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+                    <p>媒体预览与抽帧结果区</p>
+                </div>
+                
+                <div id="mediaPlayerContainer" style="display: none; flex-direction: column; align-items: center; width: 100%;">
+                    <div id="mediaPlayerWrapper" style="display:flex; justify-content:center; align-items:center; width:100%; margin-bottom: 20px;"></div>
+                    <button class="btn btn-glass" id="btnDownloadMedia" style="color: var(--theme-green);">⬇️ 下载媒体文件</button>
+                </div>
+
+                <div id="frameDisplayContainer" style="display: none; flex-direction: column; align-items: center; width: 100%; height: 100%;">
+                    <img id="frameDisplayedImage" class="media-image-display" src="" alt="Extracted Frame" />
+                    <div id="frameTimeLabel" class="media-time"></div>
+                    
+                    <div id="frameControls" style="display: none; gap: 10px; margin-top: 15px;">
+                        <button class="btn btn-glass" id="prevButton">⬅️ 上一帧</button>
+                        <button class="btn btn-glass" id="btnDownloadFrame" style="color: var(--theme-green);">⬇️ 保存此帧</button>
+                        <button class="btn btn-glass" id="nextButton">下一帧 ➡️</button>
+                    </div>
+                    <div id="framePager" style="color: var(--text-tertiary); font-size: 0.8rem; margin-top: 5px; display: none;">0 / 0</div>
+                    
+                    <div id="editButtons" style="display: flex; gap: 10px; margin-top: 15px;">
+                        <button class="btn btn-glass" id="btnInvert">反色处理</button>
+                        <button class="btn btn-glass" id="btnGray">去色黑白</button>
+                        <button class="btn btn-glass" id="btnRestore">效果还原</button>
+                        <button class="btn btn-glass" id="btnDownloadEditedImage">保存图像</button>
+                    </div>
+                </div>
+            </div>
 
         </div>
 
@@ -231,12 +289,25 @@
             
             <div class="glass-card">
                 <div class="section-title">
-                    <span>✨ AI 图像生成</span>
+                    <span>🔑 全局 API 密钥</span>
                     <a href="https://poixe.com/i/realfake" target="_blank" style="color: var(--theme-blue); font-size: 0.75rem; font-weight: normal;">获取 API</a>
                 </div>
-                <input type="password" id="apiKey" class="glass-input" placeholder="输入 API Key (poixe-xxx)">
-                
-                <select id="modelSelect" class="glass-input">
+                <input type="password" id="globalApiKey" class="glass-input" placeholder="输入密钥，例: poixe-xxx" style="margin-bottom: 0;">
+            </div>
+
+            <div class="glass-card">
+                <div class="section-title">💬 AI 文本对话 (交互左侧文本区)</div>
+                <select id="textModelSelect" class="glass-input">
+                    <option value="gemini-3.1-pro-preview">gemini-3.1-pro-preview</option>
+                    <option value="gpt-5.4-pro-2026-03-05">gpt-5.4-pro-2026-03-05</option>
+                    <option value="deepseek-v3-250324:free">deepseek-v3-250324:free</option>
+                </select>
+                <button id="openkey-btn" class="btn bg-blue" style="width: 100%; padding: 10px; font-size: 0.95rem;">🤖 发送文本请求</button>
+            </div>
+
+            <div class="glass-card">
+                <div class="section-title">✨ AI 图像生成</div>
+                <select id="imageModelSelect" class="glass-input">
                     <option value="gemini-2.5-flash-image">Nano Banana (闪电版)</option>
                     <option value="nano-banana-pro" selected>Nano Banana Pro (高画质)</option>
                 </select>
@@ -255,31 +326,40 @@
                     </select>
                 </div>
                 
-                <textarea id="imagePrompt" class="glass-input" style="min-height: 70px; margin-bottom: 10px;" placeholder="输入图像提示词，例如：赛博朋克风格的橘猫..."></textarea>
-                
-                <button id="generateBtn" class="btn bg-blue" style="width: 100%; padding: 10px; font-size: 0.95rem;" onclick="generateImage()">🚀 开始生成图像</button>
+                <textarea id="imagePrompt" class="glass-input" style="min-height: 60px; margin-bottom: 10px;" placeholder="输入图像提示词，例如：赛博朋克风格的橘猫..."></textarea>
+                <button id="generateBtn" class="btn bg-blue" style="width: 100%; padding: 10px; font-size: 0.95rem;">🚀 开始绘制图像</button>
             </div>
 
             <div class="glass-card">
-                <div class="section-title">查找与替换 (对应左侧文本区)</div>
-                <input type="text" id="search-input" class="glass-input" placeholder="输入查找文本或正则" value='https?:\/\/[^\s\/$.?#]+[^\s]*?(?=")'>      
-                <input type="text" id="replace-input" class="glass-input" placeholder="输入替换内容 (为空则删除)">
-
-                <div class="btn-grid" style="margin-top: 10px;">
-                    <button class="btn btn-glass" id="remove-duplicates-btn">去重</button>
-                    <button class="btn btn-glass" id="replace-btn">普通替换</button>
-                    <button class="btn btn-glass" id="regex-replace-btn">正则替换</button>
-                    <button class="btn btn-glass" id="preserve-matches-btn">正则提取</button>
-                    <button class="btn btn-glass" id="copy-btn">复制内容</button>
-                    <button class="btn btn-glass" id="paste-btn">粘贴覆盖</button>
-                    <button class="btn btn-glass" id="openkey-btn" data-api-url="https://api.poixe.com/v1/chat/completions" style="display:none;">API 测试</button>
-                    <button class="btn btn-glass" onclick="formatAndPreview()">预览网页</button>
-                    <button class="btn btn-glass" id="clear-btn" style="color: #fca5a5; border-color: rgba(239, 68, 68, 0.3);">清空面板</button>
+                <div class="section-title">📦 文件转码 & 视频抽帧</div>
+                <input type="file" id="fileInput" class="glass-input" accept="image/*,audio/*,video/*">
+                <input type="number" id="intervalInput" class="glass-input" min="1" placeholder="视频抽帧：输入提取帧率 (FPS)">
+                
+                <div class="btn-grid" style="grid-template-columns: 1fr 1fr;">
+                    <button class="btn btn-glass" id="btnToB64">文件 ➔ Base64</button>
+                    <button class="btn btn-glass" id="btnFromB64">Base64 ➔ 媒体</button>
+                    <button class="btn btn-glass" id="btnFrames">🎞️ 提取视频帧</button>
+                    <button class="btn btn-glass" id="btnClearOutput" style="color: #fca5a5; border-color: rgba(239,68,68,0.3);">🗑️ 清除缓存</button>
                 </div>
             </div>
 
             <div class="glass-card">
-                <div class="section-title">文本语音朗读 (TTS)</div>
+                <div class="section-title">🔍 查找与替换</div>
+                <input type="text" id="search-input" class="glass-input" placeholder="输入查找文本或正则" value='https?:\/\/[^\s\/$.?#]+[^\s]*?(?=")'>      
+                <input type="text" id="replace-input" class="glass-input" placeholder="输入替换内容 (为空则删除)">
+
+                <div class="btn-grid" style="grid-template-columns: repeat(3, 1fr);">
+                    <button class="btn btn-glass" id="remove-duplicates-btn">去重行</button>
+                    <button class="btn btn-glass" id="replace-btn">普通替换</button>
+                    <button class="btn btn-glass" id="regex-replace-btn">正则替换</button>
+                    <button class="btn btn-glass" id="preserve-matches-btn">正则提取</button>
+                    <button class="btn btn-glass" id="copy-btn">复制文本</button>
+                    <button class="btn btn-glass" id="paste-btn">粘贴覆盖</button>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <div class="section-title">📢 文本语音朗读 (TTS)</div>
                 <label class="tts-checkbox">
                     <input type="checkbox" id="tts-filterChinese" checked> 只显示中文语音
                 </label>
@@ -299,8 +379,8 @@
                 </div>
 
                 <div style="display: flex; gap: 10px; margin-top: 15px;">
-                    <button id="tts-start" class="btn btn-glass" style="flex: 1;">▶ 开始朗读</button>
-                    <button id="tts-stop" class="btn btn-glass" style="flex: 1;">■ 停止</button>
+                    <button id="tts-start" class="btn btn-glass" style="flex: 1; color: var(--theme-green); border-color: rgba(52, 211, 153, 0.3);">▶ 开始朗读</button>
+                    <button id="tts-stop" class="btn btn-glass" style="flex: 1; color: #fca5a5; border-color: rgba(239,68,68,0.3);">■ 停止</button>
                 </div>
             </div>
             
@@ -309,27 +389,43 @@
     </div>
 
     <script>
-        // 1. AI 图像生成逻辑
+        /* ===== 0. 全局状态与基础配置 ===== */
+        let extractedImages = [];
+        let currentImageIndex = -1;
+        let currentMediaImage = null;
+        let currentFilter = "";
+        let currentMediaDataURL = "";
+        let isFrameMode = false;
+
         window.addEventListener('load', () => { 
-            const savedKey = localStorage.getItem('poixe_api_key');
-            if(savedKey) document.getElementById('apiKey').value = savedKey;
+            const savedKey = localStorage.getItem('datxy_global_api_key');
+            if(savedKey) document.getElementById('globalApiKey').value = savedKey;
             
             updateResolutionState();
-            document.getElementById('modelSelect').addEventListener('change', updateResolutionState);
-            updateStats(); // 初始化文本统计
+            document.getElementById('imageModelSelect').addEventListener('change', updateResolutionState);
+            updateStats(); 
         });
 
-        function updateResolutionState() {
-            const modelSelect = document.getElementById('modelSelect');
-            const imageSizeSelect = document.getElementById('imageSize');
-            if (modelSelect.value === 'nano-banana-pro') {
-                imageSizeSelect.disabled = false; 
-            } else {
-                imageSizeSelect.disabled = true; 
-                imageSizeSelect.value = "1K"; 
-            }
+        document.getElementById('globalApiKey').addEventListener('change', (e) => {
+            localStorage.setItem('datxy_global_api_key', e.target.value.trim());
+        });
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.editor-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.workspace-view').forEach(v => v.style.display = 'none');
+            
+            document.getElementById('tab-' + tabId).classList.add('active');
+            document.getElementById('view-' + tabId).style.display = 'flex';
         }
 
+        function showOverlay(msg) {
+            const overlay = document.getElementById('progressOverlay');
+            document.getElementById('progressText').innerText = msg;
+            overlay.style.display = "flex";
+        }
+        function hideOverlay() {
+            document.getElementById('progressOverlay').style.display = "none";
+        }
         function showError(msg) {
             const errorMsg = document.getElementById('errorMsg');
             errorMsg.innerText = msg;
@@ -337,43 +433,87 @@
             setTimeout(() => { errorMsg.style.display = "none"; }, 4000);
         }
 
-        function hideImagePreview() {
-            document.getElementById('resultWrapper').style.display = 'none';
+        /* ===== 1. AI 文本测试 (调用 API) ===== */
+        document.getElementById('openkey-btn').addEventListener('click', async () => {
+            const apiKey = document.getElementById('globalApiKey').value.trim();
+            const model = document.getElementById('textModelSelect').value;
+            const text = document.getElementById('textarea').value.trim();
+            const btn = document.getElementById('openkey-btn');
+
+            if (!apiKey) return showError("❌ 请在顶部输入全局 API Key");
+            if (!text) return showError("❌ 请在左侧文本区输入请求内容");
+
+            localStorage.setItem('datxy_global_api_key', apiKey);
+            switchTab('text');
+            showOverlay("AI 正在思考中...");
+            btn.disabled = true;
+            btn.innerText = "⏳ 请求中...";
+
+            try {
+                const res = await fetch("https://api.poixe.com/v1/chat/completions", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
+                    body: JSON.stringify({
+                        model: model,
+                        messages: [
+                            { role: "system", content: "简要回复，字符不超500个。" },
+                            { role: "user", content: text }
+                        ],
+                        temperature: 0.7
+                    })
+                });
+                
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const result = await res.json();
+                
+                if (result.choices && result.choices[0]) {
+                    document.getElementById('textarea').value = result.choices[0].message.content;
+                } else {
+                    document.getElementById('textarea').value = JSON.stringify(result, null, 2);
+                }
+                updateStats();
+            } catch(e) {
+                showError("❌ 请求失败: " + e.message);
+            } finally {
+                hideOverlay();
+                btn.disabled = false;
+                btn.innerText = "🤖 发送文本请求";
+            }
+        });
+
+        /* ===== 2. AI 图像生成 ===== */
+        function updateResolutionState() {
+            const modelSelect = document.getElementById('imageModelSelect');
+            const imageSizeSelect = document.getElementById('imageSize');
+            imageSizeSelect.disabled = (modelSelect.value !== 'nano-banana-pro');
         }
 
-        async function generateImage() {
-            const rawKey = document.getElementById('apiKey').value;
-            const apiKey = rawKey.replace(/[^\x20-\x7E]/g, '').trim();
-            const model = document.getElementById('modelSelect').value;
+        document.getElementById('generateBtn').addEventListener('click', async () => {
+            const apiKey = document.getElementById('globalApiKey').value.trim();
+            const model = document.getElementById('imageModelSelect').value;
             const prompt = document.getElementById('imagePrompt').value.trim();
             const aspectRatio = document.getElementById('aspectRatio').value.split(' ')[0]; 
             const imageSize = document.getElementById('imageSize').value.split(' ')[0]; 
-            
-            const generateBtn = document.getElementById('generateBtn');
-            const progressOverlay = document.getElementById('progressOverlay');
-            const resultWrapper = document.getElementById('resultWrapper');
-            const resultImage = document.getElementById('resultImage');
+            const btn = document.getElementById('generateBtn');
 
-            if (!apiKey) return showError("❌ 请输入 API Key");
+            if (!apiKey) return showError("❌ 请在顶部输入全局 API Key");
             if (!prompt) return showError("❌ 图像提示词不能为空");
 
-            localStorage.setItem('poixe_api_key', apiKey);
-
-            // UI 显示顶层进度条，隐藏图像层露出底层文本
-            resultWrapper.style.display = "none";
-            progressOverlay.style.display = "flex";
+            localStorage.setItem('datxy_global_api_key', apiKey);
+            switchTab('image');
             
-            generateBtn.disabled = true;
-            generateBtn.innerText = "⏳ 正在绘制中...";
+            document.getElementById('imagePlaceholder').style.display = "none";
+            document.getElementById('aiResultWrapper').style.display = "none";
+            showOverlay("AI 正在绘制图像...");
+            
+            btn.disabled = true;
+            btn.innerText = "⏳ 正在绘制中...";
 
             const requestBody = {
                 contents: [ { parts: [ { text: prompt } ] } ],
                 generationConfig: {
                     responseModalities: ["Text", "Image"],
-                    imageConfig: {
-                        aspectRatio: aspectRatio,
-                        ...(model === 'nano-banana-pro' && { imageSize: imageSize })
-                    }
+                    imageConfig: { aspectRatio: aspectRatio, ...(model === 'nano-banana-pro' && { imageSize: imageSize }) }
                 }
             };
 
@@ -390,41 +530,37 @@
                 }
 
                 const data = await response.json();
-                
                 if (data.candidates && data.candidates.length > 0) {
-                    const parts = data.candidates[0].content.parts;
                     let imageUrl = "";
-
-                    parts.forEach(part => {
+                    data.candidates[0].content.parts.forEach(part => {
                         if (part.inlineData) {
-                            const mimeType = part.inlineData.mimeType || "image/png";
-                            imageUrl = `data:${mimeType};base64,${part.inlineData.data}`;
+                            imageUrl = `data:${part.inlineData.mimeType || 'image/png'};base64,${part.inlineData.data}`;
                         }
                     });
 
                     if (imageUrl) {
-                        resultImage.src = imageUrl;
-                        progressOverlay.style.display = "none";
-                        resultWrapper.style.display = "flex"; // 显示图像覆盖层
+                        document.getElementById('aiResultImage').src = imageUrl;
+                        document.getElementById('aiResultWrapper').style.display = "flex";
                     } else {
-                        showError("⚠️ 接口响应成功，但未返回图片数据");
+                        showError("⚠️ 未返回图片数据");
+                        document.getElementById('imagePlaceholder').style.display = "flex";
                     }
                 } else {
                     showError("❌ 未获取到生成结果");
+                    document.getElementById('imagePlaceholder').style.display = "flex";
                 }
-
             } catch (error) {
-                console.error("生成失败:", error);
                 showError("❌ 生成失败: " + error.message);
+                document.getElementById('imagePlaceholder').style.display = "flex";
             } finally {
-                progressOverlay.style.display = "none";
-                generateBtn.disabled = false;
-                generateBtn.innerText = "🚀 开始生成图像";
+                hideOverlay();
+                btn.disabled = false;
+                btn.innerText = "🚀 开始绘制图像";
             }
-        }
+        });
 
-        function downloadImage() {
-            const img = document.getElementById('resultImage');
+        function downloadAiImage() {
+            const img = document.getElementById('aiResultImage');
             if (!img.src) return;
             const link = document.createElement('a');
             link.href = img.src;
@@ -434,24 +570,188 @@
             document.body.removeChild(link);
         }
 
-        // 2. 文本处理逻辑 (去除兼容性断言)
+        /* ===== 3. 文件转码与媒体解析 ===== */
+        function parseMimeFromDataURI(dataURI) {
+            const m = /^data:([^;,]+)[^,]*,/.exec(dataURI);
+            return m ? m[1].trim() : '';
+        }
+
+        document.getElementById('btnToB64').addEventListener('click', () => {
+            const file = document.getElementById('fileInput').files[0];
+            if(!file) return showError('❌ 请选择一个文件');
+            
+            showOverlay('转码 Base64 中...');
+            const reader = new FileReader();
+            reader.onload = e => {
+                document.getElementById('textarea').value = e.target.result;
+                switchTab('text');
+                updateStats();
+                hideOverlay();
+            };
+            reader.onerror = () => { showError("❌ 文件读取失败"); hideOverlay(); };
+            reader.readAsDataURL(file);
+        });
+
+        document.getElementById('btnFromB64').addEventListener('click', () => {
+            const s = document.getElementById('textarea').value.trim();
+            if(!s || !s.startsWith('data:')) return showError('❌ 请在文本区提供有效的 Base64 DataURI');
+
+            const mime = parseMimeFromDataURI(s);
+            if(!mime) return showError('❌ 无法解析 MIME 类型');
+
+            switchTab('media');
+            document.getElementById('mediaPlaceholder').style.display = 'none';
+            const playerContainer = document.getElementById('mediaPlayerContainer');
+            const frameContainer = document.getElementById('frameDisplayContainer');
+            const wrapper = document.getElementById('mediaPlayerWrapper');
+
+            // Reset
+            wrapper.innerHTML = "";
+            playerContainer.style.display = 'none';
+            frameContainer.style.display = 'none';
+            currentFilter = '';
+            isFrameMode = false;
+
+            if(mime.startsWith('image/')){
+                const img = document.getElementById('frameDisplayedImage');
+                img.src = s;
+                currentMediaImage = img;
+                img.style.filter = currentFilter;
+                document.getElementById('frameControls').style.display = 'none';
+                document.getElementById('framePager').style.display = 'none';
+                document.getElementById('frameTimeLabel').textContent = '';
+                frameContainer.style.display = 'flex';
+            } else if(mime.startsWith('audio/') || mime.startsWith('video/')){
+                const media = document.createElement(mime.startsWith('audio/') ? 'audio' : 'video');
+                media.controls = true; media.src = s; media.preload = 'metadata';
+                wrapper.appendChild(media);
+                currentMediaDataURL = s;
+                playerContainer.style.display = 'flex';
+            } else {
+                showError("⚠️ 不支持预览的媒体格式，保留在文本区");
+                switchTab('text');
+            }
+        });
+
+        document.getElementById('btnDownloadMedia').addEventListener('click', () => {
+            if(!currentMediaDataURL) return;
+            const mime = parseMimeFromDataURI(currentMediaDataURL);
+            const ext = mime.includes('audio/') ? 'mp3' : mime.includes('video/') ? 'mp4' : 'bin';
+            const a = document.createElement('a');
+            a.href = currentMediaDataURL; a.download = `media_decode.${ext}`; a.click();
+        });
+
+        // 视频抽帧逻辑
+        function seekTo(vid, t) {
+            return new Promise(resolve => {
+                const handler = () => { vid.removeEventListener('seeked', handler); resolve(); };
+                vid.addEventListener('seeked', handler, { once: true });
+                vid.currentTime = Math.min(t, Math.max(0, vid.duration - 0.001));
+            });
+        }
+
+        document.getElementById('btnFrames').addEventListener('click', async () => {
+            const file = document.getElementById('fileInput').files[0];
+            const fps = parseInt(document.getElementById('intervalInput').value, 10);
+            
+            if(!file || !file.type.startsWith('video/')) return showError('❌ 请在上方选择一个视频文件');
+            if(isNaN(fps) || fps <= 0) return showError('❌ 请输入有效的抽帧率 (FPS)');
+
+            showOverlay('提取视频帧中...');
+            const objectURL = URL.createObjectURL(file);
+            const video = document.createElement('video');
+            video.preload = 'metadata'; video.src = objectURL;
+
+            video.onloadedmetadata = async () => {
+                extractedImages = [];
+                currentImageIndex = -1;
+                currentFilter = '';
+                isFrameMode = true;
+
+                switchTab('media');
+                document.getElementById('mediaPlaceholder').style.display = 'none';
+                document.getElementById('mediaPlayerContainer').style.display = 'none';
+                document.getElementById('frameDisplayContainer').style.display = 'flex';
+                document.getElementById('frameControls').style.display = 'flex';
+                document.getElementById('framePager').style.display = 'block';
+
+                const frameDuration = 1 / fps;
+                const total = Math.floor(video.duration * fps) + 1;
+                let currentTime = 0;
+
+                for(let i=0; i<total; i++){
+                    await seekTo(video, currentTime);
+                    const canvas = document.createElement('canvas');
+                    canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+                    const ctx = canvas.getContext('2d'); ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    extractedImages.push({ url: canvas.toDataURL('image/png'), time: currentTime });
+                    document.getElementById('progressText').innerText = `抽帧中: ${i+1}/${total}`;
+                    currentTime += frameDuration;
+                }
+                
+                hideOverlay();
+                if(extractedImages.length > 0){
+                    currentImageIndex = 0; displayExtractedFrame();
+                } else {
+                    showError('❌ 未能提取到任何帧');
+                }
+            };
+        });
+
+        function displayExtractedFrame() {
+            if(currentImageIndex < 0 || currentImageIndex >= extractedImages.length) return;
+            const f = extractedImages[currentImageIndex];
+            const img = document.getElementById('frameDisplayedImage');
+            img.src = f.url;
+            currentMediaImage = img;
+            img.style.filter = currentFilter;
+            document.getElementById('frameTimeLabel').textContent = `时间轴: ${f.time.toFixed(2)} 秒`;
+            document.getElementById('framePager').textContent = `${currentImageIndex + 1} / ${extractedImages.length}`;
+        }
+
+        document.getElementById('prevButton').addEventListener('click', () => { if(currentImageIndex > 0) { currentImageIndex--; displayExtractedFrame(); } });
+        document.getElementById('nextButton').addEventListener('click', () => { if(currentImageIndex < extractedImages.length - 1) { currentImageIndex++; displayExtractedFrame(); } });
+        document.getElementById('btnDownloadFrame').addEventListener('click', () => {
+            if(extractedImages.length === 0) return;
+            const f = extractedImages[currentImageIndex];
+            const a = document.createElement('a'); a.href = f.url; a.download = `frame_${String(currentImageIndex+1).padStart(4,'0')}.png`; a.click();
+        });
+
+        // 图像滤镜
+        document.getElementById('btnInvert').addEventListener('click', () => { currentFilter = (currentFilter + ' invert(1)').trim(); if(currentMediaImage) currentMediaImage.style.filter = currentFilter; });
+        document.getElementById('btnGray').addEventListener('click', () => { currentFilter = (currentFilter + ' grayscale(1)').trim(); if(currentMediaImage) currentMediaImage.style.filter = currentFilter; });
+        document.getElementById('btnRestore').addEventListener('click', () => { currentFilter = ''; if(currentMediaImage) currentMediaImage.style.filter = currentFilter; });
+        document.getElementById('btnDownloadEditedImage').addEventListener('click', () => {
+            if(!currentMediaImage || !currentMediaImage.src) return;
+            const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
+            const w = currentMediaImage.naturalWidth || currentMediaImage.width; 
+            const h = currentMediaImage.naturalHeight || currentMediaImage.height;
+            canvas.width = w; canvas.height = h; ctx.filter = currentFilter || 'none'; 
+            ctx.drawImage(currentMediaImage, 0, 0, w, h);
+            const a = document.createElement('a'); a.href = canvas.toDataURL('image/png'); a.download = 'processed_image.png'; a.click();
+        });
+
+        document.getElementById('btnClearOutput').addEventListener('click', () => {
+            document.getElementById('textarea').value = ""; updateStats();
+            document.getElementById('fileInput').value = "";
+            extractedImages = []; currentImageIndex = -1; currentMediaImage = null; currentFilter = '';
+            document.getElementById('mediaPlaceholder').style.display = 'flex';
+            document.getElementById('mediaPlayerContainer').style.display = 'none';
+            document.getElementById('frameDisplayContainer').style.display = 'none';
+            document.getElementById('mediaPlayerWrapper').innerHTML = '';
+            switchTab('text');
+        });
+
+        /* ===== 4. 文本正则与编辑区 ===== */
         const textarea = document.getElementById("textarea");
         const searchInput = document.getElementById("search-input");
         const replaceInput = document.getElementById("replace-input");
-        const totalEl = document.getElementById("total");
-        const chineseEl = document.getElementById("chinese");
-        const punctuationEl = document.getElementById("punctuation");
-        const alphabetEl = document.getElementById("alphabet");
-        const numbersEl = document.getElementById("numbers");
-        const duplicateEl = document.getElementById("duplicate");
 
         textarea.addEventListener("input", updateStats);
-        document.getElementById("clear-btn").addEventListener("click", () => { textarea.value = ""; updateStats(); });
         
         document.getElementById("remove-duplicates-btn").addEventListener("click", () => {
             const textList = textarea.value.split("\n");
             const uniqueList = [...new Set(textList)];
-            document.getElementById("duplicate").innerHTML = `重复：<span>${textList.length - uniqueList.length}</span>`;
             textarea.value = uniqueList.join("\n");
             updateStats();
         });
@@ -466,7 +766,8 @@
                 } else {
                     document.getElementById("regex-replace-count").innerHTML = `正则：<span>0</span>`;
                 }
-            } catch (e) { alert("正则表达式有误: " + e.message); }
+                updateStats(); // Force update other stats too
+            } catch (e) { showError("❌ 正则表达式有误"); }
         });
 
         document.getElementById("replace-btn").addEventListener("click", () => {
@@ -485,17 +786,23 @@
                     textarea.value = textarea.value.replace(new RegExp(searchInput.value, 'g'), replaceInput.value); 
                     document.getElementById("regex-replace-count").innerHTML = `正则：<span>${matchCount}</span>`;
                     updateStats();
-                } catch (e) { alert("正则表达式有误: " + e.message); }
+                } catch (e) { showError("❌ 正则表达式有误"); }
             }
         });
 
         function updateStats() {
             const text = textarea.value;
-            totalEl.innerHTML = `总数：<span>${text.length}</span>`;
-            chineseEl.innerHTML = `汉字：<span>${(text.match(/[\u4e00-\u9fa5]/g) || []).length}</span>`;
-            punctuationEl.innerHTML = `标点：<span>${(text.match(/[^\u4e00-\u9fa5\w]/g) || []).length}</span>`;
-            alphabetEl.innerHTML = `字母：<span>${(text.match(/[a-zA-Z]/g) || []).length}</span>`;
-            numbersEl.innerHTML = `数字：<span>${(text.match(/\d/g) || []).length}</span>`;
+            document.getElementById("total").innerHTML = `总数：<span>${text.length}</span>`;
+            document.getElementById("chinese").innerHTML = `汉字：<span>${(text.match(/[\u4e00-\u9fa5]/g) || []).length}</span>`;
+            document.getElementById("punctuation").innerHTML = `标点：<span>${(text.match(/[^\u4e00-\u9fa5\w]/g) || []).length}</span>`;
+            document.getElementById("alphabet").innerHTML = `字母：<span>${(text.match(/[a-zA-Z]/g) || []).length}</span>`;
+            document.getElementById("numbers").innerHTML = `数字：<span>${(text.match(/\d/g) || []).length}</span>`;
+            
+            // Duplicate rows count
+            const lines = text.split('\n'); const map = new Map(); let dup=0;
+            for(const line of lines){ if(line) map.set(line,(map.get(line)||0)+1); }
+            for(const cnt of map.values()){ if(cnt>1) dup += (cnt-1); }
+            document.getElementById("duplicate").innerHTML = `重复行：<span>${dup}</span>`;
         }
 
         document.getElementById("copy-btn").addEventListener("click", function() {
@@ -503,31 +810,17 @@
             const tempInput = document.createElement("textarea");
             document.body.appendChild(tempInput); tempInput.value = textToCopy; 
             tempInput.select(); document.execCommand("copy"); document.body.removeChild(tempInput);
+            showError("✅ 复制成功！"); // Actually a success message, reused error box for convenience
+            document.getElementById('errorMsg').style.background = 'rgba(52, 211, 153, 0.1)';
+            document.getElementById('errorMsg').style.color = '#6ee7b7';
+            document.getElementById('errorMsg').style.borderColor = 'rgba(52, 211, 153, 0.3)';
         });
 
         document.getElementById("paste-btn").addEventListener("click", function() {
             navigator.clipboard.readText().then(clipText => { textarea.value = clipText; updateStats(); }).catch(err => {});
         });
 
-        // 3. HTML 格式化与预览
-        function formatHTML(input) {
-            let formatted = ''; let pad = 0; const tags = ['<p>', '</p>', '<div>', '</div>', '<span>', '</span>', '<br>', '<br/>'];
-            input.split(/\r?\n/).forEach(line => {
-                let indent = 0; tags.forEach(tag => { if (line.includes(tag)) { if (tag.startsWith('</')) { pad -= 1; } } });
-                for (let i = 0; i < pad; i++) { indent += 4; }
-                formatted += ' '.repeat(indent) + line.trim() + '\n';
-                tags.forEach(tag => { if (line.includes(tag)) { if (!tag.startsWith('</')) { pad += 1; } } });
-            });
-            return formatted;
-        }
-        function formatAndPreview() {
-            const code = document.getElementById('textarea').value; 
-            document.getElementById('textarea').value = formatHTML(code); 
-            const newWindow = window.open("", "Preview Window", "width=600,height=600"); 
-            newWindow.document.write(code); newWindow.document.close();
-        }
-
-        // 4. Web Speech Synthesis 集成脚本 (TTS)
+        /* ===== 5. Web Speech Synthesis (TTS) ===== */
         (function() {
             const voiceSelect = document.getElementById('tts-voiceSelect');
             const filterChineseBox = document.getElementById('tts-filterChinese');
@@ -589,12 +882,11 @@
 
             startBtn.addEventListener('click', () => {
                 const text = document.getElementById('textarea').value.trim();
-                if (!text) return alert('请输入要朗读的文本');
+                if (!text) return showError('❌ 请输入要朗读的文本');
                 const v = window.speechSynthesis.getVoices().find(v => v.name === voiceSelect.value);
-                if (!v) return alert('请选择一个有效语音');
+                if (!v) return showError('❌ 请选择一个有效语音');
                 
-                // 确保隐藏图像覆盖层露出文本
-                hideImagePreview();
+                switchTab('text');
 
                 if (speaking) { window.speechSynthesis.cancel(); speaking = false; }
                 speakQueue(splitTextToChunks(text), v);
