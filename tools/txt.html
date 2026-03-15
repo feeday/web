@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>文本工具箱 - DatXY</title>
+    <link rel="shortcut icon" href="https://github.githubassets.com/favicons/favicon.svg" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ================== 1. 核心变量 ================== */
+        :root {
+            --bg-body: #020617; 
+            --bg-card: rgba(30, 41, 59, 0.6);
+            --bg-panel: rgba(15, 23, 42, 0.5);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-tertiary: #64748b;
+            --border-light: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(255, 255, 255, 0.2);
+            --radius-card: 20px;
+            --radius-pill: 999px;
+            --theme-blue: #38bdf8;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-body);
+            background-image: 
+                radial-gradient(circle at 50% -20%, #1e293b 0%, transparent 60%),
+                radial-gradient(circle at 50% 10%, rgba(56, 189, 248, 0.05) 0%, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            line-height: 1.6;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        a { text-decoration: none; color: inherit; transition: 0.2s; }
+
+        /* ================== 2. 顶部胶囊导航 ================== */
+        .sticky-header-wrapper {
+            width: 100%; display: flex; justify-content: center;
+            padding: 15px 20px; z-index: 999;
+        }
+        .filter-bar { 
+            display: flex; gap: 4px; align-items: center; background: rgba(0, 0, 0, 0.3); padding: 6px; 
+            border-radius: var(--radius-pill); border: 1px solid rgba(255,255,255,0.08); 
+            width: 100%; max-width: 1600px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+        }
+        .tag-btn { 
+            background: transparent; border: none; color: var(--text-secondary); 
+            padding: 8px 20px; border-radius: var(--radius-pill); font-size: 0.95rem; 
+            font-weight: 600; cursor: pointer; transition: all 0.3s; white-space: nowrap; 
+        }
+        .tag-btn.active { color: #fff; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .tag-btn:hover:not(.active) { color: #fff; background: rgba(255, 255, 255, 0.05); }
+
+        /* ================== 3. 宽屏工作台布局 ================== */
+        .workspace {
+            width: 100%; max-width: 1600px; flex: 1; margin-bottom: 20px;
+            background: var(--bg-card); border: 1px solid var(--border-light);
+            border-radius: var(--radius-card); box-shadow: 0 30px 60px -15px rgba(0,0,0,0.7);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            display: flex; overflow: hidden; animation: fadeUp 0.6s ease backwards;
+        }
+
+        /* 左侧：文本与预览面板 */
+        .editor-panel {
+            flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 15px;
+            background: radial-gradient(circle at top left, rgba(30, 41, 59, 0.3) 0%, transparent 70%);
+        }
+
+        /* 右侧：控制面板 */
+        .control-panel {
+            flex: 0 0 380px; padding: 25px; display: flex; flex-direction: column; gap: 20px;
+            border-left: 1px solid var(--border-light); background: var(--bg-panel);
+            overflow-y: auto;
+        }
+        
+        /* 隐藏滚动条 */
+        .control-panel::-webkit-scrollbar { width: 6px; }
+        .control-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+
+        /* ================== 4. UI 控件样式 ================== */
+        .section-title { font-size: 0.85rem; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+        
+        .glass-card { background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 15px; }
+
+        .glass-input { 
+            width: 100%; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); 
+            border-radius: 8px; color: var(--text-primary); padding: 10px 12px; font-family: inherit; 
+            font-size: 0.9rem; transition: all 0.3s; margin-bottom: 10px;
+        }
+        .glass-input::placeholder { color: rgba(148, 163, 184, 0.4); }
+        .glass-input:focus { background: rgba(15, 23, 42, 0.9); border-color: rgba(56, 189, 248, 0.5); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15); }
+        
+        select.glass-input { 
+            appearance: none; -webkit-appearance: none; 
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); 
+            background-repeat: no-repeat; background-position: right 12px center; background-size: 16px; padding-right: 35px; cursor: pointer; 
+        }
+        select.glass-input option { background-color: #0f172a; color: #fff; }
+
+        /* 统一简约按钮风格 */
+        .btn-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .btn { 
+            padding: 8px 10px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; 
+            cursor: pointer; transition: all 0.2s; text-align: center;
+        }
+        .btn:active { transform: translateY(0); }
+        
+        /* 统一玻璃态按钮 */
+        .btn-glass {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+        .btn-glass:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.25);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        /* TTS 样式 */
+        .tts-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; font-size: 0.85rem; color: var(--text-secondary); }
+        .tts-row input[type="range"] { width: 60%; accent-color: var(--theme-blue); }
+        .tts-checkbox { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 10px;}
+        input[type="checkbox"] { accent-color: var(--theme-blue); width: 16px; height: 16px; cursor: pointer; }
+
+        /* ================== 5. 左侧内容区样式 ================== */
+        #stats { 
+            display: flex; flex-wrap: wrap; gap: 10px; padding: 12px 20px; 
+            background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255,255,255,0.05); 
+            border-radius: 12px;
+        }
+        #stats div { 
+            font-size: 0.85rem; font-weight: 600; color: var(--theme-blue); 
+            background: rgba(56, 189, 248, 0.1); padding: 4px 12px; border-radius: 6px; 
+        }
+        #stats div span { color: #fff; margin-left: 4px; } 
+
+        .editor-container { display: flex; gap: 15px; flex: 1; overflow: hidden; }
+        
+        #textarea { 
+            flex: 1; height: 100%; resize: none; background: rgba(0, 0, 0, 0.3); 
+            border: 1px solid var(--border-light); border-radius: 12px; padding: 20px; 
+            color: var(--text-primary); font-family: monospace; font-size: 0.95rem; line-height: 1.6;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.2); transition: border-color 0.3s;
+        }
+        #textarea:focus { border-color: rgba(56, 189, 248, 0.4); outline: none; }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 1024px) {
+            .workspace { flex-direction: column-reverse; overflow-y: auto; }
+            .control-panel { flex: none; border-left: none; border-top: 1px solid var(--border-light); }
+            .editor-container { flex-direction: column; }
+            #textarea { height: 400px; flex: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sticky-header-wrapper">
+        <div class="filter-bar">
+            <button class="tag-btn active" style="cursor: default;">🛠️ 文本与正则工具箱</button>
+            <button class="tag-btn" onclick="window.location.href='/'" style="margin-left: auto;">返回主页 ➔</button>
+        </div>
+    </div>
+
+    <div class="workspace">
+        
+        <div class="editor-panel">
+            
+            <div id="stats">
+                <div id="total">总数：0</div>
+                <div id="chinese">汉字：0</div>
+                <div id="punctuation">标点：0</div>
+                <div id="alphabet">字母：0</div>
+                <div id="numbers">数字：0</div>
+                <div id="duplicate">重复：0</div>
+                <div id="replace-count">替换：0</div>
+                <div id="regex-replace-count">正则：0</div>
+            </div>
+
+            <div class="editor-container">
+                <textarea id="textarea" placeholder="非数字：[^0-9]*&#10;n位的数字：\d{n}&#10;至少n位的数字：\d{n,}&#10;匹配多行文本中每行的最后的两个字符:.{2}(?=\n|$)&#10;匹配多行文本中每行的开始的两个字符:(?<=^|\n).{2}&#10;中文字符的正则表达式：[\u4e00-\u9fa5]&#10;英文和数字：[A-Za-z0-9]+ 或 [A-Za-z0-9]{4,40}&#10;长度为3-20的所有字符：.{3,20}&#10;由数字和26个英文字母组成的字符串：[A-Za-z0-9]+&#10;由数字、26个英文字母或者下划线组成的字符串：\w+ 或 \w{3,20}&#10;&#10;curl.exe -o NUL http://speedtest.tele2.net/10GB.zip&#10;curl -s -o ~/x https://raw.githubusercontent.com/olegos2/mobox/main/install && . ~/x&#10;curl -sSL https://dokploy.com/install.sh | sudo sh&#10;&#10;sudo passwd root&#10;&#10;conda create -n python38 python=3.8 # 创建虚拟环境&#10;conda activate python38  # 切换虚拟环境&#10;conda remove -n python38 --all # 删除虚拟环境&#10;conda create -n python38 --clone old_python38 # 克隆虚拟环境&#10;conda list # 列出已安装的包&#10;conda env list # 列出所有虚拟环境&#10;&#10;cd /f/d&#10;export HF_ENDPOINT=https://hf-mirror.com&#10;./hfd.sh datxy/file --dataset --local-dir ./dataset&#10;&#10;Get-ChildItem -Recurse -File | Select-String -Pattern # 双引号 Windows 搜索&#10;tracert baidu.cn&#10;grep -rn 'py' /home/&#10;rm -rf /*"></textarea>
+            </div>
+
+        </div>
+
+        <div class="control-panel">
+            
+            <div class="glass-card">
+                <div class="section-title">全网聚合搜索</div>
+                <div style="display: flex; gap: 8px;">
+                    <select id="searchEngine" class="glass-input" style="width: 40%; margin-bottom: 0;">
+                        <option value="https://so.csdn.net/so/search?q=">CSDN</option>
+                        <option value="https://s.weibo.com/weibo?q=">微博</option>
+                        <option value="https://github.com/search?q=">GitHub</option>
+                        <option value="https://www.google.com/search?q=">Google</option>
+                        <option value="https://www.youtube.com/results?search_query=">YouTube</option>
+                        <option value="https://huggingface.co/spaces?sort=likes&search=">HuggingFace</option>
+                        <option value="https://www.baidu.com/s?q2=" selected="selected">百度</option>
+                        <option value="https://tieba.baidu.com/f/search/res?ie=utf-8&qw=">贴吧</option>
+                        <option value="https://search.bilibili.com/all?keyword=">Bilibili</option>
+                        <option value="https://www.tiktok.com/search?q=">TikTok</option>
+                        <option value="https://www.douyin.com/search/">抖音</option>
+                    </select>
+                    <input type="text" id="searchInput" class="glass-input" style="flex: 1; margin-bottom: 0;" placeholder="输入关键词，回车搜索..." onkeydown="searchRedirect(event)">
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <div class="section-title">查找与替换</div>
+                <input type="text" id="search-input" class="glass-input" placeholder="输入查找文本或正则" value='https?:\/\/[^\s\/$.?#]+[^\s]*?(?=")'>      
+                <input type="text" id="replace-input" class="glass-input" placeholder="输入替换内容 (为空则删除)">
+                
+                <div style="display: none;">
+                    <input type="text" id="api_key" placeholder="sk-jLgZkKSjwN20PfeHA2eiHAG5HQ0lX8COKCM0UUW7EUSJQ8wN">
+                    <div id="response"></div>
+                </div>
+
+                <div class="btn-grid" style="margin-top: 10px;">
+                    <button class="btn btn-glass" id="remove-duplicates-btn">去重</button>
+                    <button class="btn btn-glass" id="replace-btn">普通替换</button>
+                    <button class="btn btn-glass" id="regex-replace-btn">正则替换</button>
+                    <button class="btn btn-glass" id="preserve-matches-btn">正则提取</button>
+                    <button class="btn btn-glass" id="copy-btn">复制内容</button>
+                    <button class="btn btn-glass" id="paste-btn">粘贴覆盖</button>
+                    <button class="btn btn-glass" id="openkey-btn" data-api-url="https://api.poixe.com/v1/chat/completions">API 测试</button>
+                    <button class="btn btn-glass" onclick="formatAndPreview()">预览网页</button>
+                    <button class="btn btn-glass" id="clear-btn" style="color: #fca5a5; border-color: rgba(239, 68, 68, 0.3);">清空面板</button>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <div class="section-title">文本语音朗读 (TTS)</div>
+                <label class="tts-checkbox">
+                    <input type="checkbox" id="tts-filterChinese" checked> 只显示中文语音
+                </label>
+                <select id="tts-voiceSelect" class="glass-input"></select>
+                
+                <div class="tts-row">
+                    <span>语速 (<span id="tts-rate-val">1.0x</span>)</span>
+                    <input id="tts-rate" type="range" min="0.1" max="10" step="0.1" value="1" />
+                </div>
+                <div class="tts-row">
+                    <span>音调 (<span id="tts-pitch-val">1.0</span>)</span>
+                    <input id="tts-pitch" type="range" min="0" max="10" step="0.1" value="1" />
+                </div>
+                <div class="tts-row">
+                    <span>音量 (<span id="tts-volume-val">1.0</span>)</span>
+                    <input id="tts-volume" type="range" min="0" max="10" step="0.1" value="1" />
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button id="tts-start" class="btn btn-glass" style="flex: 1;">▶ 开始朗读</button>
+                    <button id="tts-stop" class="btn btn-glass" style="flex: 1;">■ 停止</button>
+                </div>
+            </div>
+            
+        </div>
+
+    </div>
+
+    <script>
+        // 1. 搜索引擎跳转
+        function searchRedirect(event) {
+            if (event.key === "Enter") {
+                const searchEngine = document.getElementById("searchEngine").value;
+                const keyword = document.getElementById("searchInput").value.trim();
+                if (searchEngine && keyword) {
+                    if (searchEngine === "https://so.csdn.net/so/search?q=") {
+                        const csdnURL = `https://so.csdn.net/so/search?q=${encodeURIComponent(keyword)}&t=blog&u=feeday`;
+                        window.open(csdnURL, '_blank');
+                    } else {
+                        const searchURL = `${searchEngine}${encodeURIComponent(keyword)}`;
+                        window.open(searchURL, '_blank');
+                    }
+                } else {
+                    alert("请选择搜索引擎并输入关键词！");
+                }
+            }
+        }
+    </script>
+
+    <script>
+        // 2. 文本处理逻辑
+        const textarea = document.getElementById("textarea");
+        const searchInput = document.getElementById("search-input");
+        const replaceInput = document.getElementById("replace-input");
+        const replaceBtn = document.getElementById("replace-btn");
+        const regexReplaceBtn = document.getElementById("regex-replace-btn");
+        const clearBtn = document.getElementById("clear-btn");
+        const removeDuplicatesBtn = document.getElementById("remove-duplicates-btn");
+        const totalEl = document.getElementById("total");
+        const chineseEl = document.getElementById("chinese");
+        const punctuationEl = document.getElementById("punctuation");
+        const alphabetEl = document.getElementById("alphabet");
+        const numbersEl = document.getElementById("numbers");
+        const duplicateEl = document.getElementById("duplicate");
+        const copyBtn = document.getElementById("copy-btn");
+
+        textarea.addEventListener("input", updateStats);
+        clearBtn.addEventListener("click", clearTextarea);
+        removeDuplicatesBtn.addEventListener("click", removeDuplicates);
+        replaceBtn.addEventListener("click", replaceText);
+        regexReplaceBtn.addEventListener("click", replaceTextUsingRegex);
+
+        function updateStats() {
+            const text = textarea.value;
+            const total = text.length;
+            const chinese = text.match(/[\u4e00-\u9fa5]/g)?.length || 0;
+            const punctuation = text.match(/[^\u4e00-\u9fa5\w]/g)?.length || 0;
+            const alphabet = text.match(/[a-zA-Z]/g)?.length || 0;
+            const numbers = text.match(/\d/g)?.length || 0;
+            totalEl.innerHTML = `总数：<span>${total}</span>`;
+            chineseEl.innerHTML = `汉字：<span>${chinese}</span>`;
+            punctuationEl.innerHTML = `标点：<span>${punctuation}</span>`;
+            alphabetEl.innerHTML = `字母：<span>${alphabet}</span>`;
+            numbersEl.innerHTML = `数字：<span>${numbers}</span>`;
+        }
+
+        function clearTextarea() { textarea.value = ""; updateStats(); }
+
+        function removeDuplicates() {
+            const text = textarea.value;
+            const textList = text.split("\n");
+            const uniqueList = [...new Set(textList)];
+            const duplicateCount = textList.length - uniqueList.length;
+            duplicateEl.innerHTML = `重复：<span>${duplicateCount}</span>`;
+            textarea.value = uniqueList.join("\n");
+            updateStats();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById("preserve-matches-btn").addEventListener("click", function() {
+                const searchValue = document.getElementById("search-input").value;
+                const text = document.getElementById("textarea").value;
+                try {
+                    const regex = new RegExp(searchValue, 'g');
+                    let matches = text.match(regex);
+                    if (matches && matches.length > 0) {
+                        const newText = matches.join("\n");
+                        document.getElementById("textarea").value = newText;
+                        updateRegexReplaceCount(matches.length);
+                    } else {
+                        console.log("没有找到匹配项。");
+                        updateRegexReplaceCount(0);
+                    }
+                } catch (e) { alert("正则表达式有误: " + e.message); }
+            });
+            updateStats();
+        });
+
+        function updateRegexReplaceCount(matchCount) { document.getElementById("regex-replace-count").innerHTML = `正则：<span>${matchCount}</span>`; }
+
+        function replaceText() {
+            const searchValue = searchInput.value; const replaceValue = replaceInput.value; const text = textarea.value;
+            if (searchValue !== "") {
+                const matches = text.match(new RegExp(searchValue, 'g'));
+                const replaceCount = matches ? matches.length : 0;
+                const newText = text.replaceAll(searchValue, replaceValue);
+                document.getElementById("replace-count").innerHTML = `替换：<span>${replaceCount}</span>`;
+                textarea.value = newText; updateStats();
+            }
+        }
+
+        function replaceTextUsingRegex() {
+            const searchValue = searchInput.value; const replaceValue = replaceInput.value; const text = textarea.value;
+            if (searchValue !== "") {
+                let newText; let matchCount = (text.match(new RegExp(searchValue, 'g')) || []).length;
+                try { newText = text.replace(new RegExp(searchValue, 'g'), replaceValue); }
+                catch (e) { alert("正则表达式有误: " + e.message); return; }
+                document.getElementById("regex-replace-count").innerHTML = `正则：<span>${matchCount}</span>`;
+                textarea.value = newText; updateStats();
+            }
+        }
+
+        // API 调用示例
+        document.getElementById("openkey-btn").addEventListener("click", async function() {
+            const apiUrl = this.getAttribute("data-api-url");
+            const inputField = document.getElementById("api_key");
+            const apiKey = inputField.value.trim() || inputField.placeholder;
+            let originalInput = textarea.value.trim();
+            if (!originalInput) { alert("请输入一些文本！"); return; }
+            textarea.value = "请稍后..."; document.getElementById("response").textContent = "请求中...";
+            const data = { model: "deepseek-chat:free", messages: [ { role: "system", content: "简要回复，字符不超500个。" }, { role: "user", content: originalInput } ], temperature: 0.7, max_tokens: 1000 };
+            try {
+                const res = await fetch(apiUrl, { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` }, body: JSON.stringify(data) });
+                if (!res.ok) { throw new Error(`HTTP错误! 状态码: ${res.status}`); }
+                const result = await res.json();
+                if (result.choices && result.choices[0] && result.choices[0].message) {
+                    textarea.value = result.choices[0].message.content;
+                } else { textarea.value = JSON.stringify(result, null, 2); }
+                document.getElementById("response").textContent = JSON.stringify(result, null, 2);
+                updateStats();
+            } catch (error) {
+                textarea.value = "请求失败，请检查您的API密钥和其他设置。";
+                document.getElementById("response").textContent = `请求失败: ${error.message}\n请检查API密钥和网络连接。`;
+                console.error("API请求错误:", error);
+            }
+        });
+
+        document.getElementById("copy-btn").addEventListener("click", function() {
+            let textToCopy = textarea.value;
+            if (textToCopy === "") { textToCopy = textarea.getAttribute("placeholder"); }
+            const tempInput = document.createElement("textarea");
+            document.body.appendChild(tempInput); tempInput.value = textToCopy; tempInput.select(); document.execCommand("copy"); document.body.removeChild(tempInput);
+        });
+
+        document.getElementById("paste-btn").addEventListener("click", function() {
+            navigator.clipboard.readText().then(clipText => { textarea.value = clipText; updateStats(); }).catch(err => {});
+        });
+    </script>
+
+    <script>
+        // 3. HTML 格式化与预览
+        function formatHTML(input) {
+            let formatted = ''; let pad = 0; const tags = ['<p>', '</p>', '<div>', '</div>', '<span>', '</span>', '<br>', '<br/>'];
+            input.split(/\r?\n/).forEach(line => {
+                let indent = 0; tags.forEach(tag => { if (line.includes(tag)) { if (tag.startsWith('</')) { pad -= 1; } } });
+                for (let i = 0; i < pad; i++) { indent += 4; }
+                formatted += ' '.repeat(indent) + line.trim() + '\n';
+                tags.forEach(tag => { if (line.includes(tag)) { if (!tag.startsWith('</')) { pad += 1; } } });
+            });
+            return formatted;
+        }
+        function formatAndPreview() {
+            const code = document.getElementById('textarea').value; const formattedCode = formatHTML(code);
+            document.getElementById('textarea').value = formattedCode; const newWindow = window.open("", "Preview Window", "width=600,height=600"); newWindow.document.write(code); newWindow.document.close();
+        }
+    </script>
+
+    <script>
+        (function() {
+            const voiceSelect = document.getElementById('tts-voiceSelect');
+            const filterChineseBox = document.getElementById('tts-filterChinese');
+            const startBtn = document.getElementById('tts-start');
+            const stopBtn = document.getElementById('tts-stop');
+            const rateInput = document.getElementById('tts-rate');
+            const pitchInput = document.getElementById('tts-pitch');
+            const volumeInput = document.getElementById('tts-volume');
+            const rateVal = document.getElementById('tts-rate-val');
+            const pitchVal = document.getElementById('tts-pitch-val');
+            const volumeVal = document.getElementById('tts-volume-val');
+
+            let currentQueue = []; 
+            let speaking = false;
+
+            function listVoices() {
+                const voices = window.speechSynthesis.getVoices();
+                voiceSelect.innerHTML = '';
+                const onlyZH = filterChineseBox.checked;
+                let filtered = voices;
+                if (onlyZH) { filtered = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('zh')); }
+                if (filtered.length === 0) {
+                    const opt = document.createElement('option');
+                    opt.textContent = '无可用语音（请安装TTS并刷新）'; opt.disabled = true; voiceSelect.appendChild(opt);
+                    return;
+                }
+                filtered.forEach(v => {
+                    const opt = document.createElement('option');
+                    opt.value = v.name; opt.textContent = `${v.name} (${v.lang})`; voiceSelect.appendChild(opt);
+                });
+                const saved = localStorage.getItem('tts_voice_name');
+                if (saved) {
+                    const idx = [...voiceSelect.options].findIndex(o => o.value === saved);
+                    if (idx >= 0) voiceSelect.selectedIndex = idx;
+                }
+            }
+
+            function getSelectedVoice() {
+                const voices = window.speechSynthesis.getVoices();
+                const name = voiceSelect.value;
+                const v = voices.find(v => v.name === name);
+                return v || null;
+            }
+
+            function splitTextToChunks(text) {
+                const lines = text.split(/\n+/).map(s => s.trim()).filter(Boolean);
+                const chunks = [];
+                lines.forEach(line => {
+                    const parts = line.split(/(?<=[。！？!?；;\.…])/);
+                    parts.forEach(p => { const s = p.trim(); if (s) chunks.push(s); });
+                });
+                return chunks.length ? chunks : [text];
+            }
+
+            function speakQueue(chunks, voice) {
+                speaking = true; currentQueue = chunks.slice();
+                const next = () => {
+                    if (!speaking || currentQueue.length === 0) { speaking = false; return; }
+                    const text = currentQueue.shift();
+                    const utt = new SpeechSynthesisUtterance(text);
+                    if (voice) { utt.voice = voice; utt.lang = voice.lang; }
+                    utt.rate = parseFloat(rateInput.value || '1');
+                    utt.pitch = parseFloat(pitchInput.value || '1');
+                    utt.volume = parseFloat(volumeInput.value || '1');
+                    utt.onend = () => { next(); };
+                    utt.onerror = (e) => { console.warn('TTS 错误:', e); next(); };
+                    window.speechSynthesis.speak(utt);
+                };
+                next();
+            }
+
+            function startSpeak() {
+                const text = document.getElementById('textarea').value.trim();
+                if (!text) { alert('请输入要朗读的文本'); return; }
+                const v = getSelectedVoice();
+                if (!v) { alert('请选择一个有效语音'); return; }
+                if (speaking) { window.speechSynthesis.cancel(); speaking = false; }
+                const chunks = splitTextToChunks(text);
+                speakQueue(chunks, v);
+                localStorage.setItem('tts_voice_name', v.name);
+            }
+
+            function stopSpeak() { speaking = false; window.speechSynthesis.cancel(); }
+
+            startBtn.addEventListener('click', startSpeak);
+            stopBtn.addEventListener('click', stopSpeak);
+            filterChineseBox.addEventListener('change', listVoices);
+            voiceSelect.addEventListener('change', () => { localStorage.setItem('tts_voice_name', voiceSelect.value); });
+
+            rateInput.addEventListener('input', () => { rateVal.textContent = rateInput.value + 'x'; });
+            pitchInput.addEventListener('input', () => { pitchVal.textContent = pitchInput.value; });
+            volumeInput.addEventListener('input', () => { volumeVal.textContent = volumeInput.value; });
+
+            listVoices();
+            if (typeof window.speechSynthesis !== 'undefined') {
+                if (typeof window.speechSynthesis.onvoiceschanged !== 'undefined') {
+                    window.speechSynthesis.onvoiceschanged = listVoices;
+                }
+            }
+        })();
+    </script>
+
+    <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+    <script>LA.init({id:"JRHGRBPWC7lJIaXq",ck:"JRHGRBPWC7lJIaXq"})</script>
+</body>
+</html>
