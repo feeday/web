@@ -83,7 +83,7 @@ display: flex; overflow: hidden; animation: fadeUp 0.6s ease backwards;
 .editor-panel {
 flex: 1; padding: 20px; display: flex; flex-direction: column; position: relative;
 background: radial-gradient(circle at top left, rgba(30, 41, 59, 0.3) 0%, transparent 70%);
-overflow: hidden; 
+overflow: hidden; /* 保证左侧边界 */
 }
 
 /* 右侧：控制面板 */
@@ -94,7 +94,7 @@ overflow-y: auto; overflow-x: hidden;
 }
 
 /* 统一滚动条样式 */
-::-webkit-scrollbar { width: 6px; height: 6px;}
+::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
 
@@ -131,7 +131,6 @@ input[type="file"]::file-selector-button:hover { background: rgba(255,255,255,0.
 .btn {
 padding: 8px 10px; border-radius: 8px; font-size: 0.85rem; font-weight: 600;
 cursor: pointer; transition: all 0.2s; text-align: center; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-flex-shrink: 0; /* 强制按钮防挤压 */
 }
 .btn:active { transform: translateY(0); }
 
@@ -190,10 +189,10 @@ box-shadow: inset 0 2px 10px rgba(0,0,0,0.2); transition: border-color 0.3s;
 .media-time { color: var(--text-secondary); margin-top: 10px; font-size: 0.85rem; flex-shrink: 0;}
 #mediaPlayerWrapper video, #mediaPlayerWrapper audio { max-width: 100%; max-height: calc(100vh - 300px); border-radius: 12px; outline: none; }
 
-/* 媒体操作横向滚动栏 (统合帧控制与滤镜) */
+/* 媒体操作横向滚动栏 (统合帧控制与滤镜) 修复遮挡BUG */
 .media-toolbar {
-    display: none; flex-wrap: nowrap; overflow-x: auto; gap: 8px; margin-top: 15px; 
-    max-width: 100%; padding-bottom: 8px; flex-shrink: 0;
+    display: none; flex-wrap: nowrap; overflow-x: auto; gap: 8px; margin-top: 5px; 
+    max-width: 100%; padding: 8px 4px 12px 4px; flex-shrink: 0;
 }
 
 /* 悬浮进度 & 图像结果层 */
@@ -338,8 +337,11 @@ backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); padding: 20px;
 </div>
 
 <div class="glass-card">
-<div class="section-title">📢 文本语音朗读 (TTS)</div>
-<label class="tts-checkbox">
+<div class="section-title collapsible-header collapsed" onclick="toggleCollapse('content-tts', this)">
+<span>📢 文本语音朗读 (TTS)</span>
+</div>
+<div id="content-tts" class="collapsible-content collapsed">
+<label class="tts-checkbox" style="margin-top: 8px;">
 <input type="checkbox" id="tts-filterChinese" checked> 只显示中文语音
 </label>
 <select id="tts-voiceSelect" class="glass-input"></select>
@@ -360,6 +362,7 @@ backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); padding: 20px;
 <div style="display: flex; gap: 10px; margin-top: 15px;">
 <button id="tts-start" class="btn btn-glass" style="flex: 1; color: var(--theme-green); border-color: rgba(52, 211, 153, 0.3);">▶ 开始朗读</button>
 <button id="tts-stop" class="btn btn-glass" style="flex: 1; color: #fca5a5; border-color: rgba(239,68,68,0.3);">■ 停止</button>
+</div>
 </div>
 </div>
 
