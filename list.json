@@ -5,10 +5,13 @@
   { "cat": "audio", "title": "ElevenLabs", "desc": "最自然的 AI 语音合成 (TTS)。", "url": "https://elevenlabs.io/" },
   { "cat": "audio", "title": "IndexTTS-2", "desc": "开源在线声音克隆。", "url": "https://huggingface.co/spaces/IndexTeam/IndexTTS-2-Demo" },
 
+
+  { "cat": "image", "title": "Leaderboard", "desc": "图像编辑模型排行榜", "url": "https://artificialanalysis.ai/image/leaderboard/editing", "isTop": true },  
   { "cat": "image", "title": "Z-Image-Turbo", "desc": "开源在线文生图模型。", "url": "https://huggingface.co/spaces/mrfakename/Z-Image-Turbo", "isTop": true },
-  { "cat": "image", "title": "Leaderboard", "desc": "图像编辑模型排行榜", "url": "https://artificialanalysis.ai/image/leaderboard/editing", "isTop": true },
-  { "cat": "image", "title": "Midjourney", "desc": "艺术级 AI 绘图生成工具。", "url": "https://www.midjourney.com/" },
+  { "cat": "image", "title": "Midjourney", "desc": "Banana 官网图像生成", "url": "https://labs.google/fx/zh/tools/whisk", "isTop": true },
   { "cat": "image", "title": "Mixboard", "desc": "Google Labs AI 创意生图工具。", "url": "https://mixboard.google.com/" },
+  { "cat": "image", "title": "Midjourney", "desc": "Banana API 生成", "url": "https://datxy.com/tools/banana" },
+  { "cat": "image", "title": "Midjourney", "desc": "艺术级 AI 绘图生成工具。", "url": "https://www.midjourney.com/" },
   { "cat": "image", "title": "LAION-5B", "desc": "50亿图文对，Stable Diffusion 训练基石。", "url": "https://laion.ai/" },
   { "cat": "image", "title": "Cleaner", "desc": "开源在线图像去水印。", "url": "https://huggingface.co/spaces/Sanster/Lama-Cleaner-lama" },
   { "cat": "image", "title": "Qwen-Image-Edit", "desc": "开源在线图像修改。", "url": "https://huggingface.co/spaces/multimodalart/Qwen-Image-Edit-Fast" },
