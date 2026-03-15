@@ -21,6 +21,7 @@
 --radius-pill: 999px;
 --theme-blue: #38bdf8;
 --theme-green: #34d399;
+--theme-red: #ef4444;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -161,11 +162,12 @@ input[type="checkbox"] { accent-color: var(--theme-blue); width: 16px; height: 1
 .collapsible-content.collapsed { display: none; }
 
 /* ================== 5. 左侧内容区 & 覆盖层 ================== */
-.editor-tabs { display: flex; gap: 10px; margin-bottom: 15px; flex-shrink: 0;}
+.editor-tabs { display: flex; gap: 10px; margin-bottom: 15px; flex-shrink: 0; overflow-x: auto;}
+.editor-tabs::-webkit-scrollbar { display: none;}
 .editor-tab {
 background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
 color: var(--text-secondary); padding: 8px 20px; border-radius: 8px;
-cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: 0.2s;
+cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: 0.2s; white-space: nowrap;
 }
 .editor-tab.active { background: var(--theme-blue); color: #0f172a; border-color: var(--theme-blue); }
 .editor-tab:hover:not(.active) { background: rgba(255,255,255,0.1); color: #fff; }
@@ -189,11 +191,18 @@ box-shadow: inset 0 2px 10px rgba(0,0,0,0.2); transition: border-color 0.3s;
 .media-time { color: var(--text-secondary); margin-top: 10px; font-size: 0.85rem; flex-shrink: 0;}
 #mediaPlayerWrapper video, #mediaPlayerWrapper audio { max-width: 100%; max-height: calc(100vh - 300px); border-radius: 12px; outline: none; }
 
-/* 媒体操作横向滚动栏 (统合帧控制与滤镜) 修复遮挡BUG */
+/* 媒体操作横向滚动栏 */
 .media-toolbar {
     display: none; flex-wrap: nowrap; overflow-x: auto; gap: 8px; margin-top: 5px; 
     max-width: 100%; padding: 8px 4px 12px 4px; flex-shrink: 0;
 }
+
+/* 视图 4：API 日志 */
+.log-entry { margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed rgba(255,255,255,0.1); font-family: monospace; font-size: 0.85rem; word-break: break-all; }
+.log-time { color: var(--text-tertiary); margin-bottom: 5px; font-size: 0.8rem;}
+.log-req { color: var(--theme-blue); margin-bottom: 5px;}
+.log-res { color: var(--theme-green); }
+.log-err { color: var(--theme-red); }
 
 /* 悬浮进度 & 图像结果层 */
 .progress-overlay {
@@ -255,6 +264,7 @@ backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); padding: 20px;
 <div class="editor-tabs">
 <button class="editor-tab active" id="tab-text" onclick="switchTab('text')">📝 文本编辑区</button>
 <button class="editor-tab" id="tab-media" onclick="switchTab('media')">🎬 媒体解析预览区</button>
+<button class="editor-tab" id="tab-api" onclick="switchTab('api')">📡 API 调用日志</button>
 </div>
 
 <div id="progressOverlay" class="progress-overlay">
@@ -302,6 +312,15 @@ backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); padding: 20px;
 </div>
 
 </div>
+</div>
+
+<div id="view-api" class="workspace-view" style="display: none; flex-direction: column;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <h3 style="color: var(--text-primary); font-size: 1rem; margin: 0;">📡 接口调试日志</h3>
+        <button class="btn btn-glass" onclick="clearApiLogs()" style="padding: 4px 10px; font-size: 0.8rem;">🗑️ 清空日志</button>
+    </div>
+    <div id="apiLogContainer" style="flex: 1; overflow-y: auto; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border-light); border-radius: 12px; padding: 20px; color: var(--text-primary);">
+        </div>
 </div>
 
 </div>
@@ -423,16 +442,17 @@ let currentMediaDataURL = "";
 let isFrameMode = false;
 
 window.addEventListener('load', () => {
-const savedKey = localStorage.getItem('datxy_global_api_key');
-if(savedKey) document.getElementById('globalApiKey').value = savedKey;
+    const savedKey = localStorage.getItem('datxy_global_api_key');
+    if(savedKey) document.getElementById('globalApiKey').value = savedKey;
 
-updateResolutionState();
-document.getElementById('imageModelSelect').addEventListener('change', updateResolutionState);
-updateStats();
+    updateResolutionState();
+    document.getElementById('imageModelSelect').addEventListener('change', updateResolutionState);
+    updateStats();
+    clearApiLogs(); // 初始展示空日志提示
 });
 
 document.getElementById('globalApiKey').addEventListener('change', (e) => {
-localStorage.setItem('datxy_global_api_key', e.target.value.trim());
+    localStorage.setItem('datxy_global_api_key', e.target.value.trim());
 });
 
 // 全局监听左右键切图
@@ -448,325 +468,365 @@ window.addEventListener('keydown', (e) => {
 });
 
 function switchTab(tabId) {
-document.querySelectorAll('.editor-tab').forEach(t => t.classList.remove('active'));
-document.querySelectorAll('.workspace-view').forEach(v => v.style.display = 'none');
+    document.querySelectorAll('.editor-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.workspace-view').forEach(v => v.style.display = 'none');
 
-document.getElementById('tab-' + tabId).classList.add('active');
-document.getElementById('view-' + tabId).style.display = 'flex';
-// 确保切换时隐藏覆盖层
-hideImagePreview();
+    document.getElementById('tab-' + tabId).classList.add('active');
+    document.getElementById('view-' + tabId).style.display = 'flex';
+    // 确保切换时隐藏覆盖层
+    hideImagePreview();
 }
 
 function toggleCollapse(contentId, headerElement) {
-const content = document.getElementById(contentId);
-content.classList.toggle('collapsed');
-headerElement.classList.toggle('collapsed');
+    const content = document.getElementById(contentId);
+    content.classList.toggle('collapsed');
+    headerElement.classList.toggle('collapsed');
 }
 
 function showOverlay(msg) {
-const overlay = document.getElementById('progressOverlay');
-document.getElementById('progressText').innerText = msg;
-overlay.style.display = "flex";
+    const overlay = document.getElementById('progressOverlay');
+    document.getElementById('progressText').innerText = msg;
+    overlay.style.display = "flex";
 }
 function hideOverlay() {
-document.getElementById('progressOverlay').style.display = "none";
+    document.getElementById('progressOverlay').style.display = "none";
 }
 function showError(msg) {
-const errorMsg = document.getElementById('errorMsg');
-errorMsg.innerText = msg;
-errorMsg.style.display = "block";
-setTimeout(() => { errorMsg.style.display = "none"; }, 4000);
+    const errorMsg = document.getElementById('errorMsg');
+    errorMsg.innerText = msg;
+    errorMsg.style.display = "block";
+    setTimeout(() => { errorMsg.style.display = "none"; }, 4000);
 }
 
-/* ===== 1. AI 文本测试 (调用 API) ===== */
+/* ===== 1. API 调试日志处理 ===== */
+function logApiCall(type, endpoint, reqData, resData, isError = false) {
+    const container = document.getElementById('apiLogContainer');
+    // 如果是初始提示，清空它
+    if (container.innerHTML.includes("暂无 API 调用记录")) {
+        container.innerHTML = "";
+    }
+    
+    const time = new Date().toLocaleTimeString();
+    const logHTML = `
+        <div class="log-entry">
+            <div class="log-time">[${time}] ${type} 请求: ${endpoint}</div>
+            <div class="log-req"><strong>📦 请求 Payload:</strong><br>${JSON.stringify(reqData, null, 2)}</div>
+            <div class="${isError ? 'log-err' : 'log-res'}" style="margin-top: 8px;"><strong>${isError ? '❌ 报错信息' : '✅ 响应结果'}:</strong><br>${JSON.stringify(resData, null, 2)}</div>
+        </div>
+    `;
+    container.innerHTML = logHTML + container.innerHTML; 
+}
+
+function clearApiLogs() {
+    document.getElementById('apiLogContainer').innerHTML = '<div style="color: var(--text-tertiary); text-align:center; margin-top:20px;">暂无 API 调用记录...</div>';
+}
+
+/* ===== 2. AI 文本测试 (调用 API) ===== */
 document.getElementById('openkey-btn').addEventListener('click', async () => {
-const apiKey = document.getElementById('globalApiKey').value.trim();
-const model = document.getElementById('textModelSelect').value;
-const text = document.getElementById('textarea').value.trim();
-const btn = document.getElementById('openkey-btn');
+    const apiKey = document.getElementById('globalApiKey').value.trim();
+    const model = document.getElementById('textModelSelect').value;
+    const text = document.getElementById('textarea').value.trim();
+    const btn = document.getElementById('openkey-btn');
 
-if (!apiKey) return showError("❌ 请在顶部输入全局 API Key");
-if (!text) return showError("❌ 请在左侧文本区输入请求内容");
+    if (!apiKey) return showError("❌ 请在顶部输入全局 API Key");
+    if (!text) return showError("❌ 请在左侧文本区输入请求内容");
 
-localStorage.setItem('datxy_global_api_key', apiKey);
-switchTab('text');
-showOverlay("AI 正在思考中...");
-btn.disabled = true;
-btn.innerText = "⏳ 请求中...";
+    localStorage.setItem('datxy_global_api_key', apiKey);
+    switchTab('text');
+    showOverlay("AI 正在思考中...");
+    btn.disabled = true;
+    btn.innerText = "⏳ 请求中...";
 
-try {
-const res = await fetch("https://api.poixe.com/v1/chat/completions", {
-method: "POST",
-headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
-body: JSON.stringify({
-model: model,
-messages: [
-{ role: "system", content: "简要回复，字符不超500个。" },
-{ role: "user", content: text }
-],
-temperature: 0.7
-})
+    const reqPayload = {
+        model: model,
+        messages: [
+            { role: "system", content: "简要回复，字符不超500个。" },
+            { role: "user", content: text }
+        ],
+        temperature: 0.7
+    };
+
+    try {
+        const res = await fetch("https://api.poixe.com/v1/chat/completions", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
+            body: JSON.stringify(reqPayload)
+        });
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const result = await res.json();
+
+        // 记录 API 日志
+        logApiCall('文本对话', 'https://api.poixe.com/v1/chat/completions', reqPayload, result, false);
+
+        if (result.choices && result.choices[0]) {
+            document.getElementById('textarea').value = result.choices[0].message.content;
+        } else {
+            document.getElementById('textarea').value = JSON.stringify(result, null, 2);
+        }
+        updateStats();
+    } catch(e) {
+        showError("❌ 请求失败: " + e.message);
+        logApiCall('文本对话', 'https://api.poixe.com/v1/chat/completions', reqPayload, { error: e.message }, true);
+    } finally {
+        hideOverlay();
+        btn.disabled = false;
+        btn.innerText = "🤖 发送文本请求";
+    }
 });
 
-if (!res.ok) throw new Error(`HTTP ${res.status}`);
-const result = await res.json();
-
-if (result.choices && result.choices[0]) {
-document.getElementById('textarea').value = result.choices[0].message.content;
-} else {
-document.getElementById('textarea').value = JSON.stringify(result, null, 2);
-}
-updateStats();
-} catch(e) {
-showError("❌ 请求失败: " + e.message);
-} finally {
-hideOverlay();
-btn.disabled = false;
-btn.innerText = "🤖 发送文本请求";
-}
-});
-
-/* ===== 2. AI 图像生成 (覆盖层显示) ===== */
+/* ===== 3. AI 图像生成 (覆盖层显示) ===== */
 function updateResolutionState() {
-const modelSelect = document.getElementById('imageModelSelect');
-const imageSizeSelect = document.getElementById('imageSize');
-imageSizeSelect.disabled = (modelSelect.value !== 'nano-banana-pro');
+    const modelSelect = document.getElementById('imageModelSelect');
+    const imageSizeSelect = document.getElementById('imageSize');
+    imageSizeSelect.disabled = (modelSelect.value !== 'nano-banana-pro');
 }
 
 function hideImagePreview() {
-document.getElementById('resultWrapper').style.display = 'none';
+    document.getElementById('resultWrapper').style.display = 'none';
 }
 
 document.getElementById('generateBtn').addEventListener('click', async () => {
-const apiKey = document.getElementById('globalApiKey').value.trim();
-const model = document.getElementById('imageModelSelect').value;
-const prompt = document.getElementById('imagePrompt').value.trim();
-const aspectRatio = document.getElementById('aspectRatio').value.split(' ')[0];
-const imageSize = document.getElementById('imageSize').value.split(' ')[0];
-const btn = document.getElementById('generateBtn');
+    const apiKey = document.getElementById('globalApiKey').value.trim();
+    const model = document.getElementById('imageModelSelect').value;
+    const prompt = document.getElementById('imagePrompt').value.trim();
+    const aspectRatio = document.getElementById('aspectRatio').value.split(' ')[0];
+    const imageSize = document.getElementById('imageSize').value.split(' ')[0];
+    const btn = document.getElementById('generateBtn');
 
-if (!apiKey) return showError("❌ 请在顶部输入全局 API Key");
-if (!prompt) return showError("❌ 图像提示词不能为空");
+    if (!apiKey) return showError("❌ 请在顶部输入全局 API Key");
+    if (!prompt) return showError("❌ 图像提示词不能为空");
 
-localStorage.setItem('datxy_global_api_key', apiKey);
+    localStorage.setItem('datxy_global_api_key', apiKey);
 
-// 切换到文本 Tab 并在其上覆盖图像层
-switchTab('text');
-document.getElementById('resultWrapper').style.display = "none";
-showOverlay("AI 正在绘制图像...");
+    switchTab('text');
+    document.getElementById('resultWrapper').style.display = "none";
+    showOverlay("AI 正在绘制图像...");
 
-btn.disabled = true;
-btn.innerText = "⏳ 正在绘制中...";
+    btn.disabled = true;
+    btn.innerText = "⏳ 正在绘制中...";
 
-const requestBody = {
-contents: [ { parts: [ { text: prompt } ] } ],
-generationConfig: {
-responseModalities: ["Text", "Image"],
-imageConfig: { aspectRatio: aspectRatio, ...(model === 'nano-banana-pro' && { imageSize: imageSize }) }
-}
-};
+    const requestBody = {
+        contents: [ { parts: [ { text: prompt } ] } ],
+        generationConfig: {
+            responseModalities: ["Text", "Image"],
+            imageConfig: { aspectRatio: aspectRatio, ...(model === 'nano-banana-pro' && { imageSize: imageSize }) }
+        }
+    };
 
-try {
-const response = await fetch(`https://api.poixe.com/v1beta/models/${model}:generateContent`, {
-method: 'POST',
-headers: { 'x-goog-api-key': apiKey, 'Content-Type': 'application/json' },
-body: JSON.stringify(requestBody)
-});
+    try {
+        const response = await fetch(`https://api.poixe.com/v1beta/models/${model}:generateContent`, {
+            method: 'POST',
+            headers: { 'x-goog-api-key': apiKey, 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestBody)
+        });
 
-if (!response.ok) {
-const errData = await response.json().catch(() => ({}));
-throw new Error(errData.error?.message || `HTTP ${response.status}`);
-}
+        if (!response.ok) {
+            const errData = await response.json().catch(() => ({}));
+            throw new Error(errData.error?.message || `HTTP ${response.status}`);
+        }
 
-const data = await response.json();
-if (data.candidates && data.candidates.length > 0) {
-let imageUrl = "";
-data.candidates[0].content.parts.forEach(part => {
-if (part.inlineData) {
-imageUrl = `data:${part.inlineData.mimeType || 'image/png'};base64,${part.inlineData.data}`;
-}
-});
+        const data = await response.json();
+        
+        // 为了不在日志里满屏打印 base64 导致卡顿，复制一份去掉 base64 数据的对象打印
+        let logData = JSON.parse(JSON.stringify(data));
+        if(logData.candidates && logData.candidates[0] && logData.candidates[0].content && logData.candidates[0].content.parts){
+            logData.candidates[0].content.parts.forEach(p => {
+                if(p.inlineData && p.inlineData.data) {
+                    p.inlineData.data = "[Base64 Image Data Truncated For Log...]";
+                }
+            });
+        }
+        logApiCall('图像生成', `https://api.poixe.com/v1beta/models/${model}:generateContent`, requestBody, logData, false);
 
-if (imageUrl) {
-document.getElementById('resultImage').src = imageUrl;
-document.getElementById('resultWrapper').style.display = "flex";
-} else {
-showError("⚠️ 未返回图片数据");
-}
-} else {
-showError("❌ 未获取到生成结果");
-}
-} catch (error) {
-showError("❌ 生成失败: " + error.message);
-} finally {
-hideOverlay();
-btn.disabled = false;
-btn.innerText = "🚀 开始绘制图像";
-}
+        if (data.candidates && data.candidates.length > 0) {
+            let imageUrl = "";
+            data.candidates[0].content.parts.forEach(part => {
+                if (part.inlineData) {
+                    imageUrl = `data:${part.inlineData.mimeType || 'image/png'};base64,${part.inlineData.data}`;
+                }
+            });
+
+            if (imageUrl) {
+                document.getElementById('resultImage').src = imageUrl;
+                document.getElementById('resultWrapper').style.display = "flex";
+            } else {
+                showError("⚠️ 未返回图片数据");
+            }
+        } else {
+            showError("❌ 未获取到生成结果");
+        }
+    } catch (error) {
+        showError("❌ 生成失败: " + error.message);
+        logApiCall('图像生成', `https://api.poixe.com/v1beta/models/${model}:generateContent`, requestBody, { error: error.message }, true);
+    } finally {
+        hideOverlay();
+        btn.disabled = false;
+        btn.innerText = "🚀 开始绘制图像";
+    }
 });
 
 function downloadImage() {
-const img = document.getElementById('resultImage');
-if (!img.src) return;
-const link = document.createElement('a');
-link.href = img.src;
-link.download = `DatXY_Vision_${new Date().getTime()}.png`;
-document.body.appendChild(link);
-link.click();
-document.body.removeChild(link);
+    const img = document.getElementById('resultImage');
+    if (!img.src) return;
+    const link = document.createElement('a');
+    link.href = img.src;
+    link.download = `DatXY_Vision_${new Date().getTime()}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
 
-/* ===== 3. 文件转码与媒体解析 ===== */
+/* ===== 4. 文件转码与媒体解析 ===== */
 function parseMimeFromDataURI(dataURI) {
-const m = /^data:([^;,]+)[^,]*,/.exec(dataURI);
-return m ? m[1].trim() : '';
+    const m = /^data:([^;,]+)[^,]*,/.exec(dataURI);
+    return m ? m[1].trim() : '';
 }
 
 document.getElementById('btnToB64').addEventListener('click', () => {
-const file = document.getElementById('fileInput').files[0];
-if(!file) return showError('❌ 请选择一个文件');
+    const file = document.getElementById('fileInput').files[0];
+    if(!file) return showError('❌ 请选择一个文件');
 
-if (file.type.startsWith('video/') && file.size > 5 * 1024 * 1024) {
-    return showError('❌ 视频文件大于5MB，不支持直接转码');
-}
+    if (file.type.startsWith('video/') && file.size > 5 * 1024 * 1024) {
+        return showError('❌ 视频文件大于5MB，不支持直接转码');
+    }
 
-showOverlay('转码 Base64 中...');
-const reader = new FileReader();
-reader.onload = e => {
-document.getElementById('textarea').value = e.target.result;
-switchTab('text');
-updateStats();
-hideOverlay();
-};
-reader.onerror = () => { showError("❌ 文件读取失败"); hideOverlay(); };
-reader.readAsDataURL(file);
+    showOverlay('转码 Base64 中...');
+    const reader = new FileReader();
+    reader.onload = e => {
+        document.getElementById('textarea').value = e.target.result;
+        switchTab('text');
+        updateStats();
+        hideOverlay();
+    };
+    reader.onerror = () => { showError("❌ 文件读取失败"); hideOverlay(); };
+    reader.readAsDataURL(file);
 });
 
 document.getElementById('btnFromB64').addEventListener('click', () => {
-const s = document.getElementById('textarea').value.trim();
-if(!s || !s.startsWith('data:')) return showError('❌ 请在文本区提供有效的 Base64 DataURI');
+    const s = document.getElementById('textarea').value.trim();
+    if(!s || !s.startsWith('data:')) return showError('❌ 请在文本区提供有效的 Base64 DataURI');
 
-const mime = parseMimeFromDataURI(s);
-if(!mime) return showError('❌ 无法解析 MIME 类型');
+    const mime = parseMimeFromDataURI(s);
+    if(!mime) return showError('❌ 无法解析 MIME 类型');
 
-switchTab('media');
-document.getElementById('mediaPlaceholder').style.display = 'none';
-const playerContainer = document.getElementById('mediaPlayerContainer');
-const frameContainer = document.getElementById('frameDisplayContainer');
-const wrapper = document.getElementById('mediaPlayerWrapper');
+    switchTab('media');
+    document.getElementById('mediaPlaceholder').style.display = 'none';
+    const playerContainer = document.getElementById('mediaPlayerContainer');
+    const frameContainer = document.getElementById('frameDisplayContainer');
+    const wrapper = document.getElementById('mediaPlayerWrapper');
 
-// Reset
-wrapper.innerHTML = "";
-playerContainer.style.display = 'none';
-frameContainer.style.display = 'none';
-currentFilter = '';
-isFrameMode = false;
+    // Reset
+    wrapper.innerHTML = "";
+    playerContainer.style.display = 'none';
+    frameContainer.style.display = 'none';
+    currentFilter = '';
+    isFrameMode = false;
 
-if(mime.startsWith('image/')){
-const img = document.getElementById('frameDisplayedImage');
-img.src = s;
-currentMediaImage = img;
-img.style.filter = currentFilter;
-document.getElementById('mediaToolbar').style.display = 'flex';
-document.querySelectorAll('.frame-btn').forEach(el => el.style.display = 'none'); // 隐藏帧特有按钮
-document.getElementById('framePager').style.display = 'none';
-frameContainer.style.display = 'flex';
-} else if(mime.startsWith('audio/') || mime.startsWith('video/')){
-const media = document.createElement(mime.startsWith('audio/') ? 'audio' : 'video');
-media.controls = true; media.src = s; media.preload = 'metadata';
-wrapper.appendChild(media);
-currentMediaDataURL = s;
-playerContainer.style.display = 'flex';
-} else {
-showError("⚠️ 不支持预览的媒体格式，保留在文本区");
-switchTab('text');
-}
+    if(mime.startsWith('image/')){
+        const img = document.getElementById('frameDisplayedImage');
+        img.src = s;
+        currentMediaImage = img;
+        img.style.filter = currentFilter;
+        document.getElementById('mediaToolbar').style.display = 'flex';
+        document.querySelectorAll('.frame-btn').forEach(el => el.style.display = 'none'); 
+        document.getElementById('framePager').style.display = 'none';
+        frameContainer.style.display = 'flex';
+    } else if(mime.startsWith('audio/') || mime.startsWith('video/')){
+        const media = document.createElement(mime.startsWith('audio/') ? 'audio' : 'video');
+        media.controls = true; media.src = s; media.preload = 'metadata';
+        wrapper.appendChild(media);
+        currentMediaDataURL = s;
+        playerContainer.style.display = 'flex';
+    } else {
+        showError("⚠️ 不支持预览的媒体格式，保留在文本区");
+        switchTab('text');
+    }
 });
 
 document.getElementById('btnDownloadMedia').addEventListener('click', () => {
-if(!currentMediaDataURL) return;
-const mime = parseMimeFromDataURI(currentMediaDataURL);
-const ext = mime.includes('audio/') ? 'mp3' : mime.includes('video/') ? 'mp4' : 'bin';
-const a = document.createElement('a');
-a.href = currentMediaDataURL; a.download = `media_decode.${ext}`; a.click();
+    if(!currentMediaDataURL) return;
+    const mime = parseMimeFromDataURI(currentMediaDataURL);
+    const ext = mime.includes('audio/') ? 'mp3' : mime.includes('video/') ? 'mp4' : 'bin';
+    const a = document.createElement('a');
+    a.href = currentMediaDataURL; a.download = `media_decode.${ext}`; a.click();
 });
 
 // 视频抽帧逻辑
 function seekTo(vid, t) {
-return new Promise(resolve => {
-const handler = () => { vid.removeEventListener('seeked', handler); resolve(); };
-vid.addEventListener('seeked', handler, { once: true });
-vid.currentTime = Math.min(t, Math.max(0, vid.duration - 0.001));
-});
+    return new Promise(resolve => {
+        const handler = () => { vid.removeEventListener('seeked', handler); resolve(); };
+        vid.addEventListener('seeked', handler, { once: true });
+        vid.currentTime = Math.min(t, Math.max(0, vid.duration - 0.001));
+    });
 }
 
 document.getElementById('btnFrames').addEventListener('click', async () => {
-const file = document.getElementById('fileInput').files[0];
-const fps = parseInt(document.getElementById('intervalInput').value, 10);
+    const file = document.getElementById('fileInput').files[0];
+    const fps = parseInt(document.getElementById('intervalInput').value, 10);
 
-if(!file || !file.type.startsWith('video/')) return showError('❌ 请在上方选择一个视频文件');
-if(isNaN(fps) || fps <= 0) return showError('❌ 请输入有效的抽帧率 (FPS)');
+    if(!file || !file.type.startsWith('video/')) return showError('❌ 请在上方选择一个视频文件');
+    if(isNaN(fps) || fps <= 0) return showError('❌ 请输入有效的抽帧率 (FPS)');
 
-showOverlay('提取视频帧中...');
-const objectURL = URL.createObjectURL(file);
-const video = document.createElement('video');
-video.preload = 'metadata'; video.src = objectURL;
+    showOverlay('提取视频帧中...');
+    const objectURL = URL.createObjectURL(file);
+    const video = document.createElement('video');
+    video.preload = 'metadata'; video.src = objectURL;
 
-video.onloadedmetadata = async () => {
-extractedImages = [];
-currentImageIndex = -1;
-currentFilter = '';
-isFrameMode = true;
+    video.onloadedmetadata = async () => {
+        extractedImages = [];
+        currentImageIndex = -1;
+        currentFilter = '';
+        isFrameMode = true;
 
-switchTab('media');
-document.getElementById('mediaPlaceholder').style.display = 'none';
-document.getElementById('mediaPlayerContainer').style.display = 'none';
-document.getElementById('frameDisplayContainer').style.display = 'flex';
+        switchTab('media');
+        document.getElementById('mediaPlaceholder').style.display = 'none';
+        document.getElementById('mediaPlayerContainer').style.display = 'none';
+        document.getElementById('frameDisplayContainer').style.display = 'flex';
 
-document.getElementById('mediaToolbar').style.display = 'flex';
-document.querySelectorAll('.frame-btn').forEach(el => el.style.display = 'inline-flex'); // 恢复帧特有按钮
-document.getElementById('framePager').style.display = 'block';
+        document.getElementById('mediaToolbar').style.display = 'flex';
+        document.querySelectorAll('.frame-btn').forEach(el => el.style.display = 'inline-flex'); 
+        document.getElementById('framePager').style.display = 'block';
 
-const frameDuration = 1 / fps;
-const total = Math.floor(video.duration * fps) + 1;
-let currentTime = 0;
+        const frameDuration = 1 / fps;
+        const total = Math.floor(video.duration * fps) + 1;
+        let currentTime = 0;
 
-for(let i=0; i<total; i++){
-await seekTo(video, currentTime);
-const canvas = document.createElement('canvas');
-canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-const ctx = canvas.getContext('2d'); ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-extractedImages.push({ url: canvas.toDataURL('image/png'), time: currentTime });
-document.getElementById('progressText').innerText = `抽帧中: ${i+1}/${total}`;
-currentTime += frameDuration;
-}
+        for(let i=0; i<total; i++){
+            await seekTo(video, currentTime);
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d'); ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            extractedImages.push({ url: canvas.toDataURL('image/png'), time: currentTime });
+            document.getElementById('progressText').innerText = `抽帧中: ${i+1}/${total}`;
+            currentTime += frameDuration;
+        }
 
-hideOverlay();
-if(extractedImages.length > 0){
-currentImageIndex = 0; displayExtractedFrame();
-} else {
-showError('❌ 未能提取到任何帧');
-}
-};
+        hideOverlay();
+        if(extractedImages.length > 0){
+            currentImageIndex = 0; displayExtractedFrame();
+        } else {
+            showError('❌ 未能提取到任何帧');
+        }
+    };
 });
 
 function displayExtractedFrame() {
-if(currentImageIndex < 0 || currentImageIndex >= extractedImages.length) return;
-const f = extractedImages[currentImageIndex];
-const img = document.getElementById('frameDisplayedImage');
-img.src = f.url;
-currentMediaImage = img;
-img.style.filter = currentFilter;
-// 更新进度与时间，合并在一行显示
-document.getElementById('framePager').textContent = `[ ${currentImageIndex + 1} / ${extractedImages.length} ] 时间轴: ${f.time.toFixed(2)} 秒`;
+    if(currentImageIndex < 0 || currentImageIndex >= extractedImages.length) return;
+    const f = extractedImages[currentImageIndex];
+    const img = document.getElementById('frameDisplayedImage');
+    img.src = f.url;
+    currentMediaImage = img;
+    img.style.filter = currentFilter;
+    document.getElementById('framePager').textContent = `[ ${currentImageIndex + 1} / ${extractedImages.length} ] 时间轴: ${f.time.toFixed(2)} 秒`;
 }
 
 document.getElementById('prevButton').addEventListener('click', () => { if(currentImageIndex > 0) { currentImageIndex--; displayExtractedFrame(); } });
 document.getElementById('nextButton').addEventListener('click', () => { if(currentImageIndex < extractedImages.length - 1) { currentImageIndex++; displayExtractedFrame(); } });
 document.getElementById('btnDownloadFrame').addEventListener('click', () => {
-if(extractedImages.length === 0) return;
-const f = extractedImages[currentImageIndex];
-const a = document.createElement('a'); a.href = f.url; a.download = `frame_${String(currentImageIndex+1).padStart(4,'0')}.png`; a.click();
+    if(extractedImages.length === 0) return;
+    const f = extractedImages[currentImageIndex];
+    const a = document.createElement('a'); a.href = f.url; a.download = `frame_${String(currentImageIndex+1).padStart(4,'0')}.png`; a.click();
 });
 
 // 图像滤镜
@@ -774,27 +834,27 @@ document.getElementById('btnInvert').addEventListener('click', () => { currentFi
 document.getElementById('btnGray').addEventListener('click', () => { currentFilter = (currentFilter + ' grayscale(1)').trim(); if(currentMediaImage) currentMediaImage.style.filter = currentFilter; });
 document.getElementById('btnRestore').addEventListener('click', () => { currentFilter = ''; if(currentMediaImage) currentMediaImage.style.filter = currentFilter; });
 document.getElementById('btnDownloadEditedImage').addEventListener('click', () => {
-if(!currentMediaImage || !currentMediaImage.src) return;
-const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
-const w = currentMediaImage.naturalWidth || currentMediaImage.width;
-const h = currentMediaImage.naturalHeight || currentMediaImage.height;
-canvas.width = w; canvas.height = h; ctx.filter = currentFilter || 'none';
-ctx.drawImage(currentMediaImage, 0, 0, w, h);
-const a = document.createElement('a'); a.href = canvas.toDataURL('image/png'); a.download = 'processed_image.png'; a.click();
+    if(!currentMediaImage || !currentMediaImage.src) return;
+    const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
+    const w = currentMediaImage.naturalWidth || currentMediaImage.width;
+    const h = currentMediaImage.naturalHeight || currentMediaImage.height;
+    canvas.width = w; canvas.height = h; ctx.filter = currentFilter || 'none';
+    ctx.drawImage(currentMediaImage, 0, 0, w, h);
+    const a = document.createElement('a'); a.href = canvas.toDataURL('image/png'); a.download = 'processed_image.png'; a.click();
 });
 
 document.getElementById('btnClearOutput').addEventListener('click', () => {
-document.getElementById('textarea').value = ""; updateStats();
-document.getElementById('fileInput').value = "";
-extractedImages = []; currentImageIndex = -1; currentMediaImage = null; currentFilter = '';
-document.getElementById('mediaPlaceholder').style.display = 'flex';
-document.getElementById('mediaPlayerContainer').style.display = 'none';
-document.getElementById('frameDisplayContainer').style.display = 'none';
-document.getElementById('mediaPlayerWrapper').innerHTML = '';
-switchTab('text');
+    document.getElementById('textarea').value = ""; updateStats();
+    document.getElementById('fileInput').value = "";
+    extractedImages = []; currentImageIndex = -1; currentMediaImage = null; currentFilter = '';
+    document.getElementById('mediaPlaceholder').style.display = 'flex';
+    document.getElementById('mediaPlayerContainer').style.display = 'none';
+    document.getElementById('frameDisplayContainer').style.display = 'none';
+    document.getElementById('mediaPlayerWrapper').innerHTML = '';
+    switchTab('text');
 });
 
-/* ===== 4. 文本正则与编辑区 ===== */
+/* ===== 5. 文本正则与编辑区 ===== */
 const textarea = document.getElementById("textarea");
 const searchInput = document.getElementById("search-input");
 const replaceInput = document.getElementById("replace-input");
@@ -802,161 +862,161 @@ const replaceInput = document.getElementById("replace-input");
 textarea.addEventListener("input", updateStats);
 
 document.getElementById("remove-duplicates-btn").addEventListener("click", () => {
-const textList = textarea.value.split("\n");
-const uniqueList = [...new Set(textList)];
-document.getElementById("duplicate").innerHTML = `重复：<span>${textList.length - uniqueList.length}</span>`;
-textarea.value = uniqueList.join("\n");
-updateStats();
+    const textList = textarea.value.split("\n");
+    const uniqueList = [...new Set(textList)];
+    document.getElementById("duplicate").innerHTML = `重复：<span>${textList.length - uniqueList.length}</span>`;
+    textarea.value = uniqueList.join("\n");
+    updateStats();
 });
 
 document.getElementById("preserve-matches-btn").addEventListener("click", function() {
-try {
-const regex = new RegExp(searchInput.value, 'g');
-let matches = textarea.value.match(regex);
-if (matches && matches.length > 0) {
-textarea.value = matches.join("\n");
-document.getElementById("regex-replace-count").innerHTML = `正则：<span>${matches.length}</span>`;
-} else {
-document.getElementById("regex-replace-count").innerHTML = `正则：<span>0</span>`;
-}
-} catch (e) { showError("❌ 正则表达式有误"); }
+    try {
+        const regex = new RegExp(searchInput.value, 'g');
+        let matches = textarea.value.match(regex);
+        if (matches && matches.length > 0) {
+            textarea.value = matches.join("\n");
+            document.getElementById("regex-replace-count").innerHTML = `正则：<span>${matches.length}</span>`;
+        } else {
+            document.getElementById("regex-replace-count").innerHTML = `正则：<span>0</span>`;
+        }
+    } catch (e) { showError("❌ 正则表达式有误"); }
 });
 
 document.getElementById("replace-btn").addEventListener("click", () => {
-if (searchInput.value !== "") {
-const textArr = textarea.value.split(searchInput.value);
-document.getElementById("replace-count").innerHTML = `替换：<span>${textArr.length - 1}</span>`;
-textarea.value = textArr.join(replaceInput.value);
-updateStats();
-}
+    if (searchInput.value !== "") {
+        const textArr = textarea.value.split(searchInput.value);
+        document.getElementById("replace-count").innerHTML = `替换：<span>${textArr.length - 1}</span>`;
+        textarea.value = textArr.join(replaceInput.value);
+        updateStats();
+    }
 });
 
 document.getElementById("regex-replace-btn").addEventListener("click", () => {
-if (searchInput.value !== "") {
-try {
-let matchCount = (textarea.value.match(new RegExp(searchInput.value, 'g')) || []).length;
-textarea.value = textarea.value.replace(new RegExp(searchInput.value, 'g'), replaceInput.value);
-document.getElementById("regex-replace-count").innerHTML = `正则：<span>${matchCount}</span>`;
-updateStats();
-} catch (e) { showError("❌ 正则表达式有误"); }
-}
+    if (searchInput.value !== "") {
+        try {
+            let matchCount = (textarea.value.match(new RegExp(searchInput.value, 'g')) || []).length;
+            textarea.value = textarea.value.replace(new RegExp(searchInput.value, 'g'), replaceInput.value);
+            document.getElementById("regex-replace-count").innerHTML = `正则：<span>${matchCount}</span>`;
+            updateStats();
+        } catch (e) { showError("❌ 正则表达式有误"); }
+    }
 });
 
 function updateStats() {
-const text = textarea.value;
-document.getElementById("total").innerHTML = `总数：<span>${text.length}</span>`;
-document.getElementById("chinese").innerHTML = `汉字：<span>${(text.match(/[\u4e00-\u9fa5]/g) || []).length}</span>`;
-document.getElementById("punctuation").innerHTML = `标点：<span>${(text.match(/[^\u4e00-\u9fa5\w]/g) || []).length}</span>`;
-document.getElementById("alphabet").innerHTML = `字母：<span>${(text.match(/[a-zA-Z]/g) || []).length}</span>`;
-document.getElementById("numbers").innerHTML = `数字：<span>${(text.match(/\d/g) || []).length}</span>`;
+    const text = textarea.value;
+    document.getElementById("total").innerHTML = `总数：<span>${text.length}</span>`;
+    document.getElementById("chinese").innerHTML = `汉字：<span>${(text.match(/[\u4e00-\u9fa5]/g) || []).length}</span>`;
+    document.getElementById("punctuation").innerHTML = `标点：<span>${(text.match(/[^\u4e00-\u9fa5\w]/g) || []).length}</span>`;
+    document.getElementById("alphabet").innerHTML = `字母：<span>${(text.match(/[a-zA-Z]/g) || []).length}</span>`;
+    document.getElementById("numbers").innerHTML = `数字：<span>${(text.match(/\d/g) || []).length}</span>`;
 
-const lines = text.split('\n'); const map = new Map(); let dup=0;
-for(const line of lines){ if(line) map.set(line,(map.get(line)||0)+1); }
-for(const cnt of map.values()){ if(cnt>1) dup += (cnt-1); }
-document.getElementById("duplicate").innerHTML = `重复：<span>${dup}</span>`;
+    const lines = text.split('\n'); const map = new Map(); let dup=0;
+    for(const line of lines){ if(line) map.set(line,(map.get(line)||0)+1); }
+    for(const cnt of map.values()){ if(cnt>1) dup += (cnt-1); }
+    document.getElementById("duplicate").innerHTML = `重复：<span>${dup}</span>`;
 }
 
 document.getElementById("copy-btn").addEventListener("click", function() {
-let textToCopy = textarea.value || textarea.getAttribute("placeholder");
-const tempInput = document.createElement("textarea");
-document.body.appendChild(tempInput); tempInput.value = textToCopy;
-tempInput.select(); document.execCommand("copy"); document.body.removeChild(tempInput);
-showError("✅ 复制成功！");
-document.getElementById('errorMsg').style.background = 'rgba(52, 211, 153, 0.1)';
-document.getElementById('errorMsg').style.color = '#6ee7b7';
-document.getElementById('errorMsg').style.borderColor = 'rgba(52, 211, 153, 0.3)';
+    let textToCopy = textarea.value || textarea.getAttribute("placeholder");
+    const tempInput = document.createElement("textarea");
+    document.body.appendChild(tempInput); tempInput.value = textToCopy;
+    tempInput.select(); document.execCommand("copy"); document.body.removeChild(tempInput);
+    showError("✅ 复制成功！");
+    document.getElementById('errorMsg').style.background = 'rgba(52, 211, 153, 0.1)';
+    document.getElementById('errorMsg').style.color = '#6ee7b7';
+    document.getElementById('errorMsg').style.borderColor = 'rgba(52, 211, 153, 0.3)';
 });
 
 document.getElementById("paste-btn").addEventListener("click", function() {
-navigator.clipboard.readText().then(clipText => { textarea.value = clipText; updateStats(); }).catch(err => {});
+    navigator.clipboard.readText().then(clipText => { textarea.value = clipText; updateStats(); }).catch(err => {});
 });
 
-// 5. Web Speech Synthesis (TTS)
+// 6. Web Speech Synthesis (TTS)
 (function() {
-const voiceSelect = document.getElementById('tts-voiceSelect');
-const filterChineseBox = document.getElementById('tts-filterChinese');
-const startBtn = document.getElementById('tts-start');
-const stopBtn = document.getElementById('tts-stop');
-const rateInput = document.getElementById('tts-rate');
-const pitchInput = document.getElementById('tts-pitch');
-const volumeInput = document.getElementById('tts-volume');
+    const voiceSelect = document.getElementById('tts-voiceSelect');
+    const filterChineseBox = document.getElementById('tts-filterChinese');
+    const startBtn = document.getElementById('tts-start');
+    const stopBtn = document.getElementById('tts-stop');
+    const rateInput = document.getElementById('tts-rate');
+    const pitchInput = document.getElementById('tts-pitch');
+    const volumeInput = document.getElementById('tts-volume');
 
-let currentQueue = []; let speaking = false;
+    let currentQueue = []; let speaking = false;
 
-function listVoices() {
-const voices = window.speechSynthesis.getVoices();
-voiceSelect.innerHTML = '';
-const onlyZH = filterChineseBox.checked;
-let filtered = onlyZH ? voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('zh')) : voices;
-if (filtered.length === 0) {
-voiceSelect.innerHTML = '<option disabled>无可用语音（请安装TTS并刷新）</option>'; return;
-}
-filtered.forEach(v => {
-const opt = document.createElement('option');
-opt.value = v.name; opt.textContent = `${v.name} (${v.lang})`; voiceSelect.appendChild(opt);
-});
-const saved = localStorage.getItem('tts_voice_name');
-if (saved) {
-const idx = [...voiceSelect.options].findIndex(o => o.value === saved);
-if (idx >= 0) voiceSelect.selectedIndex = idx;
-}
-}
+    function listVoices() {
+        const voices = window.speechSynthesis.getVoices();
+        voiceSelect.innerHTML = '';
+        const onlyZH = filterChineseBox.checked;
+        let filtered = onlyZH ? voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('zh')) : voices;
+        if (filtered.length === 0) {
+            voiceSelect.innerHTML = '<option disabled>无可用语音（请安装TTS并刷新）</option>'; return;
+        }
+        filtered.forEach(v => {
+            const opt = document.createElement('option');
+            opt.value = v.name; opt.textContent = `${v.name} (${v.lang})`; voiceSelect.appendChild(opt);
+        });
+        const saved = localStorage.getItem('tts_voice_name');
+        if (saved) {
+            const idx = [...voiceSelect.options].findIndex(o => o.value === saved);
+            if (idx >= 0) voiceSelect.selectedIndex = idx;
+        }
+    }
 
-function splitTextToChunks(text) {
-const lines = text.split(/\n+/).map(s => s.trim()).filter(Boolean);
-const chunks = [];
-lines.forEach(line => {
-const parts = line.match(/[^。！？!?；;\.…]+[。！？!?；;\…]?/g);
-if (parts) {
-parts.forEach(p => { if (p.trim()) chunks.push(p.trim()); });
-} else {
-chunks.push(line);
-}
-});
-return chunks.length ? chunks : [text];
-}
+    function splitTextToChunks(text) {
+        const lines = text.split(/\n+/).map(s => s.trim()).filter(Boolean);
+        const chunks = [];
+        lines.forEach(line => {
+            const parts = line.match(/[^。！？!?；;\.…]+[。！？!?；;\…]?/g);
+            if (parts) {
+                parts.forEach(p => { if (p.trim()) chunks.push(p.trim()); });
+            } else {
+                chunks.push(line);
+            }
+        });
+        return chunks.length ? chunks : [text];
+    }
 
-function speakQueue(chunks, voice) {
-speaking = true; currentQueue = chunks.slice();
-const next = () => {
-if (!speaking || currentQueue.length === 0) { speaking = false; return; }
-const utt = new SpeechSynthesisUtterance(currentQueue.shift());
-if (voice) { utt.voice = voice; utt.lang = voice.lang; }
-utt.rate = parseFloat(rateInput.value || '1');
-utt.pitch = parseFloat(pitchInput.value || '1');
-utt.volume = parseFloat(volumeInput.value || '1');
-utt.onend = next; utt.onerror = () => { next(); };
-window.speechSynthesis.speak(utt);
-};
-next();
-}
+    function speakQueue(chunks, voice) {
+        speaking = true; currentQueue = chunks.slice();
+        const next = () => {
+            if (!speaking || currentQueue.length === 0) { speaking = false; return; }
+            const utt = new SpeechSynthesisUtterance(currentQueue.shift());
+            if (voice) { utt.voice = voice; utt.lang = voice.lang; }
+            utt.rate = parseFloat(rateInput.value || '1');
+            utt.pitch = parseFloat(pitchInput.value || '1');
+            utt.volume = parseFloat(volumeInput.value || '1');
+            utt.onend = next; utt.onerror = () => { next(); };
+            window.speechSynthesis.speak(utt);
+        };
+        next();
+    }
 
-startBtn.addEventListener('click', () => {
-const text = document.getElementById('textarea').value.trim();
-if (!text) return showError('❌ 请输入要朗读的文本');
-const v = window.speechSynthesis.getVoices().find(v => v.name === voiceSelect.value);
-if (!v) return showError('❌ 请选择一个有效语音');
+    startBtn.addEventListener('click', () => {
+        const text = document.getElementById('textarea').value.trim();
+        if (!text) return showError('❌ 请输入要朗读的文本');
+        const v = window.speechSynthesis.getVoices().find(v => v.name === voiceSelect.value);
+        if (!v) return showError('❌ 请选择一个有效语音');
 
-switchTab('text');
-hideImagePreview();
+        switchTab('text');
+        hideImagePreview();
 
-if (speaking) { window.speechSynthesis.cancel(); speaking = false; }
-speakQueue(splitTextToChunks(text), v);
-localStorage.setItem('tts_voice_name', v.name);
-});
+        if (speaking) { window.speechSynthesis.cancel(); speaking = false; }
+        speakQueue(splitTextToChunks(text), v);
+        localStorage.setItem('tts_voice_name', v.name);
+    });
 
-stopBtn.addEventListener('click', () => { speaking = false; window.speechSynthesis.cancel(); });
-filterChineseBox.addEventListener('change', listVoices);
-voiceSelect.addEventListener('change', () => { localStorage.setItem('tts_voice_name', voiceSelect.value); });
+    stopBtn.addEventListener('click', () => { speaking = false; window.speechSynthesis.cancel(); });
+    filterChineseBox.addEventListener('change', listVoices);
+    voiceSelect.addEventListener('change', () => { localStorage.setItem('tts_voice_name', voiceSelect.value); });
 
-rateInput.addEventListener('input', () => document.getElementById('tts-rate-val').textContent = rateInput.value + 'x');
-pitchInput.addEventListener('input', () => document.getElementById('tts-pitch-val').textContent = pitchInput.value);
-volumeInput.addEventListener('input', () => document.getElementById('tts-volume-val').textContent = volumeInput.value);
+    rateInput.addEventListener('input', () => document.getElementById('tts-rate-val').textContent = rateInput.value + 'x');
+    pitchInput.addEventListener('input', () => document.getElementById('tts-pitch-val').textContent = pitchInput.value);
+    volumeInput.addEventListener('input', () => document.getElementById('tts-volume-val').textContent = volumeInput.value);
 
-listVoices();
-if (typeof window.speechSynthesis !== 'undefined' && typeof window.speechSynthesis.onvoiceschanged !== 'undefined') {
-window.speechSynthesis.onvoiceschanged = listVoices;
-}
+    listVoices();
+    if (typeof window.speechSynthesis !== 'undefined' && typeof window.speechSynthesis.onvoiceschanged !== 'undefined') {
+        window.speechSynthesis.onvoiceschanged = listVoices;
+    }
 })();
 </script>
 
