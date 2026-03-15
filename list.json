@@ -20,6 +20,7 @@
 
   { "cat": "multi", "title": "Models", "desc": "HuggingFace 在线模型生成。", "url": "https://huggingface.co/spaces", "isTop": true },
   { "cat": "multi", "title": "Gemini", "desc": "Google 原生多模态大模型。", "url": "https://gemini.google.com/", "isTop": true },
+  { "cat": "multi", "title": "Poixe AI", "desc": "API 文本生成图。", "url": "https://datxy.com/tools/txt", "isTop": true },
   { "cat": "multi", "title": "ChatGPT", "desc": "全能助手：文本、代码、识图、绘图。", "url": "https://chat.openai.com/" },
   { "cat": "multi", "title": "豆包", "desc": "豆包在线全能助手，支持生图改图。", "url": "https://www.doubao.com/chat/create-image" },
   { "cat": "multi", "title": "Dreamina", "desc": "即梦生图改图、生成视频，对口型。", "url": "https://dreamina.capcut.com/ai-tool/home" },
