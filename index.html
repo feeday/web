@@ -455,7 +455,7 @@
             <div class="copyright-bar">
                 <span>&copy; 2026 DatXY  ·  Web Gemini 3 Pro Design</span>
                 <div class="copyright-divider"></div>
-                <span id="performance-result">加载: -- ms</span>
+                <span id="performance-result">Load: -- ms</span>
             </div>
 
         </div>
@@ -674,7 +674,7 @@
             searchInput.focus();
         }
         
-        // ================== 键盘交互 ==================
+        // ================== 键盘交互 (终极修复版) ==================
         function updateSelection(index) {
             visibleCards.forEach(c => c.classList.remove('active-focus'));
             if (index >= 0 && index < visibleCards.length) {
@@ -686,10 +686,12 @@
         }
 
         document.addEventListener('keydown', (e) => {
-            if (document.activeElement === searchInput) {
-                if (e.key === 'Enter') {
+            const isSearchFocused = (document.activeElement === searchInput);
+
+            // 1. 回车键逻辑 (Enter)
+            if (e.key === 'Enter') {
+                if (isSearchFocused) {
                     const engine = document.getElementById('searchEngineValue').value;
-                    
                     if (engine !== DEFAULT_ENGINE) {
                         e.preventDefault();
                         performSearch();
@@ -709,38 +711,64 @@
                          performSearch();
                     }
                     return;
+                } else {
+                    if (selectedCardIndex !== -1 && visibleCards[selectedCardIndex]) {
+                        const link = visibleCards[selectedCardIndex].querySelector('a');
+                        if (link) link.click();
+                    }
+                    return;
                 }
             }
 
-            if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-                e.preventDefault(); 
-                const buttons = Array.from(document.querySelectorAll('.tag-btn'));
-                const activeIndex = buttons.findIndex(btn => btn.classList.contains('active'));
-                let newIndex = activeIndex;
-                if (e.key === 'ArrowRight') newIndex = (activeIndex + 1) % buttons.length;
-                else if (e.key === 'ArrowLeft') newIndex = (activeIndex - 1 + buttons.length) % buttons.length;
-                buttons[newIndex].click();
-                return;
+            // 2. 搜索框保护机制：如果在搜索框内打字，左右方向键正常移动光标，不触发全局快捷键
+            if (isSearchFocused && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+                return; // 让浏览器原生处理文本光标移动
             }
 
-            if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-                e.preventDefault(); 
+            // 3. 上下左右方向键：真·2D 网格导航
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
                 if (visibleCards.length === 0) return;
-                if (e.key === 'ArrowDown') {
-                    if (selectedCardIndex < visibleCards.length - 1) selectedCardIndex++;
-                } else if (e.key === 'ArrowUp') {
-                    if (selectedCardIndex > 0) selectedCardIndex--;
+                
+                e.preventDefault(); // 防止页面跟着滚动
+
+                // 如果焦点在搜索框且按下“下”，则跳转到网格第一项
+                if (isSearchFocused && e.key === 'ArrowDown') {
+                    searchInput.blur();
+                    selectedCardIndex = 0;
+                } else {
+                    // 动态获取当前一行有几列 (根据屏幕宽度自适应)
+                    const gridComputedStyle = window.getComputedStyle(grid);
+                    const columnsCount = gridComputedStyle.getPropertyValue('grid-template-columns').split(' ').length;
+                    
+                    let newIndex = selectedCardIndex === -1 ? 0 : selectedCardIndex;
+
+                    if (e.key === 'ArrowRight') {
+                        if (newIndex < visibleCards.length - 1) newIndex++;
+                    } else if (e.key === 'ArrowLeft') {
+                        if (newIndex > 0) newIndex--;
+                    } else if (e.key === 'ArrowDown') {
+                        if (newIndex + columnsCount < visibleCards.length) {
+                            newIndex += columnsCount;
+                        } else {
+                            newIndex = visibleCards.length - 1; // 触底选中最后一个
+                        }
+                    } else if (e.key === 'ArrowUp') {
+                        if (newIndex - columnsCount >= 0) {
+                            newIndex -= columnsCount;
+                        } else {
+                            // 到达最顶部时，返回搜索框
+                            searchInput.focus();
+                            updateSelection(-1);
+                            return;
+                        }
+                    }
+                    selectedCardIndex = newIndex;
                 }
+
                 updateSelection(selectedCardIndex);
                 const card = visibleCards[selectedCardIndex];
-                if (card) card.scrollIntoView({ block: 'center', behavior: 'smooth' });
-                return;
-            }
-
-            if (e.key === 'Enter' && document.activeElement !== searchInput) {
-                if (selectedCardIndex !== -1 && visibleCards[selectedCardIndex]) {
-                    const link = visibleCards[selectedCardIndex].querySelector('a');
-                    if (link) link.click();
+                if (card) {
+                    card.scrollIntoView({ block: 'center', behavior: 'smooth' });
                 }
             }
         });
@@ -767,7 +795,7 @@
                 }
                 const resultElement = document.getElementById('performance-result');
                 if (resultElement && loadTime > 0) {
-                    resultElement.innerText = `Load Time ${loadTime} ms`;
+                    resultElement.innerText = `Load: ${loadTime} ms`;
                 }
             }, 0);
         });
