@@ -4,7 +4,8 @@
   { "cat": "audio", "title": "Suno AI", "desc": "生成广播级歌曲的 AI 音乐生成器。", "url": "https://suno.com/" },
   { "cat": "audio", "title": "ElevenLabs", "desc": "最自然的 AI 语音合成 (TTS)。", "url": "https://elevenlabs.io/" },
   { "cat": "audio", "title": "IndexTTS-2", "desc": "开源在线声音克隆。", "url": "https://huggingface.co/spaces/IndexTeam/IndexTTS-2-Demo" },
-
+  { "cat": "audio", "title": "VibeVoice", "desc": "微软在线语言识别。", "url": "https://aka.ms/vibevoice-asr" },
+  
 
   { "cat": "image", "title": "Leaderboard", "desc": "图像编辑模型排行榜", "url": "https://artificialanalysis.ai/image/leaderboard/editing", "isTop": true },  
   { "cat": "image", "title": "Z-Image-Turbo", "desc": "开源在线文生图模型。", "url": "https://huggingface.co/spaces/mrfakename/Z-Image-Turbo", "isTop": true },
