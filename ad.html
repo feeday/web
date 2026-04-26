@@ -2,19 +2,32 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>Audio Spectrum & Spectrogram</title>
+    <title>Professional Audio Analyzer</title>
     <style>
-        body { background-color: #111; color: #fff; margin: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; }
-        canvas { background-color: #000; border-bottom: 1px solid #333; }
-        #controls { padding: 10px; }
+        body { 
+            background-color: #050505; color: #fff; margin: 0; 
+            font-family: sans-serif; display: flex; flex-direction: column; align-items: center; 
+        }
+        #controls { padding: 15px; }
+        button {
+            background-color: #333; color: #fff; border: 1px solid #555;
+            padding: 8px 16px; border-radius: 4px; cursor: pointer;
+        }
+        button:hover { background-color: #444; }
+        .canvas-container { position: relative; }
+        canvas { display: block; }
+        #spectrum { border-bottom: 1px solid #333; }
     </style>
 </head>
 <body>
     <div id="controls">
-        <button id="startBtn">开启麦克风</button>
+        <button id="startBtn">开启高灵敏度麦克风</button>
     </div>
-    <canvas id="spectrum" width="800" height="300"></canvas>
-    <canvas id="spectrogram" width="800" height="300"></canvas>
+    
+    <div class="canvas-container">
+        <canvas id="spectrum" width="900" height="350"></canvas>
+        <canvas id="spectrogram" width="900" height="300"></canvas>
+    </div>
 
 <script>
     const startBtn = document.getElementById('startBtn');
@@ -23,26 +36,47 @@
     const canvasWaterfall = document.getElementById('spectrogram');
     const ctxWaterfall = canvasWaterfall.getContext('2d');
 
-    let audioCtx, analyser, dataArray;
+    let audioCtx, analyser, dataArray, peakArray;
+    let sampleRate = 48000; // 默认值，启动后会被真实采样率覆盖
     
-    // 配置参数
-    const FFT_SIZE = 4096;
-    const MIN_DB = -130;
-    const MAX_DB = 0;
+    // 核心配置参数
+    const FFT_SIZE = 8192; // 更高的分辨率以检测微小声音
+    const MIN_DB = -120;   // 调低最低显示阈值，显示微小底噪
+    const MAX_DB = -10;    // 最高阈值
+    const MIN_FREQ = 10;   // 对数图左侧起点 (10 Hz)
+    
+    // 获取频率对应的 X 坐标 (精准对数映射)
+    function getXForFreq(freq, width) {
+        const MAX_FREQ = sampleRate / 2; // 奈奎斯特频率
+        const minLog = Math.log10(MIN_FREQ);
+        const maxLog = Math.log10(MAX_FREQ);
+        const freqLog = Math.log10(Math.max(MIN_FREQ, freq));
+        return ((freqLog - minLog) / (maxLog - minLog)) * width;
+    }
 
     startBtn.addEventListener('click', async () => {
         if (!audioCtx) {
             audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            sampleRate = audioCtx.sampleRate; 
+            
             analyser = audioCtx.createAnalyser();
             analyser.fftSize = FFT_SIZE;
-            analyser.smoothingTimeConstant = 0.8; // 平滑度
-            analyser.minDecibels = MIN_DB;
-            analyser.maxDecibels = MAX_DB;
+            analyser.smoothingTimeConstant = 0.5; // 降低平滑度，反应更灵敏
             
-            dataArray = new Float32Array(analyser.frequencyBinCount);
+            const binCount = analyser.frequencyBinCount;
+            dataArray = new Float32Array(binCount);
+            peakArray = new Float32Array(binCount).fill(-Infinity); // 初始化峰值数组
 
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                // 【关键修复】关闭浏览器自带的处理，获取高灵敏度 Raw 音频
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: {
+                        echoCancellation: false,
+                        autoGainControl: false,
+                        noiseSuppression: false
+                    } 
+                });
+                
                 const source = audioCtx.createMediaStreamSource(stream);
                 source.connect(analyser);
                 startBtn.style.display = 'none';
@@ -53,21 +87,55 @@
         }
     });
 
-    // 计算对数 X 坐标的辅助函数
-    function getLogX(i, length, width) {
-        const minLog = Math.log10(1); 
-        const maxLog = Math.log10(length);
-        const logI = Math.log10(i + 1); // 避免 log(0)
-        return ((logI - minLog) / (maxLog - minLog)) * width;
+    // 绘制背景网格和刻度
+    function drawGrid(width, height) {
+        ctxSpec.fillStyle = '#0a0a0a';
+        ctxSpec.fillRect(0, 0, width, height);
+        
+        ctxSpec.lineWidth = 1;
+        ctxSpec.font = '11px Arial';
+        
+        // 1. 绘制 Y轴 (dB) 刻度
+        const dbSteps = [-20, -40, -60, -80, -100, -120];
+        ctxSpec.textAlign = 'left';
+        ctxSpec.textBaseline = 'bottom';
+        dbSteps.forEach(db => {
+            const y = height - ((db - MIN_DB) / (MAX_DB - MIN_DB)) * height;
+            ctxSpec.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            ctxSpec.beginPath();
+            ctxSpec.moveTo(0, y);
+            ctxSpec.lineTo(width, y);
+            ctxSpec.stroke();
+            
+            ctxSpec.fillStyle = '#888';
+            ctxSpec.fillText(`${db} dB`, 5, y - 2);
+        });
+
+        // 2. 绘制 X轴 (频率) 刻度
+        const freqSteps = [10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000];
+        ctxSpec.textAlign = 'center';
+        ctxSpec.textBaseline = 'top';
+        freqSteps.forEach(freq => {
+            if (freq > sampleRate / 2) return;
+            const x = getXForFreq(freq, width);
+            
+            ctxSpec.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            ctxSpec.beginPath();
+            ctxSpec.moveTo(x, 0);
+            ctxSpec.lineTo(x, height);
+            ctxSpec.stroke();
+            
+            let label = freq >= 1000 ? `${freq/1000}k` : freq;
+            ctxSpec.fillStyle = '#888';
+            ctxSpec.fillText(label, x, height - 15);
+        });
     }
 
-    // 将 dB 映射为颜色 (用于瀑布图)
+    // 瀑布图颜色映射
     function getColorForDb(db) {
-        // 简单映射：低 dB 为黑色/深蓝，高 dB 为紫/粉/亮白 (类似你的截图)
         let normalized = (db - MIN_DB) / (MAX_DB - MIN_DB);
-        normalized = Math.max(0, Math.min(1, normalized)); // 钳制在 0-1
-        
-        const hue = 260 - (normalized * 80); // 260是紫色, 往品红方向走
+        normalized = Math.max(0, Math.min(1, normalized)); 
+        const hue = 260 - (normalized * 80); 
         const lightness = normalized * 100;
         return `hsl(${hue}, 80%, ${lightness}%)`;
     }
@@ -79,42 +147,55 @@
         const width = canvasSpec.width;
         const heightSpec = canvasSpec.height;
         const binCount = analyser.frequencyBinCount;
+        const freqResolution = (sampleRate / 2) / binCount;
 
-        // ==========================================
-        // 1. 绘制上方频谱图 (折线)
-        // ==========================================
-        ctxSpec.clearRect(0, 0, width, heightSpec);
-        
+        // --- 绘制上方频谱 ---
+        drawGrid(width, heightSpec);
+
         ctxSpec.beginPath();
-        ctxSpec.strokeStyle = '#ffcc00'; // 黄色线段
-        ctxSpec.lineWidth = 1.5;
+        ctxSpec.strokeStyle = '#ffcc00'; // 实时折线：黄色
+        ctxSpec.lineWidth = 1.2;
+
+        ctxSpec.beginPath();
+        let peakPath = new Path2D();
 
         for (let i = 0; i < binCount; i++) {
+            const freq = Math.max(MIN_FREQ, i * freqResolution);
             const db = dataArray[i];
             
-            // 使用对数坐标映射 X
-            const x = getLogX(i, binCount, width);
-            
-            // 映射 Y 坐标 (将 dB 映射到 Canvas 高度)
-            let y = heightSpec - ((db - MIN_DB) / (MAX_DB - MIN_DB)) * heightSpec;
-            
-            if (i === 0) ctxSpec.moveTo(x, y);
-            else ctxSpec.lineTo(x, y);
-        }
-        ctxSpec.stroke();
+            // 计算峰值衰减 (Peak Hold)
+            peakArray[i] = Math.max(db, peakArray[i] - 0.2); // 0.2 是红线掉落的速度
 
-        // ==========================================
-        // 2. 绘制下方声谱图 (瀑布图)
-        // ==========================================
-        // 将原有的画面往下移动 1 像素
+            const x = getXForFreq(freq, width);
+            const y = heightSpec - ((db - MIN_DB) / (MAX_DB - MIN_DB)) * heightSpec;
+            const peakY = heightSpec - ((peakArray[i] - MIN_DB) / (MAX_DB - MIN_DB)) * heightSpec;
+            
+            if (i === 0) {
+                ctxSpec.moveTo(x, y);
+                peakPath.moveTo(x, peakY);
+            } else {
+                ctxSpec.lineTo(x, y);
+                peakPath.lineTo(x, peakY);
+            }
+        }
+        
+        ctxSpec.stroke(); // 画黄色实时线
+        
+        ctxSpec.strokeStyle = 'rgba(255, 50, 50, 0.8)'; // 峰值线：红色
+        ctxSpec.lineWidth = 1;
+        ctxSpec.stroke(peakPath); // 画红色峰值线
+
+        // --- 绘制下方瀑布图 ---
         const imageData = ctxWaterfall.getImageData(0, 0, width, canvasWaterfall.height - 1);
         ctxWaterfall.putImageData(imageData, 0, 1);
 
-        // 绘制顶部的最新一行 (1像素高)
         for (let i = 0; i < binCount; i++) {
-            const x = getLogX(i, binCount, width);
-            const nextX = getLogX(i + 1, binCount, width);
-            const segmentWidth = Math.max(1, nextX - x); // 计算这段频率占据的像素宽度
+            const freq = Math.max(MIN_FREQ, i * freqResolution);
+            const nextFreq = Math.max(MIN_FREQ, (i + 1) * freqResolution);
+            
+            const x = getXForFreq(freq, width);
+            const nextX = getXForFreq(nextFreq, width);
+            const segmentWidth = Math.max(1, nextX - x); 
             
             ctxWaterfall.fillStyle = getColorForDb(dataArray[i]);
             ctxWaterfall.fillRect(x, 0, Math.ceil(segmentWidth), 1);
