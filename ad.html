@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>Audio Spectrum & Spectrogram</title>
+    <style>
+        body { background-color: #111; color: #fff; margin: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; }
+        canvas { background-color: #000; border-bottom: 1px solid #333; }
+        #controls { padding: 10px; }
+    </style>
+</head>
+<body>
+    <div id="controls">
+        <button id="startBtn">开启麦克风</button>
+    </div>
+    <canvas id="spectrum" width="800" height="300"></canvas>
+    <canvas id="spectrogram" width="800" height="300"></canvas>
+
+<script>
+    const startBtn = document.getElementById('startBtn');
+    const canvasSpec = document.getElementById('spectrum');
+    const ctxSpec = canvasSpec.getContext('2d');
+    const canvasWaterfall = document.getElementById('spectrogram');
+    const ctxWaterfall = canvasWaterfall.getContext('2d');
+
+    let audioCtx, analyser, dataArray;
+    
+    // 配置参数
+    const FFT_SIZE = 4096;
+    const MIN_DB = -130;
+    const MAX_DB = 0;
+
+    startBtn.addEventListener('click', async () => {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioCtx.createAnalyser();
+            analyser.fftSize = FFT_SIZE;
+            analyser.smoothingTimeConstant = 0.8; // 平滑度
+            analyser.minDecibels = MIN_DB;
+            analyser.maxDecibels = MAX_DB;
+            
+            dataArray = new Float32Array(analyser.frequencyBinCount);
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const source = audioCtx.createMediaStreamSource(stream);
+                source.connect(analyser);
+                startBtn.style.display = 'none';
+                draw();
+            } catch (err) {
+                alert('无法访问麦克风: ' + err);
+            }
+        }
+    });
+
+    // 计算对数 X 坐标的辅助函数
+    function getLogX(i, length, width) {
+        const minLog = Math.log10(1); 
+        const maxLog = Math.log10(length);
+        const logI = Math.log10(i + 1); // 避免 log(0)
+        return ((logI - minLog) / (maxLog - minLog)) * width;
+    }
+
+    // 将 dB 映射为颜色 (用于瀑布图)
+    function getColorForDb(db) {
+        // 简单映射：低 dB 为黑色/深蓝，高 dB 为紫/粉/亮白 (类似你的截图)
+        let normalized = (db - MIN_DB) / (MAX_DB - MIN_DB);
+        normalized = Math.max(0, Math.min(1, normalized)); // 钳制在 0-1
+        
+        const hue = 260 - (normalized * 80); // 260是紫色, 往品红方向走
+        const lightness = normalized * 100;
+        return `hsl(${hue}, 80%, ${lightness}%)`;
+    }
+
+    function draw() {
+        requestAnimationFrame(draw);
+        analyser.getFloatFrequencyData(dataArray);
+
+        const width = canvasSpec.width;
+        const heightSpec = canvasSpec.height;
+        const binCount = analyser.frequencyBinCount;
+
+        // ==========================================
+        // 1. 绘制上方频谱图 (折线)
+        // ==========================================
+        ctxSpec.clearRect(0, 0, width, heightSpec);
+        
+        ctxSpec.beginPath();
+        ctxSpec.strokeStyle = '#ffcc00'; // 黄色线段
+        ctxSpec.lineWidth = 1.5;
+
+        for (let i = 0; i < binCount; i++) {
+            const db = dataArray[i];
+            
+            // 使用对数坐标映射 X
+            const x = getLogX(i, binCount, width);
+            
+            // 映射 Y 坐标 (将 dB 映射到 Canvas 高度)
+            let y = heightSpec - ((db - MIN_DB) / (MAX_DB - MIN_DB)) * heightSpec;
+            
+            if (i === 0) ctxSpec.moveTo(x, y);
+            else ctxSpec.lineTo(x, y);
+        }
+        ctxSpec.stroke();
+
+        // ==========================================
+        // 2. 绘制下方声谱图 (瀑布图)
+        // ==========================================
+        // 将原有的画面往下移动 1 像素
+        const imageData = ctxWaterfall.getImageData(0, 0, width, canvasWaterfall.height - 1);
+        ctxWaterfall.putImageData(imageData, 0, 1);
+
+        // 绘制顶部的最新一行 (1像素高)
+        for (let i = 0; i < binCount; i++) {
+            const x = getLogX(i, binCount, width);
+            const nextX = getLogX(i + 1, binCount, width);
+            const segmentWidth = Math.max(1, nextX - x); // 计算这段频率占据的像素宽度
+            
+            ctxWaterfall.fillStyle = getColorForDb(dataArray[i]);
+            ctxWaterfall.fillRect(x, 0, Math.ceil(segmentWidth), 1);
+        }
+    }
+</script>
+</body>
+</html>
