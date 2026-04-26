@@ -1,0 +1,22 @@
+<script>
+    function isNonPC() {
+        var ua = navigator.userAgent.toLowerCase();
+        var mobileAgents = ['android', 'iphone', 'ipod', 'ipad', 'windows phone', 'mqqbrowser'];
+        
+        for (var i = 0; i < mobileAgents.length; i++) {
+            if (ua.indexOf(mobileAgents[i]) > -1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // 根据设备类型执行不同的跳转
+    if (isNonPC()) {
+        // 非PC设备跳转到夸克网盘
+        window.location.replace("https://pan.quark.cn/s/480fc97b3a23");
+    } else {
+        // PC设备跳转到你的导航页
+        window.location.replace("https://cpuck.com/url/");
+    }
+</script>
