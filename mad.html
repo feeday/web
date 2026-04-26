@@ -5,23 +5,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mobile Pro Audio Analyzer</title>
     <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #050505; overflow: hidden; font-family: sans-serif; }
-        #overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: flex; justify-content: center; align-items: center; z-index: 999; color: #fff; font-size: 1.2rem; flex-direction: column; }
-        #overlay button { background: #ffcc00; color: #000; border: none; padding: 15px 30px; font-size: 1.2rem; font-weight: bold; border-radius: 8px; margin-top: 20px; cursor: pointer; }
-        #container { display: flex; flex-direction: column; width: 100%; height: 100%; }
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            background-color: #050505; overflow: hidden; font-family: sans-serif;
+            touch-action: none; /* 防止微信下拉回弹 */
+        }
+        #overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85); display: flex; justify-content: center;
+            align-items: center; z-index: 999; color: #fff; font-size: 1.2rem; flex-direction: column;
+        }
+        #overlay button {
+            background: #ffcc00; color: #000; border: none;
+            padding: 15px 30px; font-size: 1.2rem; font-weight: bold;
+            border-radius: 8px; margin-top: 20px; cursor: pointer;
+        }
+        #container {
+            display: flex; flex-direction: column; width: 100%;
+        }
         canvas { display: block; width: 100%; height: 50%; }
-        #spectrum { border-bottom: 1px solid #333; }
+        #spectrum { border-bottom: 1px solid #333; box-sizing: border-box; }
     </style>
 </head>
 <body>
+
     <div id="overlay">
         <div>需要麦克风权限</div>
         <button id="startBtn">点击开始检测</button>
     </div>
+
     <div id="container">
         <canvas id="spectrum"></canvas>
         <canvas id="spectrogram"></canvas>
     </div>
+
+    
+    
+    
+    
+    
+    
+    
+    
 <script>
     const startBtn = document.getElementById('startBtn');
     const overlay = document.getElementById('overlay');
