@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mobile Pro Audio Analyzer</title>
+    <style>
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #050505; overflow: hidden; font-family: sans-serif; }
+        #overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: flex; justify-content: center; align-items: center; z-index: 999; color: #fff; font-size: 1.2rem; flex-direction: column; }
+        #overlay button { background: #ffcc00; color: #000; border: none; padding: 15px 30px; font-size: 1.2rem; font-weight: bold; border-radius: 8px; margin-top: 20px; cursor: pointer; }
+        #container { display: flex; flex-direction: column; width: 100%; height: 100%; }
+        canvas { display: block; width: 100%; height: 50%; }
+        #spectrum { border-bottom: 1px solid #333; }
+    </style>
+</head>
+<body>
+    <div id="overlay">
+        <div>需要麦克风权限</div>
+        <button id="startBtn">点击开始检测</button>
+    </div>
+    <div id="container">
+        <canvas id="spectrum"></canvas>
+        <canvas id="spectrogram"></canvas>
+    </div>
+<script>
+    const startBtn = document.getElementById('startBtn');
+    const overlay = document.getElementById('overlay');
+    const canvasSpec = document.getElementById('spectrum');
+    const ctxSpec = canvasSpec.getContext('2d');
+    const canvasWaterfall = document.getElementById('spectrogram');
+    const ctxWaterfall = canvasWaterfall.getContext('2d', { alpha: false }); 
+
+    let audioCtx, analyser, dataArray, peakArray;
+    let sampleRate = 48000;
+    const FFT_SIZE = 8192;
+    const MIN_DB = -130;
+    const MAX_DB = 0;
+    const MIN_FREQ = 5; 
+    
+    let dpr = window.devicePixelRatio || 1;
+    let logicalWidth, logicalHeight;
+    let waterfallImgData; 
+
+    function resizeCanvas() {
+        logicalWidth = window.innerWidth;
+        logicalHeight = window.innerHeight / 2;
+        canvasSpec.width = logicalWidth * dpr;
+        canvasSpec.height = logicalHeight * dpr;
+        canvasWaterfall.width = logicalWidth * dpr;
+        canvasWaterfall.height = logicalHeight * dpr;
+        waterfallImgData = ctxWaterfall.createImageData(canvasWaterfall.width, 1);
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function getX(freq, width) {
+        const maxFreq = sampleRate / 2;
+        const minLog = Math.log10(MIN_FREQ);
+        const maxLog = Math.log10(maxFreq);
+        const freqLog = Math.log10(Math.max(MIN_FREQ, freq));
+        return ((freqLog - minLog) / (maxLog - minLog)) * width;
+    }
+
+    function getWaterfallColor(db) {
+        let t = (db - MIN_DB) / (MAX_DB - MIN_DB);
+        t = Math.max(0, Math.min(1, t));
+        let r, g, b;
+        if (t < 0.2) { 
+            let norm = t / 0.2; r = 0; g = 30 * norm; b = 40 * norm;
+        } else if (t < 0.5) { 
+            let norm = (t - 0.2) / 0.3; r = 100 * norm; g = 30 * (1 - norm) + 50 * norm; b = 40 + 100 * norm;
+        } else if (t < 0.8) { 
+            let norm = (t - 0.5) / 0.3; r = 100 + 100 * norm; g = 50 * (1 - norm) + 100 * norm; b = 140 + 60 * norm;
+        } else { 
+            let norm = (t - 0.8) / 0.2; r = 200 + 55 * norm; g = 100 + 155 * norm; b = 200 + 55 * norm;
+        }
+        return [r, g, b];
+    }
+
+    startBtn.addEventListener('click', async () => {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            sampleRate = audioCtx.sampleRate; 
+            analyser = audioCtx.createAnalyser();
+            analyser.fftSize = FFT_SIZE;
+            analyser.smoothingTimeConstant = 0.5;
+            dataArray = new Float32Array(analyser.frequencyBinCount);
+            peakArray = new Float32Array(analyser.frequencyBinCount).fill(-Infinity);
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: { echoCancellation: false, autoGainControl: false, noiseSuppression: false } 
+                });
+                const source = audioCtx.createMediaStreamSource(stream);
+                source.connect(analyser);
+                overlay.style.display = 'none';
+                draw();
+            } catch (err) {
+                alert('无法访问麦克风: ' + err.message);
+            }
+        }
+    });
+    function drawGrid(w, h) {
+        ctxSpec.fillStyle = '#080808';
+        ctxSpec.fillRect(0, 0, w, h);
+        ctxSpec.font = `${10 * dpr}px Arial`;
+        ctxSpec.textAlign = 'left';
+        
+        const dbSteps = [0, -25, -50, -75, -100, -125];
+        dbSteps.forEach(db => {
+            const y = h - ((db - MIN_DB) / (MAX_DB - MIN_DB)) * h;
+            ctxSpec.strokeStyle = '#222';
+            ctxSpec.lineWidth = 1 * dpr;
+            ctxSpec.beginPath();
+            ctxSpec.moveTo(0, y);
+            ctxSpec.lineTo(w, y);
+            ctxSpec.stroke();
+            ctxSpec.fillStyle = '#aaa';
+            ctxSpec.fillText(db, 5 * dpr, y - 4 * dpr);
+        });
+
+        ctxSpec.textAlign = 'center';
+        ctxSpec.textBaseline = 'top';
+        const powers = [10, 100, 1000, 10000]; 
+        powers.forEach(base => {
+            let x = getX(base, w);
+            ctxSpec.strokeStyle = '#444'; 
+            ctxSpec.lineWidth = 1 * dpr;
+            ctxSpec.beginPath();
+            ctxSpec.moveTo(x, 0); ctxSpec.lineTo(x, h);
+            ctxSpec.stroke();
+            ctxSpec.fillStyle = '#aaa';
+            ctxSpec.fillText(base, x, h - 18 * dpr); 
+
+            ctxSpec.strokeStyle = '#1a1a1a'; 
+            for (let i = 2; i < 10; i++) {
+                let subX = getX(base * i, w);
+                if(subX > w) break;
+                ctxSpec.beginPath();
+                ctxSpec.moveTo(subX, 0); ctxSpec.lineTo(subX, h);
+                ctxSpec.stroke();
+            }
+        });
+    }
+
+    function draw() {
+        requestAnimationFrame(draw);
+        analyser.getFloatFrequencyData(dataArray);
+
+        const w = canvasSpec.width;
+        const h = canvasSpec.height;
+        const binCount = analyser.frequencyBinCount;
+        const freqResolution = (sampleRate / 2) / binCount;
+
+        drawGrid(w, h);
+
+        ctxSpec.beginPath();
+        let peakPath = new Path2D();
+
+        for (let i = 0; i < binCount; i++) {
+            const freq = Math.max(MIN_FREQ, i * freqResolution);
+            const db = dataArray[i];
+            peakArray[i] = Math.max(db, peakArray[i] - 0.3);
+            const x = getX(freq, w);
+            const y = h - ((db - MIN_DB) / (MAX_DB - MIN_DB)) * h;
+            const peakY = h - ((peakArray[i] - MIN_DB) / (MAX_DB - MIN_DB)) * h;
+            
+            if (i === 0) {
+                ctxSpec.moveTo(x, y);
+                peakPath.moveTo(x, peakY);
+            } else {
+                ctxSpec.lineTo(x, y);
+                peakPath.lineTo(x, peakY);
+            }
+        }
+        
+        ctxSpec.strokeStyle = '#ffcc00'; 
+        ctxSpec.lineWidth = 1.5 * dpr;
+        ctxSpec.stroke(); 
+        
+        ctxSpec.strokeStyle = 'rgba(255, 30, 30, 0.8)';
+        ctxSpec.lineWidth = 1 * dpr;
+        ctxSpec.stroke(peakPath);
+
+        ctxWaterfall.drawImage(canvasWaterfall, 0, 0, w, h, 0, 1 * dpr, w, h);
+
+        const data = waterfallImgData.data;
+        for (let x = 0; x < w; x++) {
+            const minLog = Math.log10(MIN_FREQ);
+            const maxLog = Math.log10(sampleRate / 2);
+            const logFreq = (x / w) * (maxLog - minLog) + minLog;
+            const freq = Math.pow(10, logFreq);
+            
+            let binIndex = Math.floor(freq / freqResolution);
+            binIndex = Math.max(0, Math.min(binCount - 1, binIndex));
+
+            const rgb = getWaterfallColor(dataArray[binIndex]);
+            const pixelIndex = x * 4;
+            data[pixelIndex] = rgb[0];     
+            data[pixelIndex + 1] = rgb[1]; 
+            data[pixelIndex + 2] = rgb[2]; 
+            data[pixelIndex + 3] = 255;    
+        }
+        
+        for(let i=0; i<Math.ceil(dpr); i++) {
+            ctxWaterfall.putImageData(waterfallImgData, 0, i);
+        }
+    }
+</script>
+</body>
+</html>
