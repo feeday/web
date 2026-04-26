@@ -1,0 +1,510 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="referrer" content="no-referrer">
+    <title>─=≡Σ((( つ•̀ω•́)つ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+    <script>LA.init({id:"JRHGRBPWC7lJIaXq",ck:"JRHGRBPWC7lJIaXq"})</script>
+    
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root { 
+            --bg-deep: #030303; 
+            --bg-panel: #0a0a0a;
+            --accent: #00ff41; 
+            --accent-dim: rgba(0, 255, 65, 0.1);
+            --danger: #ff2a2a;
+            --tech-blue: #00f0ff;
+            --border-color: #333;
+        }
+        
+        body { 
+            font-family: 'Share Tech Mono', monospace; 
+            background-color: var(--bg-deep); 
+            color: #d4d4d4; 
+            overflow: hidden; 
+            height: 100dvh;
+            background-image: 
+                linear-gradient(rgba(0, 255, 65, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 65, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        .scanlines {
+            position: fixed; inset: 0; pointer-events: none; z-index: 2;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1));
+            background-size: 100% 4px;
+        }
+        
+        .tech-border {
+            position: relative;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            border-radius: 4px;
+        }
+        .tech-border::before { content: ''; position: absolute; top: -1px; left: -1px; width: 8px; height: 8px; border-top: 2px solid var(--accent); border-left: 2px solid var(--accent); border-top-left-radius: 4px; }
+        .tech-border::after { content: ''; position: absolute; bottom: -1px; right: -1px; width: 8px; height: 8px; border-bottom: 2px solid var(--accent); border-right: 2px solid var(--accent); border-bottom-right-radius: 4px; }
+
+        .embedded-drawer {
+            background: #050505;
+            border: 1px solid var(--tech-blue);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cyber-btn {
+            position: relative;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border-color);
+            color: #888;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            border-radius: 4px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .cyber-btn:hover:not(:disabled) {
+            background: var(--accent-dim); border-color: var(--accent); color: var(--accent);
+            box-shadow: 0 0 15px var(--accent-dim); text-shadow: 0 0 5px var(--accent);
+        }
+
+        .monitor-frame {
+            position: relative; width: 100%; height: 100%; background: #000; border: 1px solid #333;
+            border-radius: 4px; overflow: hidden;
+        }
+        .monitor-overlay {
+            position: absolute; inset: 0; pointer-events: none; z-index: 5;
+            box-shadow: inset 0 0 100px rgba(0,0,0,0.9); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+        .monitor-label {
+            position: absolute; top: 10px; left: 10px; z-index: 10;
+            background: rgba(0,0,0,0.8); padding: 2px 8px;
+            font-size: 10px; color: var(--accent); border: 1px solid var(--accent); border-radius: 2px;
+        }
+        .bili-full { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+        .cyber-scroll::-webkit-scrollbar { width: 4px; }
+        .cyber-scroll::-webkit-scrollbar-thumb { background: var(--tech-blue); }
+
+        /* 隐藏滚动条但保留滚动功能，用于防止头部统计被挤压 */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .cyber-input { 
+            background: #000; border: 1px solid #333; color: var(--tech-blue); 
+            font-family: 'Share Tech Mono'; width: 100%; transition: 0.3s; border-radius: 6px;
+        }
+        .cyber-input:focus { outline: none; border-color: var(--tech-blue); box-shadow: 0 0 10px rgba(0,240,255,0.2); }
+
+        .nav-link:hover { color: var(--tech-blue); text-shadow: 0 0 5px var(--tech-blue); }
+        .nav-link i { margin-right: 4px; }
+        
+        #delay a { 
+            color: var(--tech-blue) !important; 
+            text-decoration: none !important; 
+            display: flex !important; 
+            align-items: center !important; 
+            height: 100% !important; 
+            margin: 0 !important; 
+            padding: 0 !important; 
+            line-height: 1 !important; 
+        }
+        #delay a:hover { text-shadow: 0 0 5px var(--tech-blue); }
+    </style>
+</head>
+<body class="flex flex-col h-[100dvh] overflow-hidden relative selection:bg-green-500 selection:text-black">
+
+    <div class="scanlines"></div>
+
+    <header class="hidden lg:flex h-12 bg-black/80 border-b border-[#222] items-center justify-between px-6 z-20 shrink-0 backdrop-blur-sm">
+        <div class="flex items-center gap-3">
+            <i class="fas fa-biohazard text-green-500 animate-pulse text-lg"></i>
+            <span class="text-xl font-[Orbitron] font-black text-white tracking-widest">
+                ─=≡Σ<span class="text-green-500">((( つ•̀ω•́)つ</span>
+            </span>
+        </div>
+        
+        <div class="hidden md:flex gap-6 text-[10px] font-mono text-gray-500 tracking-wider">
+            <a href="https://feeday.cn" target="_blank" class="nav-link transition"><i class="fab fa-github"></i>GITHUB</a>
+            <a href="https://huggingface.co/spaces/feeday/Aigc" target="_blank" class="nav-link transition"><i class="fas fa-smile"></i>HUGGINGFACE</a>
+            <a href="https://cloud.tencent.com/act/cps/redirect?redirect=37529&cps_key=615609c54e8bcced8b02c202a43b5570" target="_blank" class="nav-link transition"><i class="fab fa-cloudflare"></i>CLOUDFLARE</a>
+            <a href="https://cloudstudio.net/" target="_blank" class="nav-link transition"><i class="fas fa-laptop-code"></i>STUDIO</a>
+            <a href="https://colab.research.google.com" target="_blank" class="nav-link transition"><i class="fab fa-google"></i>COLAB</a>
+            <a href="https://arxiv.org/list/cs.AI/recent" target="_blank" class="nav-link transition"><i class="fas fa-book"></i>ARXIV</a>
+            <a href="https://matrix.tencent.com/ai-detect/" target="_blank" class="nav-link transition" title="Zhuque AI Detection"><i class="fas fa-shield-alt"></i>MATRIX</a>
+            <a href="https://artificialanalysis.ai/image/leaderboard/editing" target="_blank" class="nav-link transition" title="Image Editing Leaderboard"><i class="fas fa-ranking-star"></i>MODEL-I2I</a>
+            <a href="https://aigcarena.com/" target="_blank" class="nav-link transition" title="MagicArena"><i class="fas fa-bolt"></i>MODEL-PK</a>
+            <a href="https://labs.google/fx/zh/tools/flow" target="_blank" class="nav-link transition" title="Nano Banana Pro"><i class="fas fa-wand-magic-sparkles"></i>BANANA-PRO</a>
+            <a href="https://gemini.google.com/" target="_blank" class="nav-link transition" title="Gemini"><i class="fas fa-robot"></i>GEMINI</a>
+        </div>
+
+        <div class="text-[10px] font-mono text-gray-500 flex items-center gap-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-green-500 box-shadow-green"></span>
+            <span>SYSTEM: ONLINE</span>
+        </div>
+    </header>
+
+    <div class="flex-grow flex flex-col lg:flex-row overflow-hidden relative z-10 p-2 lg:p-4 gap-2 lg:gap-4 min-h-0">
+        
+        <div class="h-[35vh] lg:h-auto lg:w-[65%] xl:w-[70%] flex flex-col gap-2 shrink-0 lg:shrink min-h-0">
+            <div class="monitor-frame relative flex-grow tech-border min-h-0">
+                
+                <div class="absolute top-2 right-2 z-20 flex items-center gap-2">
+                    <a id="bili-source-btn" href="#" target="_blank" title="在新窗口打开原视频" 
+                       class="flex items-center gap-2 px-2 py-1 bg-black/80 border border-gray-700 rounded text-[10px] font-mono text-gray-400 hover:text-[#00f0ff] hover:border-[#00f0ff] transition backdrop-blur-sm group">
+                        <i class="fab fa-bilibili"></i>
+                        <span>SOURCE</span>
+                    </a>
+                </div>
+
+                <div class="monitor-overlay"></div>
+                
+                <div id="video-container" class="w-full h-full relative z-0">
+                    <div class="absolute inset-0 flex items-center justify-center text-gray-700 animate-pulse font-mono text-xs">
+                        ESTABLISHING UPLINK...
+                    </div>
+                </div>
+            </div>
+            
+            <div class="h-10 tech-border flex items-center justify-between px-4 bg-black/40 shrink-0">
+                <button id="btn-prev" onclick="changePage(-1)" class="text-xs text-gray-500 hover:text-white transition">
+                    <i class="fas fa-caret-left mr-1"></i> PREV
+                </button>
+                <div class="text-xs font-mono text-gray-600">
+                    FILE_INDEX: <span id="page-indicator" class="text-white">00 / 00</span>
+                </div>
+                <button id="btn-next" onclick="changePage(1)" class="text-xs text-gray-500 hover:text-white transition">
+                    NEXT <i class="fas fa-caret-right ml-1"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="flex-1 lg:flex-none lg:w-[35%] xl:w-[30%] flex flex-col min-h-0 relative">
+            
+            <div class="embedded-drawer w-full h-full">
+                
+                <div class="p-2 sm:p-3 border-b border-gray-800 flex flex-nowrap justify-between items-center gap-2 shrink-0 bg-[#050505] z-20">
+                    
+                    <div class="flex-1 flex text-[10px] font-mono opacity-90 items-stretch h-[26px] text-[#00f0ff] overflow-hidden">
+                        <div class="flex-1 border border-gray-700 border-r-0 rounded-l bg-black/60 overflow-x-auto no-scrollbar flex items-center px-1.5 sm:px-2 min-w-0">
+                            <span id="delay" class="whitespace-nowrap flex items-center h-full">
+                                <script id="LA-DATA-WIDGET" crossorigin="anonymous" charset="UTF-8" src="https://v6-widget.51.la/v6/JRHGRBPWC7lJIaXq/quote.js?theme=0&f=12&display=0,0,1,1,0,0,0,0"></script>
+                            </span>
+                        </div>
+                        <span id="performance-result" class="px-1.5 sm:px-2 border border-gray-700 rounded-r flex items-center whitespace-nowrap bg-black/60 shrink-0">
+                            加载:--ms
+                        </span>
+                    </div>
+                    
+                    <div class="flex items-center bg-[#0a0a0a] border border-gray-700 rounded text-[10px] shadow-[0_0_10px_rgba(0,0,0,0.5)] shrink-0">
+                        <button onclick="editSystemName()" class="flex items-center gap-1.5 px-2.5 py-1 text-gray-400 hover:text-[#00f0ff] hover:bg-[rgba(0,240,255,0.1)] transition-all cursor-pointer group" title="修改代号">
+                            <i class="fas fa-user-edit group-hover:scale-110 transition-transform"></i>
+                            <span id="nav-nickname" class="font-mono max-w-[80px] truncate hidden sm:block">小纸条</span>
+                        </button>
+                        <div class="w-px h-3.5 bg-gray-700"></div>
+                        <button onclick="manualRefresh()" class="px-2.5 py-1 text-gray-400 hover:text-[#00f0ff] hover:bg-[rgba(0,240,255,0.1)] transition-all cursor-pointer group" title="同步最新数据">
+                            <i class="fas fa-sync-alt group-hover:rotate-180 transition-transform duration-300" id="refresh-icon"></i>
+                        </button>
+                    </div>
+
+                </div>
+                
+                <div id="comment-list" class="flex-grow overflow-y-auto p-4 space-y-6 cyber-scroll relative z-10 min-h-0">
+                    <div class="text-center text-gray-600 text-xs mt-10 font-mono animate-pulse">DOWNLOADING PACKETS...</div>
+                </div>
+                
+                <div class="p-3 lg:p-4 border-t border-gray-800 shrink-0 relative z-10 bg-[#050505]">
+                    <form id="cyber-form" onsubmit="event.preventDefault(); postComment();" class="flex flex-col gap-2">
+                        <input type="hidden" name="username" id="hidden-username" value="">
+                        <div>
+                            <textarea id="message" name="content" placeholder="Input data..." class="cyber-input px-3 py-2 text-[13px] h-16 lg:h-20 resize-none" required></textarea>
+                        </div>
+                        <button type="submit" id="send-btn" class="cyber-btn w-full py-2 lg:py-2.5 text-xs font-bold border-[#00f0ff] text-[#00f0ff] hover:bg-[#00f0ff] hover:text-black shrink-0">
+                            TRANSMIT
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+<script>
+        const API_BASE = "https://cpuck.com/video/api";
+
+        let database = [];
+        let currentIndex = 0;
+        let latestCommentId = null; 
+
+        window.addEventListener('load', function () {
+            const elapsed = Math.round(performance.now());
+            const result = document.getElementById('performance-result');
+            if (result) {
+                result.innerHTML = '加载:' + elapsed + 'ms';
+            }
+        });
+
+        window.onload = async () => {
+            initSystemName(); // 初始化昵称
+            await loadDatabase();
+            
+            if (database.length > 0) {
+                loadCase(0);
+            }
+            
+            loadComments();
+            
+            // 后台静默轮询
+            setInterval(() => {
+                loadComments(true); 
+            }, 10000);
+            
+            document.addEventListener('keydown', (e) => {
+                if(e.key === 'ArrowRight') changePage(1);
+                if(e.key === 'ArrowLeft') changePage(-1);
+            });
+        };
+
+        // --- 昵称管理逻辑 ---
+        function initSystemName() {
+            const savedName = localStorage.getItem('username') || '小纸条';
+            document.getElementById('nav-nickname').innerText = savedName;
+            document.getElementById('hidden-username').value = savedName;
+        }
+
+        function editSystemName() {
+            const current = localStorage.getItem('username') || '小纸条';
+            const input = prompt(">> PLEASE ENTER NEW CALLSIGN (输入新代号):", current);
+            
+            if (input !== null) { 
+                const cleanName = input.trim().substring(0, 15) || '小纸条';
+                localStorage.setItem('username', cleanName); 
+                document.getElementById('nav-nickname').innerText = cleanName;
+                document.getElementById('hidden-username').value = cleanName;
+            }
+        }
+        // -------------------
+
+        // --- 纯净版加载 TXT 配置：仅支持 BV 号 ---
+        async function loadDatabase() {
+            try {
+                const res = await fetch('videos.txt?t=' + new Date().getTime());
+                if (!res.ok) throw new Error('找不到 videos.txt 文件');
+                
+                const text = await res.text();
+                const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+                
+                database = lines.map((line, index) => {
+                    let target = line;
+                    
+                    const bvMatch = line.match(/(BV[a-zA-Z0-9]+)/);
+                    if (bvMatch) {
+                        target = bvMatch[1];
+                    } 
+
+                    return { 
+                        id: String(index + 1).padStart(2, '0'), 
+                        src: target, 
+                        desc: `TARGET_ID: ${target}` 
+                    };
+                });
+
+                if (database.length === 0) throw new Error('txt文件是空的');
+                
+            } catch (err) {
+                console.warn('读取 txt 失败，使用内置默认数据', err);
+                database = [
+                    { id: '01', src: 'BV1Y34y1X7CK', desc: 'TARGET_ID: BV1Y34y1X7CK' },
+                    { id: '02', src: 'BV1My2YBsEcJ', desc: 'TARGET_ID: BV1My2YBsEcJ' } 
+                ];
+            }
+        }
+
+        function changePage(direction) {
+            if (database.length === 0) return;
+            let newIndex = currentIndex + direction;
+            if (newIndex >= database.length) newIndex = 0;
+            if (newIndex < 0) newIndex = database.length - 1;
+            loadCase(newIndex);
+        }
+
+        function loadCase(index) {
+            if (database.length === 0) return;
+            currentIndex = index;
+            const currentData = database[currentIndex];
+            
+            document.getElementById('page-indicator').innerText = `${String(index + 1).padStart(2, '0')} / ${String(database.length).padStart(2, '0')}`;
+            
+            const sourceBtn = document.getElementById('bili-source-btn');
+            if (sourceBtn) {
+                sourceBtn.href = `https://www.bilibili.com/video/${currentData.src}`;
+            }
+
+            const container = document.getElementById('video-container');
+            container.innerHTML = `<iframe src="//player.bilibili.com/player.html?bvid=${currentData.src}&page=1&high_quality=1&danmaku=0&autoplay=1" class="bili-full" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" sandbox="allow-top-navigation allow-same-origin allow-forms allow-scripts allow-popups"></iframe>`;
+        }
+
+        function escapeHtml(s) {
+            if (!s) return '';
+            return s.replace(/[&<>"']/g, m => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[m]));
+        }
+
+        async function manualRefresh() {
+            const icon = document.getElementById('refresh-icon');
+            icon.classList.add('fa-spin'); 
+            
+            await loadComments(false, true); 
+            
+            const list = document.getElementById('comment-list');
+            list.scrollTop = 0;
+            
+            setTimeout(() => {
+                icon.classList.remove('fa-spin');
+            }, 600);
+        }
+
+        async function loadComments(isAutoRefresh = false, force = false) {
+            const list = document.getElementById('comment-list');
+            
+            if (!isAutoRefresh && list.innerHTML.includes('DOWNLOADING')) {
+                 list.innerHTML = '<div class="text-center text-gray-600 text-xs mt-10 font-mono animate-pulse">DOWNLOADING PACKETS...</div>';
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/messages_list.php?page=1&approved=1&_t=${new Date().getTime()}`, {
+                     credentials: "include" 
+                });
+                const json = await res.json();
+                
+                if (json.ok) {
+                    const items = json.data.items;
+
+                    if (!items || items.length === 0) {
+                        if (!isAutoRefresh) list.innerHTML = '<div class="text-center text-gray-600 text-xs mt-10 font-mono">NO LOGS FOUND</div>';
+                        return;
+                    }
+                    
+                    if (isAutoRefresh && !force && latestCommentId === items[0].id) {
+                        return;
+                    }
+                    
+                    latestCommentId = items[0].id;
+                    list.innerHTML = ''; 
+                    
+                    items.forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'group mb-4'; 
+                        
+                        let displayName = item.username;
+                        if (!displayName || displayName.trim() === '') {
+                            displayName = '小纸条'; 
+                        }
+
+                        let nameStyle = "text-[14px] font-bold text-gray-300 group-hover:text-[#00f0ff] transition-colors";
+
+                        if (displayName === 'AI小助手' || (item.ip && item.ip.includes('43.162.119'))) {
+                            if (item.ip && item.ip.includes('43.162.119') && displayName === '小纸条') {
+                                displayName = "0.*"; 
+                            }
+                            nameStyle = "text-[14px] font-bold text-[#ff2a2a] group-hover:text-[#ff5555] drop-shadow-[0_0_8px_rgba(255,42,42,0.8)] transition-colors tracking-wider";
+                        }
+                        
+                        div.innerHTML = `
+                            <div class="flex justify-between items-baseline mb-1">
+                                <span class="${nameStyle}">${escapeHtml(displayName)}</span>
+                                <span class="text-[10px] text-gray-600 font-mono">${timeAgo(item.created_at)}</span>
+                            </div>
+                            <div class="text-[13px] text-gray-400 break-words leading-relaxed">${escapeHtml(item.content)}</div>
+                        `;
+                        list.appendChild(div);
+                    });
+                } else {
+                    if (!isAutoRefresh) list.innerHTML = `<div class="text-red-500 text-xs font-mono text-center">ERROR: ${json.error}</div>`;
+                }
+            } catch (err) {
+                console.error(err);
+                if (!isAutoRefresh) list.innerHTML = '<div class="text-red-600 text-xs font-mono text-center">CONNECTION LOST</div>';
+            }
+        }
+
+        async function postComment() {
+            const msgBox = document.getElementById('message');
+            const btn = document.getElementById('send-btn');
+            
+            if (!msgBox.value.trim()) return;
+            
+            btn.innerHTML = 'TRANSMITTING...';
+            btn.disabled = true;
+            
+            const form = document.getElementById('cyber-form');
+            const fd = new FormData(form); 
+
+            try {
+                const res = await fetch(`${API_BASE}/messages_create.php`, {
+                    method: 'POST',
+                    body: fd,
+                    credentials: "include"
+                });
+                
+                const json = await res.json();
+                
+                if (json.ok) {
+                    msgBox.value = '';
+                    
+                    if (json.data.status === "held") {
+                        alert("已提交，需审核后显示 // AWAITING AUDIT");
+                    } else {
+                        await loadComments(false, true); 
+                        const list = document.getElementById('comment-list');
+                        list.scrollTop = 0;
+                    }
+                } else {
+                    alert('TRANSMISSION FAILED: ' + (json.error || 'Unknown Error'));
+                }
+            } catch (err) {
+                alert('NETWORK ERROR: CANNOT REACH SERVER');
+            } finally {
+                btn.innerHTML = 'TRANSMIT';
+                btn.disabled = false;
+            }
+        }
+
+        function timeAgo(dateString) {
+            if(!dateString) return '';
+            const date = new Date(dateString.replace(/-/g, '/'));
+            const seconds = Math.floor((new Date() - date) / 1000);
+            if (seconds < 60) return 'NOW';
+            const minutes = Math.floor(seconds / 60);
+            if (minutes < 60) return minutes + 'M';
+            const hours = Math.floor(minutes / 60);
+            if (hours < 24) return hours + 'H';
+            return Math.floor(hours / 24) + 'D';
+        }
+</script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"be6902ac1d20467bbd30f68c26962298","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
