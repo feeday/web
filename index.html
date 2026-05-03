@@ -609,7 +609,7 @@
         observer.observe(scrollSentinel);
 
         // 5. 异步获取数据
-        fetch('/list.json')
+        fetch('list.json')
             .then(response => {
                 if (!response.ok) throw new Error('网络响应失败');
                 return response.json();
@@ -620,7 +620,7 @@
             })
             .catch(error => {
                 console.error('获取资源文件失败:', error);
-                grid.innerHTML = '<div style="color:#ef4444; text-align:center; width:100%; padding: 2rem;">数据加载失败，请检查 resources.json </div>';
+                grid.innerHTML = '<div style="color:#ef4444; text-align:center; width:100%; padding: 2rem;">数据加载失败，请检查 list.json </div>';
                 scrollSentinel.style.display = 'none';
             });
 
