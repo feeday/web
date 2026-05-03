@@ -2,7 +2,7 @@
   { "cat": "image", "title": "Leaderboard", "desc": "图像编辑模型排行榜", "url": "https://artificialanalysis.ai/image/leaderboard/editing", "isTop": true }, 
   { "cat": "text", "title": "Artificial Intelligence", "desc": "人工智能领域相关论文", "url": "https://arxiv.org/list/cs.AI/recent", "isTop": true },
   { "cat": "image", "title": "NanoBanana2", "desc": "Banana 官网图像生成", "url": "https://labs.google/fx/zh/tools/flow", "isTop": true },
-  { "cat": "multi", "title": "API Banana Pro。", "desc": "Poixe AI 提供服务", "url": "https://cpuck.com/aigc/", "isTop": true },
+  { "cat": "multi", "title": "API Banana Pro。", "desc": "Poixe AI 提供服务", "url": "https://huggingface.co/spaces/feeday/Aigc", "isTop": true },
   { "cat": "text", "title": "Benchmark", "desc": "文本模型排行榜", "url": "https://llm2014.github.io/llm_benchmark/", "isTop": true },
   { "cat": "text", "title": "AI-工具集", "desc": "发现最新AI产品工具和使用技巧。", "url": "https://ai-bot.cn/ai-tools/", "isTop": true },
   { "cat": "multi", "title": "Gemini", "desc": "Google 原生多模态大模型。", "url": "https://gemini.google.com/", "isTop": true },
