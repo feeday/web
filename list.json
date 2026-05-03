@@ -1,0 +1,60 @@
+[
+  { "cat": "audio", "title": "Fish Audio", "desc": "最佳AI文字转语音和免费语音克隆。", "url": "https://fish.audio/zh-CN/discovery/" },
+  { "cat": "audio", "title": "Weights", "desc": "使用 AI 创作音乐、人声翻唱等更多内容。", "url": "https://www.weights.com/zh/create" },
+  { "cat": "audio", "title": "Suno AI", "desc": "生成广播级歌曲的 AI 音乐生成器。", "url": "https://suno.com/" },
+  { "cat": "audio", "title": "ElevenLabs", "desc": "最自然的 AI 语音合成 (TTS)。", "url": "https://elevenlabs.io/" },
+  { "cat": "audio", "title": "IndexTTS-2", "desc": "开源在线声音克隆。", "url": "https://huggingface.co/spaces/IndexTeam/IndexTTS-2-Demo" },
+  { "cat": "audio", "title": "VibeVoice", "desc": "微软在线语言识别。", "url": "https://aka.ms/vibevoice-asr" },
+  
+  { "cat": "image", "title": "Leaderboard", "desc": "图像编辑模型排行榜", "url": "https://artificialanalysis.ai/image/leaderboard/editing", "isTop": true }, 
+    { "cat": "text", "title": "Artificial Intelligence", "desc": "人工智能领域相关论文", "url": "https://arxiv.org/list/cs.AI/recent", "isTop": true },
+ 
+  { "cat": "image", "title": "Z-Image-Turbo", "desc": "开源在线文生图模型。", "url": "https://huggingface.co/spaces/mrfakename/Z-Image-Turbo"},
+  { "cat": "image", "title": "NanoBanana2", "desc": "Banana 官网图像生成", "url": "https://labs.google/fx/zh/tools/flow", "isTop": true },
+      { "cat": "multi", "title": "API Banana Pro。", "desc": "Poixe AI 提供服务", "url": "https://cpuck.com/aigc/", "isTop": true },
+ { "cat": "text", "title": "Benchmark", "desc": "文本模型排行榜", "url": "https://llm2014.github.io/llm_benchmark/", "isTop": true },
+  { "cat": "image", "title": "Mixboard", "desc": "Google Labs AI 创意生图工具。", "url": "https://mixboard.google.com/" },
+  { "cat": "image", "title": "Midjourney", "desc": "艺术级 AI 绘图生成工具。", "url": "https://www.midjourney.com/" },
+  { "cat": "image", "title": "LAION-5B", "desc": "50亿图文对，Stable Diffusion 训练基石。", "url": "https://laion.ai/" },
+  { "cat": "image", "title": "Cleaner", "desc": "开源在线图像去水印。", "url": "https://huggingface.co/spaces/Sanster/Lama-Cleaner-lama" },
+  { "cat": "image", "title": "Qwen-Image-Edit", "desc": "开源在线图像修改。", "url": "https://huggingface.co/spaces/multimodalart/Qwen-Image-Edit-Fast" },
+  
+    { "cat": "image", "title": "gpt-image-2", "desc": "API Apimart Test。", "url": "ttps://apimart.ai/zh/model/gpt-image-2" }, 
+  { "cat": "image", "title": "AI-or-Not", "desc": "开源在线图像真实伪造鉴别。", "url": "https://huggingface.co/spaces/datxy/AI-or-Not" },
+  { "cat": "image", "title": "Photopea", "desc": "在线PS，图形图层在线编辑器。", "url": "https://www.photopea.com/" },
+
+  { "cat": "multi", "title": "Models", "desc": "HuggingFace 在线模型生成。", "url": "https://huggingface.co/spaces" },
+  { "cat": "multi", "title": "Models", "desc": "HuggingFace 国内镜像站。", "url": "https://hf-mirror.com/"},
+    { "cat": "text", "title": "AI-工具集", "desc": "发现最新AI产品工具和使用技巧。", "url": "https://ai-bot.cn/ai-tools/", "isTop": true },
+  { "cat": "multi", "title": "Gemini", "desc": "Google 原生多模态大模型。", "url": "https://gemini.google.com/", "isTop": true },
+    { "cat": "multi", "title": "TapNow", "desc": "AI视觉创作引擎", "url":"https://www.tapnow.ai/referral/xEyLCori"},
+  
+
+  { "cat": "multi", "title": "ChatGPT", "desc": "全能助手：文本、代码、识图、绘图。", "url": "https://chat.openai.com/" },
+  { "cat": "multi", "title": "豆包", "desc": "豆包在线全能助手，支持生图改图。", "url": "https://www.doubao.com/chat/create-image" },
+  { "cat": "multi", "title": "Dreamina", "desc": "即梦生图改图、生成视频，对口型。", "url": "https://dreamina.capcut.com/ai-tool/home" },
+  { "cat": "multi", "title": "Detection Fake", "desc": "腾讯朱雀文视图鉴伪。", "url": "https://matrix.tencent.com/ai-detect/" },
+  { "cat": "multi", "title": "Dataset", "desc": "HuggingFace 多模态数据集。", "url": "https://huggingface.co/datasets?sort=modified" },
+  { "cat": "multi", "title": "魔搭数据集", "desc": "最新多模态数据集。", "url": "https://www.modelscope.cn/datasets?page=1&sort=latest" },
+  { "cat": "multi", "title": "Kaggle", "desc": "Kaggle 综合数据集。", "url": "https://www.kaggle.com/datasets?sort=published" },
+  { "cat": "multi", "title": "Replicate", "desc": "Replicate 模型生成汇总。", "url": "https://replicate.com/explore" },
+  { "cat": "multi", "title": "fal.ai", "desc": "fal.ai 模型生成汇总。", "url": "https://fal.ai/explore" },
+
+  { "cat": "text", "title": "谷歌翻译", "desc": "谷歌文档文字在线翻译。", "url": "https://translate.google.com/", "isTop": true },
+
+
+  { "cat": "text", "title": "Llama 3", "desc": "Meta 开源的最强语言模型，支持本地部署。", "url": "https://llama.meta.com/" },
+  { "cat": "text", "title": "AI-日报", "desc": "AI资讯日报，最前沿的AI信息。", "url": "https://gorden-sun.notion.site/527689cd2b294e60912f040095e803c5?v=4f6cc12006c94f47aee4dc909511aeb5" },
+  
+  
+  { "cat": "text", "title": "Cloud Studio", "desc": "腾讯云代码编辑与开发。", "url": "https://cloudstudio.net/", "hideOnMobile": true },
+  { "cat": "text", "title": "Colab", "desc": "谷歌云端 Python 代码笔记。", "url": "https://colab.new/", "hideOnMobile": true },
+  { "cat": "text", "title": "IP-地址查询", "desc": "高精度IP地址归属地查询。", "url": "http://ping0.cc/" },
+  { "cat": "text", "title": "Cloudflare", "desc": "域名DNS解析与网络防务。", "url": "https://dash.cloudflare.com/" },
+
+  { "cat": "video", "title": "Runway Gen-2", "desc": "专业的 AI 视频生成与编辑工具。", "url": "https://runwayml.com/" },
+  { "cat": "video", "title": "PixVerse", "desc": "拍我视频生成编辑、对口型。", "url": "https://app.pixverse.ai/" },
+  { "cat": "video", "title": "Wan2.2", "desc": "开源在线首尾帧生成视频。", "url": "https://huggingface.co/spaces/multimodalart/wan-2-2-first-last-frame" },
+  { "cat": "video", "title": "Video-Editor", "desc": "简单免费的在线视频编辑工具。", "url": "https://online-video-cutter.com/cn/video-editor" },
+  { "cat": "video", "title": "MagicArena", "desc": "在线图像与视频模型对战。", "url": "https://aigcarena.com/" }
+]
