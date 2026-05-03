@@ -36,8 +36,6 @@
 </script>
     <link rel="icon" type="image/png" href="/favicon.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1964437526797765" crossorigin="anonymous"></script>
-
     <style>
         /* ================== 1. 核心变量 ================== */
         :root {
@@ -386,49 +384,6 @@
         }
         .fab-top:hover { border-color: var(--text-secondary); color: #fff; }
         .fab-top.visible { opacity: 1; transform: translateY(0); }
-
-        /* ================== 5. Google AdSense 专属容器样式 ================== */
-        .ad-container {
-            width: 100%;
-            max-width: 1400px;
-            margin: 0 auto 24px auto; /* 底部留白，和卡片网格拉开距离 */
-            position: relative;
-            background: var(--bg-card);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-card);
-            padding: 16px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            /* 自适应广告需要空间，设置最小高度防止加载时页面剧烈抖动 */
-            min-height: 120px; 
-            transition: border-color 0.3s;
-        }
-        
-        .ad-container:hover {
-            border-color: rgba(255, 255, 255, 0.15);
-        }
-        
-        /* 增加 "广告" 水印提示，让界面看起来更专业，且符合合规性要求 */
-        .ad-container::before {
-            content: 'Sponsored';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 0.8rem;
-            color: var(--text-tertiary);
-            letter-spacing: 2px;
-            z-index: 0;
-            opacity: 0.5;
-            pointer-events: none;
-        }
-        
-        .ad-container ins {
-            z-index: 1; /* 确保广告层级高于水印 */
-            width: 100%;
-        }
 
         @media (max-width: 768px) {
             .sticky-header-wrapper { padding: 10px; top: 0; padding-top: 10px; padding-bottom: 20px; margin-bottom: 20px; }
@@ -882,8 +837,6 @@
                 }
             }, 0);
         });
-
-
     </script>
 </body>
 </html>
