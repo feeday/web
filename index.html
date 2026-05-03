@@ -609,7 +609,7 @@
         observer.observe(scrollSentinel);
 
         // 5. 异步获取数据
-        fetch('list.json')
+        fetch('/list.json')
             .then(response => {
                 if (!response.ok) throw new Error('网络响应失败');
                 return response.json();
