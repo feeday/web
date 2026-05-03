@@ -1,1 +1,1 @@
-# datxy.com
+# AI URL Navigation
