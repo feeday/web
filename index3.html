@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>模型数据 - AI工具导航</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta name="description" content="我们是一个简洁高效的 AI 导航网站。收录 ChatGPT、Midjourney、Suno、Llama 等最新 AI 工具、大模型、数据集及开发资源。提供 IP 查询、代码编辑等实用开发者工具，助您快速探索人工智能世界。">
+    <meta name="keywords" content="AI导航, 人工智能工具, AI Models, LLM, 免费AI, Midjourney, ChatGPT, Stable Diffusion, 机器学习数据集, DatXY, 开发者工具">
+    <meta name="author" content="datxy">
+    <meta name="copyright" content="datxy">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="发现全球顶尖 AI 工具与资源">
+    <meta property="og:description" content="极简风 AI 导航站，收录最新图像、视频、音频生成模型及开发者工具。">
+<script>
+    function isNonPC() {
+        var ua = navigator.userAgent.toLowerCase();
+        var mobileAgents = ['android', 'iphone', 'ipod', 'ipad', 'windows phone', 'mqqbrowser'];
+        for (var i = 0; i < mobileAgents.length; i++) {
+            if (ua.indexOf(mobileAgents[i]) > -1) {
+                return true;
+            }
+        }
+        return false;
+    }
+    if (isNonPC()) {
+        window.location.replace("https://tcq233.com");
+    }
+</script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ================== 1. 核心变量 ================== */
+        :root {
+            --bg-body: #020617; 
+            --bg-card: rgba(30, 41, 59, 0.4);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-tertiary: #64748b;
+            --border-light: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(255, 255, 255, 0.2);
+            --radius-card: 16px;
+            --radius-pill: 999px;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-body);
+            background-image: 
+                radial-gradient(circle at 50% -20%, #1e293b 0%, transparent 60%),
+                radial-gradient(circle at 50% 10%, rgba(56, 189, 248, 0.05) 0%, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a { text-decoration: none; color: inherit; transition: 0.2s; }
+
+        /* ================== 2. 悬浮胶囊导航 ================== */
+        .sticky-header-wrapper {
+            position: sticky; 
+            top: 0; 
+            z-index: 999;
+            width: 100%; 
+            display: flex; 
+            justify-content: center;
+            padding: 20px;
+            margin-bottom: 30px; 
+            background: rgba(2, 6, 23, 0.95); 
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            pointer-events: none; 
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .sticky-inner {
+            background: rgba(30, 41, 59, 0.6); 
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            border-radius: var(--radius-pill);            
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5); 
+            padding: 8px 12px; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px;
+            width: auto;
+            max-width: 100%; 
+            pointer-events: auto; 
+        }
+
+        /* ================== 搜索栏 ================== */
+        .search-wrapper { 
+            position: relative; 
+            width: 380px; 
+            height: 44px; 
+            border-radius: var(--radius-pill);
+            background: rgba(15, 23, 42, 0.6); 
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            padding: 0 6px; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1001;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        
+        .search-wrapper:focus-within { 
+            width: 420px; 
+            background: rgba(15, 23, 42, 0.8);
+            border-color: rgba(56, 189, 248, 0.5);
+            box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.15);
+        }
+
+        .custom-select {
+            position: relative;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding-left: 8px;
+            -webkit-user-select: none; user-select: none;
+        }
+
+        .select-trigger {
+            display: flex;
+            align-items: center;
+            gap: 6px; 
+            height: 100%;
+            color: #e2e8f0;
+            font-size: 0.9rem;
+            font-weight: 500;
+            white-space: nowrap;
+            transition: opacity 0.2s;
+        }
+        .select-trigger:hover { opacity: 0.8; }
+
+        .arrow-icon {
+            width: 12px; height: 12px; fill: currentColor; opacity: 0.5;
+            transition: transform 0.3s ease;
+        }
+        .custom-select.active .arrow-icon { transform: rotate(180deg); }
+
+        .search-inner-divider {
+            width: 1px; height: 18px; 
+            background: rgba(255,255,255,0.1); 
+            margin: 0 10px; 
+            flex-shrink: 0;
+        }
+
+        .search-input {
+            flex: 1; border: none; background: transparent;
+            color: #fff; font-size: 0.95rem; padding: 0; height: 100%;
+            min-width: 0; 
+        }
+        .search-input::placeholder { color: rgba(148, 163, 184, 0.5); }
+        
+        .search-clear {
+            width: 20px; height: 20px; line-height: 20px; text-align: center;
+            border-radius: 50%; background: rgba(255,255,255,0.1); 
+            color: #fff; font-size: 10px; cursor: pointer;
+            display: none; margin-right: 8px; flex-shrink: 0;
+        }
+        .search-clear:hover { background: rgba(255,255,255,0.25); }
+
+        .external-search-btn {
+            width: 34px; height: 34px; 
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.05); 
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            flex-shrink: 0;
+            margin-left: 0;
+        }
+        
+        .external-search-btn svg { width: 16px; height: 16px; stroke-width: 2.5; }
+        
+        .external-search-btn:hover {
+            background: #38bdf8; 
+            color: #0f172a;
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+        }
+        .external-search-btn:active { transform: scale(0.95); }
+
+        .select-options {
+            position: absolute;
+            top: 50px; left: 0;
+            width: 140px; 
+            background: rgba(15, 23, 42, 0.95); 
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 6px;
+            display: flex; flex-direction: column; gap: 2px;
+            box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5);
+            opacity: 0; visibility: hidden;
+            transform: translateY(-10px) scale(0.95);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 2000; 
+        }
+        .custom-select.active .select-options { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
+        
+        .option-item {
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .option-item:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+        .option-item.selected { background: rgba(56, 189, 248, 0.15); color: #38bdf8; font-weight: 600; }
+
+        .divider { width: 1px; height: 20px; background: rgba(255,255,255,0.1); margin: 0 4px; }
+
+        /* ================== 导航栏及滑块 ================== */
+        .filter-bar {
+            display: flex; gap: 4px; align-items: center; position: relative;
+            background: rgba(0, 0, 0, 0.2); padding: 4px;
+            border-radius: var(--radius-pill); border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .filter-glider {
+            position: absolute; top: 4px; left: 0;
+            height: calc(100% - 8px); 
+            background: rgba(255, 255, 255, 0.1); 
+            border: 1px solid rgba(255, 255, 255, 0.15); 
+            border-radius: var(--radius-pill);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            z-index: 1; pointer-events: none; width: 0; 
+        }
+
+        .tag-btn {
+            background: transparent; border: none; color: var(--text-secondary); 
+            padding: 6px 16px; border-radius: var(--radius-pill);
+            font-size: 0.9rem; font-weight: 500; cursor: pointer; 
+            transition: color 0.3s; white-space: nowrap; position: relative; z-index: 2; 
+        }
+
+        .tag-btn.active { 
+            color: #fff; font-weight: 600; text-shadow: 0 0 10px rgba(255,255,255,0.3);
+            background: transparent; box-shadow: none;
+        }
+        .tag-btn:hover:not(.active) { color: #fff; }
+
+        /* ================== 3. 资源网格与卡片 ================== */
+        .main-content { padding: 0 2rem; flex: 1; display: flex; flex-direction: column;}
+
+        .resource-grid {
+            display: grid; gap: 20px; max-width: 1400px; width: 100%; margin: 0 auto;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        }
+
+        .card {
+            background: var(--bg-card); 
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-card); padding: 24px;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
+            position: relative; display: flex; flex-direction: column; overflow: hidden;
+            animation: fadeUp 0.5s ease backwards;
+            scroll-margin-top: 110px;
+        }
+        
+        .card:hover, .card.active-focus { 
+            transform: translateY(-5px); border-color: var(--border-hover);
+            background: rgba(30, 41, 59, 0.8);
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.6); 
+        }
+
+        /* 动态边框高亮：七大类核心颜色系统 (包含工具和广告色) */
+        .card:has(.tag-text):hover,  .card.active-focus:has(.tag-text)  { border-color: rgba(229, 231, 235, 0.4); }
+        .card:has(.tag-image):hover, .card.active-focus:has(.tag-image) { border-color: rgba(244, 114, 182, 0.4); }
+        .card:has(.tag-video):hover, .card.active-focus:has(.tag-video) { border-color: rgba(167, 139, 250, 0.4); }
+        .card:has(.tag-audio):hover, .card.active-focus:has(.tag-audio) { border-color: rgba(96, 165, 250, 0.4); }
+        .card:has(.tag-multi):hover, .card.active-focus:has(.tag-multi) { border-color: rgba(251, 191, 36, 0.4); }
+        .card:has(.tag-tool):hover,  .card.active-focus:has(.tag-tool)  { border-color: rgba(52, 211, 153, 0.4); }
+        .card:has(.tag-ad):hover,    .card.active-focus:has(.tag-ad)    { border-color: rgba(248, 113, 113, 0.4); }
+
+        .card-tag {
+            position: absolute; top: 20px; right: 20px;
+            font-size: 0.7rem; font-weight: 700; padding: 4px 10px; border-radius: 6px;
+            background: rgba(255,255,255,0.05); color: var(--text-secondary);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .pin-icon {
+            position: absolute; top: 0; left: 0;
+            width: 32px; height: 32px;
+            background: linear-gradient(135deg, #ef4444 50%, transparent 50%);
+            display: flex; align-items: flex-start; justify-content: flex-start;
+            padding: 4px 0 0 4px;
+            border-bottom-right-radius: 32px; 
+            z-index: 5;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+        }
+
+        /* 标签文字基础颜色 */
+        .tag-text { color: #e5e7eb; } 
+        .tag-image { color: #f472b6; }
+        .tag-video { color: #a78bfa; } 
+        .tag-audio { color: #60a5fa; }
+        .tag-multi { color: #fbbf24; }
+        .tag-tool { color: #34d399; }
+        .tag-ad { color: #f87171; }
+
+        .card-title { font-size: 1.15rem; font-weight: 600; color: #fff; margin-bottom: 8px; margin-right: 50px; }
+        .card-desc { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 24px; flex-grow: 1; line-height: 1.6; }
+        
+        .card-link {
+            font-size: 0.9rem; color: #fff; font-weight: 500;
+            padding: 12px 0; border-radius: 10px; text-align: center;
+            background: rgba(255,255,255,0.03); 
+            border: 1px solid rgba(255,255,255,0.02); transition: 0.2s; margin-top: auto;
+        }
+        .card-link:hover { background: var(--text-primary); color: #000; border-color: #fff; }
+        
+        @keyframes shake { 0%,100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* 触底加载指示器 */
+        .loading-sentinel {
+            width: 100%; height: 40px; margin-top: 20px;
+            display: flex; justify-content: center; align-items: center;
+            color: var(--text-tertiary); font-size: 0.9rem;
+        }
+
+        /* ================== 4. Footer ================== */
+        .site-footer {
+            margin-top: auto; padding: 4rem 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            background: linear-gradient(to bottom, rgba(2, 6, 23, 0) 0%, rgba(2, 6, 23, 1) 100%);
+        }
+        .footer-content { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 1.5rem; text-align: center; }
+        
+        .footer-links { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; justify-content: center; margin-bottom: 0.5rem; }
+        .footer-link-item {
+            display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: var(--text-secondary);
+            padding: 6px 12px; border-radius: 8px; background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05); transition: all 0.2s ease;
+        }
+        .footer-link-item:hover { color: #fff; background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.1); transform: translateY(-2px); }
+        .footer-icon { width: 16px; height: 16px; fill: currentColor; }
+
+        .copyright-bar { display: flex; align-items: center; justify-content: center; gap: 12px; color: var(--text-tertiary); font-size: 0.85rem; }
+        .copyright-divider { width: 1px; height: 12px; background: var(--text-tertiary); opacity: 0.4; }
+        #performance-result { font-family: monospace; }
+
+        .fab-top {
+            position: fixed; bottom: 30px; right: 30px; width: 44px; height: 44px; border-radius: 12px;
+            background: rgba(30, 41, 59, 0.9); backdrop-filter: blur(10px);
+            border: 1px solid var(--border-light); color: var(--text-secondary); 
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; opacity: 0; transform: translateY(10px); transition: 0.3s; z-index: 1000;
+        }
+        .fab-top:hover { border-color: var(--text-secondary); color: #fff; }
+        .fab-top.visible { opacity: 1; transform: translateY(0); }
+
+        @media (max-width: 768px) {
+            .sticky-header-wrapper { padding: 10px; top: 0; padding-top: 10px; padding-bottom: 20px; margin-bottom: 20px; }
+            .sticky-inner { flex-direction: column; width: 100%; border-radius: 20px; padding: 12px 14px; gap: 10px; }
+            .search-wrapper, .search-wrapper:focus-within { width: 100%; }
+            .search-input { font-size: 16px; }
+            .divider { display: none; } 
+            .filter-bar { width: 100%; overflow-x: auto; justify-content: flex-start; scrollbar-width: none; }
+            .filter-bar::-webkit-scrollbar { display: none; }
+            .tag-btn { padding: 6px 14px; font-size: 0.85rem; }
+            .main-content { padding: 0 1rem; }
+            .fab-top { width: 40px; height: 40px; bottom: 20px; right: 20px; }
+            .copyright-bar { flex-direction: column; gap: 8px; }
+            .copyright-divider { display: none; } 
+            .hide-on-mobile { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sticky-header-wrapper">
+        <div class="sticky-inner">
+            
+            <div class="search-wrapper">
+                <div class="custom-select" id="customSelect">
+                    <div class="select-trigger" onclick="toggleSelect(event)">
+                        <span id="currentEngineText">Google</span>
+                        <svg class="arrow-icon" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+                    </div>
+                    <input type="hidden" id="searchEngineValue" value="https://www.google.com/search?q=">
+
+                    <div class="select-options" id="selectOptions">
+                        <div class="option-item selected" onclick="selectEngine('https://www.google.com/search?q=', 'Google', this)">Google</div>
+                        <div class="option-item" onclick="selectEngine('https://www.youtube.com/results?search_query=', 'YouTube', this)">YouTube</div>
+                        <div class="option-item" onclick="selectEngine('https://yandex.by/images/search?text=', 'Yandex', this)">Yandex</div>
+                        <div class="option-item" onclick="selectEngine('https://search.bilibili.com/all?keyword=', 'B站', this)">Bilibili</div>
+                        <div class="option-item" onclick="selectEngine('https://www.douyin.com/search/', '抖音', this)">Douyin</div>
+                        <div class="option-item" onclick="selectEngine('https://www.baidu.com/s?q2=', '百度', this)">Baidu</div>
+                        <div class="option-item" onclick="selectEngine('https://tieba.baidu.com/f/search/res?ie=utf-8&amp;qw=', '贴吧', this)">Tieba</div>
+                        <div class="option-item" onclick="selectEngine('https://s.weibo.com/weibo?q=', '微博', this)">Weibo</div>
+                    </div>
+                </div>
+                
+                <div class="search-inner-divider"></div>
+
+                <input type="text" class="search-input" id="searchInput" placeholder="搜索标题或简介..." autocomplete="off">
+                <span class="search-clear" id="searchClear" onmousedown="event.preventDefault()" onclick="clearSearch()">✕</span>
+                
+                <div class="external-search-btn" id="externalSearchBtn" title="搜索">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </div>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <div class="filter-bar">
+                <div class="filter-glider" id="filterGlider"></div>
+                <button class="tag-btn active" onclick="filterData('all', this)">全部</button>
+                <button class="tag-btn" onclick="filterData('text', this)">文本</button>
+                <button class="tag-btn" onclick="filterData('image', this)">图像</button>
+                <button class="tag-btn" onclick="filterData('audio', this)">音频</button>
+                <button class="tag-btn" onclick="filterData('video', this)">视频</button>
+                <button class="tag-btn" onclick="filterData('multi', this)">多模态</button>
+                <button class="tag-btn" onclick="filterData('tool', this)">工具</button>
+                <button class="tag-btn" onclick="filterData('ad', this)">广告</button>
+            </div>
+        </div>
+    </div>
+  
+    <div class="main-content">
+        <div id="grid" class="resource-grid"></div>
+        <div id="scrollSentinel" class="loading-sentinel"></div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="https://github.com/" target="_blank" class="footer-link-item">
+                    <svg class="footer-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg> GitHub
+                </a>
+                <a href="https://dash.cloudflare.com/" target="_blank" class="footer-link-item">
+                    <svg class="footer-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.998 8.014L5.358 13.91h3.918l-1.057 5.766 8.649-11.338H11.23l1.823-5.326L9.998 8.014zm-4.39 1.764L1.76 14.54a3.868 3.868 0 0 0 3.863 3.87h1.01c.21 1.58 1.56 2.8 3.19 2.8h7.957a4.67 4.67 0 0 0 1.516-9.088c-.015-.173-.023-.35-.023-.527a6.62 6.62 0 0 0-6.619-6.619c-2.923 0-5.412 1.89-6.289 4.526a3.882 3.882 0 0 0-.765-.077z"/></svg> Cloudflare
+                </a>
+                <a href="https://huggingface.co/" target="_blank" class="footer-link-item">
+                    <svg class="footer-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 .5C5.37.5 0 5.87 0 12.5c0 3.2 1.25 6.13 3.32 8.35l.04.05c.82.88 2.06 1.2 2.97.77.92-.42 1.2-1.65.8-2.57l-.05-.12c-.52-.86-.82-1.85-.82-2.91 0-3.17 2.58-5.75 5.75-5.75 3.17 0 5.75 2.58 5.75 5.75 0 1.05-.29 2.03-.8 2.89l-.04.1c-.42.94-.15 2.18.78 2.6.93.43 2.18.1 3.01-.79l.05-.05C22.75 18.63 24 15.7 24 12.5 24 5.87 18.63.5 12 .5zM7.75 11.25a1.75 1.75 0 1 1 0-3.5 1.75 1.75 0 0 1 0 3.5zM12 17.6c-2.04 0-3.8-1.24-4.52-3.01h9.04c-.72 1.77-2.48 3.01-4.52 3.01zM16.25 11.25a1.75 1.75 0 1 1 0-3.5 1.75 1.75 0 0 1 0 3.5z"/>
+                    </svg> HuggingFace
+                </a>
+            </div>
+
+            <div class="copyright-bar">
+                <span>&copy; 2026 Web Gemini 3 Pro Design</span>
+                <div class="copyright-divider"></div>
+                <span id="performance-result">Load: -- ms</span>
+            </div>
+        </div>
+    </footer>
+
+    <div class="fab-top" id="fabTop" onclick="scrollToTop()">↑</div>
+
+    <script>
+        // ================== 全局数据存储与分页配置 ==================
+        let resources = [];         
+        let currentDataList = [];   
+        let visibleCards = [];      
+        let currentPage = 0;
+        const pageSize = 24;        
+        let selectedCardIndex = -1;
+
+        const grid = document.getElementById('grid');
+        const searchInput = document.getElementById('searchInput');
+        const searchClear = document.getElementById('searchClear');
+        const scrollSentinel = document.getElementById('scrollSentinel');
+
+        // ================== 初始化渲染 ==================
+        function initRender(list) {
+            grid.innerHTML = '';
+            visibleCards = []; 
+            selectedCardIndex = -1;
+            currentPage = 0;
+            
+            currentDataList = list.sort((a, b) => {
+                if (a.isTop && !b.isTop) return -1;
+                if (!a.isTop && b.isTop) return 1;
+                return 0;
+            });
+
+            if (currentDataList.length === 0) {
+                scrollSentinel.innerText = "没有找到匹配的资源";
+                return;
+            }
+            loadMore();
+        }
+
+        // ================== 加载下一页数据 ==================
+        function loadMore() {
+            const startIndex = currentPage * pageSize;
+            const endIndex = startIndex + pageSize;
+            const sliceToRender = currentDataList.slice(startIndex, endIndex);
+
+            if (sliceToRender.length === 0) {
+                if(currentDataList.length > 0) scrollSentinel.innerText = "";
+                return;
+            }
+            
+            scrollSentinel.innerText = "下拉加载更多...";
+
+            sliceToRender.forEach((item, indexInSlice) => {
+                const globalIndex = startIndex + indexInSlice; 
+                const el = document.createElement('div');
+                
+                if (item.hideOnMobile) {
+                    el.className = 'card hide-on-mobile';
+                } else {
+                    el.className = 'card';
+                }
+                
+                el.style.animationDelay = `${indexInSlice * 0.03}s`;
+
+                // 处理分类标签样式和文字
+                let tagClass = 'tag-text';
+                if(item.cat==='image') tagClass='tag-image';
+                else if(item.cat==='video') tagClass='tag-video';
+                else if(item.cat==='audio') tagClass='tag-audio';
+                else if(item.cat==='multi') tagClass='tag-multi';
+                else if(item.cat==='tool') tagClass='tag-tool';
+                else if(item.cat==='ad') tagClass='tag-ad';
+
+                let tagName = '文本';
+                if(item.cat === 'image') tagName = '图像';
+                if(item.cat === 'video') tagName = '视频';
+                if(item.cat === 'audio') tagName = '音频';
+                if(item.cat === 'multi') tagName = '多模态';
+                if(item.cat === 'tool') tagName = '实用工具';
+                if(item.cat === 'ad') tagName = '广告';
+
+                // 读取 JSON 中配置的打开方式，默认新窗口 _blank
+                const target = item.target || '_blank';
+                
+                const pinHtml = item.isTop ? '<div class="pin-icon"></div>' : '';
+
+                el.innerHTML = `
+                    ${pinHtml}
+                    <span class="card-tag ${tagClass}">${tagName}</span>
+                    <div class="card-title">${item.title}</div>
+                    <div class="card-desc">${item.desc}</div>
+                    <a href="${item.url}" target="${target}" class="card-link">访问官网 →</a>
+                `;
+                
+                el.addEventListener('mouseenter', () => { updateSelection(globalIndex); });
+                grid.appendChild(el);
+                visibleCards.push(el); 
+            });
+
+            currentPage++;
+            
+            if (currentPage * pageSize >= currentDataList.length) {
+                scrollSentinel.innerText = "";
+            }
+        }
+
+        // ================== 交叉观察器 (下拉加载) ==================
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting) {
+                loadMore();
+            }
+        }, { rootMargin: '200px' }); 
+
+        observer.observe(scrollSentinel);
+
+        // ================== 异步获取数据 ==================
+        fetch('list.json')
+            .then(response => {
+                if (!response.ok) throw new Error('网络响应失败');
+                return response.json();
+            })
+            .then(data => {
+                resources = data; 
+                initRender(resources); 
+            })
+            .catch(error => {
+                console.error('获取资源文件失败:', error);
+                grid.innerHTML = '<div style="color:#ef4444; text-align:center; width:100%; padding: 2rem;">数据加载失败，请检查 list.json </div>';
+                scrollSentinel.style.display = 'none';
+            });
+
+        // ================== 滑块逻辑 ==================
+        const glider = document.getElementById('filterGlider');
+        function moveGlider(targetBtn) {
+            if(!targetBtn) return;
+            glider.style.width = targetBtn.offsetWidth + 'px';
+            glider.style.transform = `translateX(${targetBtn.offsetLeft}px)`;
+        }
+        function filterData(type, btnElement) {
+            if(btnElement) {
+                document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+                btnElement.classList.add('active');
+                moveGlider(btnElement);
+            }
+            if(type === 'all') initRender(resources);
+            else initRender(resources.filter(i => i.cat === type));
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+        window.addEventListener('load', () => { const activeBtn = document.querySelector('.tag-btn.active'); if(activeBtn) moveGlider(activeBtn); });
+        window.addEventListener('resize', () => { const activeBtn = document.querySelector('.tag-btn.active'); if(activeBtn) moveGlider(activeBtn); });
+
+        // ================== 核心交互逻辑 ==================
+        function toggleSelect(e) {
+            e.stopPropagation(); 
+            const wrapper = document.getElementById('customSelect');
+            wrapper.classList.toggle('active');
+        }
+
+        const DEFAULT_ENGINE = "http://regurl.cn/?s=";
+
+        function selectEngine(value, name, element) {
+            document.getElementById('searchEngineValue').value = value;
+            document.getElementById('currentEngineText').innerText = name;
+            
+            document.querySelectorAll('.option-item').forEach(item => item.classList.remove('selected'));
+            element.classList.add('selected');
+            
+            document.getElementById('customSelect').classList.remove('active');
+            
+            const input = document.getElementById('searchInput');
+            if (value === DEFAULT_ENGINE) {
+                input.placeholder = "搜索标题或简介...";
+            } else {
+                input.placeholder = `回车搜索 ${name}...`;
+            }
+            input.focus();
+        }
+
+        function performSearch() {
+            const engine = document.getElementById('searchEngineValue').value; 
+            const query = document.getElementById('searchInput').value;
+            
+            if (!query.trim()) {
+                const wrapper = document.querySelector('.search-wrapper');
+                wrapper.style.animation = 'shake 0.4s ease-in-out';
+                setTimeout(() => wrapper.style.animation = '', 400);
+                return;
+            }
+
+            const url = engine + encodeURIComponent(query);
+            if (engine.includes("regurl.cn")) {
+                window.location.href = url;
+            } else {
+                window.open(url, "_blank");
+            }
+        }
+
+        document.addEventListener('click', (e) => {
+            const wrapper = document.getElementById('customSelect');
+            if (!wrapper.contains(e.target)) {
+                wrapper.classList.remove('active');
+            }
+        });
+
+        document.getElementById('externalSearchBtn').addEventListener('click', performSearch);
+
+        // ================== 本地搜索逻辑 ==================
+        searchInput.addEventListener('input', (e) => {
+            const val = e.target.value;
+            searchClear.style.display = val.length > 0 ? 'block' : 'none';
+            const k = val.toLowerCase();
+            
+            const filtered = resources.filter(i => 
+                i.title.toLowerCase().includes(k) || 
+                i.desc.toLowerCase().includes(k)
+            );
+            
+            initRender(filtered);
+        });
+
+        function clearSearch() {
+            searchInput.value = '';
+            searchClear.style.display = 'none';
+            initRender(resources);
+            searchInput.focus();
+        }
+        
+        // ================== 键盘交互 ==================
+        function updateSelection(index) {
+            visibleCards.forEach(c => c.classList.remove('active-focus'));
+            if (index >= 0 && index < visibleCards.length) {
+                selectedCardIndex = index;
+                visibleCards[index].classList.add('active-focus');
+            } else {
+                selectedCardIndex = -1;
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            const isSearchFocused = (document.activeElement === searchInput);
+
+            if (e.key === 'Enter') {
+                if (isSearchFocused) {
+                    const engine = document.getElementById('searchEngineValue').value;
+                    if (engine !== DEFAULT_ENGINE || e.shiftKey) {
+                        e.preventDefault();
+                        performSearch();
+                        return;
+                    }
+
+                    if (visibleCards.length > 0) {
+                        searchInput.blur();
+                        const link = visibleCards[0].querySelector('a');
+                        if (link) link.click();
+                    } else {
+                         performSearch();
+                    }
+                    return;
+                } else {
+                    if (selectedCardIndex !== -1 && visibleCards[selectedCardIndex]) {
+                        const link = visibleCards[selectedCardIndex].querySelector('a');
+                        if (link) link.click();
+                    }
+                    return;
+                }
+            }
+
+            if (isSearchFocused && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+                return;
+            }
+
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                if (visibleCards.length === 0) return;
+                
+                e.preventDefault(); 
+
+                if (isSearchFocused && e.key === 'ArrowDown') {
+                    searchInput.blur();
+                    selectedCardIndex = 0;
+                } else {
+                    const gridComputedStyle = window.getComputedStyle(grid);
+                    const columnsCount = gridComputedStyle.getPropertyValue('grid-template-columns').split(' ').length;
+                    
+                    let newIndex = selectedCardIndex === -1 ? 0 : selectedCardIndex;
+
+                    if (e.key === 'ArrowRight') {
+                        if (newIndex < visibleCards.length - 1) newIndex++;
+                    } else if (e.key === 'ArrowLeft') {
+                        if (newIndex > 0) newIndex--;
+                    } else if (e.key === 'ArrowDown') {
+                        if (newIndex + columnsCount < visibleCards.length) {
+                            newIndex += columnsCount;
+                        } else {
+                            newIndex = visibleCards.length - 1; 
+                        }
+                    } else if (e.key === 'ArrowUp') {
+                        if (newIndex - columnsCount >= 0) {
+                            newIndex -= columnsCount;
+                        } else {
+                            searchInput.focus();
+                            updateSelection(-1);
+                            return;
+                        }
+                    }
+                    selectedCardIndex = newIndex;
+                }
+
+                updateSelection(selectedCardIndex);
+                const card = visibleCards[selectedCardIndex];
+                if (card) {
+                    card.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                }
+            }
+        });
+
+        const fab = document.getElementById('fabTop');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) fab.classList.add('visible');
+            else fab.classList.remove('visible');
+        });
+        function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+        // ================== 页面加载性能计算 ==================
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const perfEntries = performance.getEntriesByType("navigation");
+                let loadTime = 0;
+                if (perfEntries.length > 0) {
+                    loadTime = Math.round(perfEntries[0].loadEventEnd);
+                } else {
+                    const perf = performance.timing;
+                    loadTime = perf.loadEventEnd - perf.navigationStart;
+                }
+                const resultElement = document.getElementById('performance-result');
+                if (resultElement && loadTime > 0) {
+                    resultElement.innerText = `Load: ${loadTime} ms`;
+                }
+            }, 0);
+        });
+    </script>
+</body>
+</html>
