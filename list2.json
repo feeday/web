@@ -14,7 +14,7 @@
   { "cat": "image", "title": "gpt-image-2", "desc": "API Apimart Test。", "url": "https://apimart.ai/zh/model/gpt-image-2", "isTop": true }, 
 
   { "cat": "ad", "title": "京东联盟", "desc": "CPS联盟平台", "url": "https://union.jd.com/index", "isTop": true, "target": "_blank" },
-  { "cat": "ad", "title": "Apple M5 Max", "desc": "3nm工艺 R23单核跑分2584", "url": "https://u.jd.com/fDJ8yhu", "isTop": true, "target": "_blank" },
+  { "cat": "ad", "title": "Google AdSense", "desc": "谷歌广告联盟", "url": "https://adsense.google.com/adsense", "isTop": true, "target": "_blank" },
   { "cat": "tool", "title": "鼠标测试", "desc": "在线鼠标测试", "url": "https://cps-check.com/cn/polling-rate-check", "target": "_self" },
 
   { "cat": "multi", "title": "Models", "desc": "HuggingFace 在线模型生成。", "url": "https://huggingface.co/spaces" },
