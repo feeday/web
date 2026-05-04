@@ -21,6 +21,7 @@
 
   { "cat": "multi", "title": "Models", "desc": "HuggingFace 在线模型生成。", "url": "https://huggingface.co/spaces" },
   { "cat": "multi", "title": "Models", "desc": "HuggingFace 国内镜像站。", "url": "https://hf-mirror.com/"},
+  { "cat": "multi", "title": "LightX2V", "desc": "图像视频生成平台。", "url": "https://x2v.light-ai.top/generate" },
   { "cat": "multi", "title": "TapNow", "desc": "AI视觉创作引擎", "url":"https://www.tapnow.ai/referral/xEyLCori"},
   { "cat": "multi", "title": "豆包", "desc": "豆包在线全能助手，支持生图改图。", "url": "https://www.doubao.com/chat/create-image" },
   { "cat": "multi", "title": "Dreamina", "desc": "即梦生图改图、生成视频，对口型。", "url": "https://dreamina.capcut.com/ai-tool/home" },
@@ -29,6 +30,7 @@
   { "cat": "multi", "title": "Kaggle", "desc": "Kaggle 综合数据集。", "url": "https://www.kaggle.com/datasets?sort=published" },
   { "cat": "multi", "title": "Replicate", "desc": "Replicate 模型生成汇总。", "url": "https://replicate.com/explore" },
   { "cat": "multi", "title": "fal.ai", "desc": "fal.ai 模型生成汇总。", "url": "https://fal.ai/explore" },
+  
 
   { "cat": "image", "title": "Z-Image-Turbo", "desc": "开源在线文生图模型。", "url": "https://huggingface.co/spaces/mrfakename/Z-Image-Turbo"},
   { "cat": "image", "title": "FireRed-Image-Edit", "desc": "图像编辑模型。", "url": "https://huggingface.co/spaces/prithivMLmods/FireRed-Image-Edit-1.0-Fast"},
