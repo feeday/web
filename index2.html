@@ -441,12 +441,14 @@
             <div class="filter-bar">
                 <div class="filter-glider" id="filterGlider"></div>
                 <button class="tag-btn active" onclick="filterData('all', this)">全部</button>
+                <button class="tag-btn" onclick="filterData('tool', this)">工具</button>
                 <button class="tag-btn" onclick="filterData('text', this)">文本</button>
                 <button class="tag-btn" onclick="filterData('image', this)">图像</button>
                 <button class="tag-btn" onclick="filterData('audio', this)">音频</button>
                 <button class="tag-btn" onclick="filterData('video', this)">视频</button>
                 <button class="tag-btn" onclick="filterData('multi', this)">多模态</button>
-                <button class="tag-btn" onclick="filterData('tool', this)">工具</button>
+
+              
                 
                 <div class="divider hide-on-mobile" style="height: 14px; margin: 0 4px;"></div>
                 
@@ -630,7 +632,7 @@
 
         observer.observe(scrollSentinel);
 
-        fetch('list.json')
+        fetch('list2.json')
             .then(response => {
                 if (!response.ok) throw new Error('网络响应失败');
                 return response.json();
@@ -641,7 +643,7 @@
             })
             .catch(error => {
                 console.error('获取资源文件失败:', error);
-                grid.innerHTML = '<div style="color:#ef4444; text-align:center; width:100%; padding: 2rem;">数据加载失败，请检查 list.json </div>';
+                grid.innerHTML = '<div style="color:#ef4444; text-align:center; width:100%; padding: 2rem;">data err json </div>';
                 scrollSentinel.style.display = 'none';
             });
 
@@ -672,7 +674,7 @@
             wrapper.classList.toggle('active');
         }
 
-        const DEFAULT_ENGINE = "http://regurl.cn/?s=";
+        const DEFAULT_ENGINE = "http://datxy.com/?s=";
 
         function selectEngine(value, name, element) {
             document.getElementById('searchEngineValue').value = value;
