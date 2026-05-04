@@ -13,9 +13,9 @@
   { "cat": "video", "title": "MagicArena", "desc": "在线图像与视频模型对战。", "url": "https://aigcarena.com/", "isTop": true  },
   { "cat": "image", "title": "gpt-image-2", "desc": "API Apimart Test。", "url": "https://apimart.ai/zh/model/gpt-image-2", "isTop": true }, 
 
-  { "cat": "ad", "title": "京东联盟", "desc": "CPS联盟平台", "url": "https://union.jd.com/index", "isTop": true, "target": "_blank" },
-  { "cat": "ad", "title": "Google AdSense", "desc": "谷歌广告联盟", "url": "https://adsense.google.com/adsense", "isTop": true, "target": "_blank" },
-  { "cat": "ad", "title": "API 中转站", "desc": "谷歌模型 生图 $0.03 生文 $0.002", "url": "https://poixe.com/pricing?i=token", "isTop": true, "target": "_blank" },
+  { "cat": "ad", "title": "京东联盟", "desc": "CPS联盟平台", "url": "https://union.jd.com/index",  "target": "_blank" },
+  { "cat": "ad", "title": "Google AdSense", "desc": "谷歌广告联盟", "url": "https://adsense.google.com/adsense", "target": "_blank" },
+  { "cat": "ad", "title": "API 中转站", "desc": "谷歌模型 生图 $0.03 生文 $0.002", "url": "https://poixe.com/pricing?i=token",  "target": "_blank" },
   { "cat": "tool", "title": "鼠标测试", "desc": "在线鼠标测试", "url": "https://cps-check.com/cn/polling-rate-check", "target": "_self" },
 
   { "cat": "multi", "title": "Models", "desc": "HuggingFace 在线模型生成。", "url": "https://huggingface.co/spaces" },
