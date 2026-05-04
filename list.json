@@ -41,7 +41,9 @@
   { "cat": "text", "title": "Cloud Studio", "desc": "腾讯云代码编辑与开发。", "url": "https://cloudstudio.net/", "hideOnMobile": true },
   { "cat": "text", "title": "Colab", "desc": "谷歌云端 Python 代码笔记。", "url": "https://colab.new/", "hideOnMobile": true },
   { "cat": "text", "title": "TXT", "desc": "文本查找替换", "url": "https://huggingface.co/spaces/feeday/Aigc", "hideOnMobile": true },
-  
+  { "cat": "multi", "title": "船舶定位", "desc": "全球船舶位置动态跟踪。", "url": "http://www.shipxy.com/" },
+  { "cat": "multi", "title": "航班定位", "desc": "实时航班跟踪。", "url": "https://zh.flightaware.com/live/" },
+  { "cat": "multi", "title": "网速测试", "desc": "中科大测速站点。", "url": "https://test.ustc.edu.cn/" },
 
   { "cat": "audio", "title": "Fish Audio", "desc": "最佳AI文字转语音和免费语音克隆。", "url": "https://fish.audio/zh-CN/discovery/" },
   { "cat": "audio", "title": "Weights", "desc": "使用 AI 创作音乐、人声翻唱等更多内容。", "url": "https://www.weights.com/zh/create" },
