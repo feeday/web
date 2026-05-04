@@ -13,10 +13,8 @@
   { "cat": "video", "title": "MagicArena", "desc": "在线图像与视频模型对战。", "url": "https://aigcarena.com/", "isTop": true  },
   { "cat": "image", "title": "gpt-image-2", "desc": "API Apimart Test。", "url": "https://apimart.ai/zh/model/gpt-image-2", "isTop": true }, 
 
-
-  { "cat": "ad", "title": "TapNow 视觉引擎", "desc": "限时特惠，新用户注册即送算力点数。", "url": "https://www.tapnow.ai/referral/xEyLCori", "isTop": true, "target": "_blank" },
-  { "cat": "tool", "title": "Cloud Studio", "desc": "腾讯云代码编辑与开发", "url": "https://cloudstudio.net/", "target": "_self" }
-
+  { "cat": "ad", "title": "京东广告", "desc": "首页", "url": "https://jd.com", "isTop": true, "target": "_blank" },
+  { "cat": "tool", "title": "鼠标测试", "desc": "在线鼠标测试", "url": "https://cps-check.com/cn/polling-rate-check", "target": "_self" }
 
   { "cat": "multi", "title": "Models", "desc": "HuggingFace 在线模型生成。", "url": "https://huggingface.co/spaces" },
   { "cat": "multi", "title": "Models", "desc": "HuggingFace 国内镜像站。", "url": "https://hf-mirror.com/"},
