@@ -60,7 +60,7 @@
   { "cat": "audio", "title": "VibeVoice", "desc": "微软在线语言识别。", "url": "https://aka.ms/vibevoice-asr" },
 
   { "cat": "video", "title": "Runway Gen-2", "desc": "专业的 AI 视频生成与编辑工具。", "url": "https://runwayml.com/" },
-  { "cat": "video", "title": "PixVerse", "desc": "拍我视频生成编辑、对口型。", "url": "https://app.pixverse.ai/" },
+  { "cat": "video", "title": "PixVerse", "desc": "拍我视频生成编辑、对口型。", "url": "https://share.pix.video/referral/8CUERJER" },
   { "cat": "video", "title": "Wan2.2", "desc": "开源在线首尾帧生成视频。", "url": "https://huggingface.co/spaces/multimodalart/wan-2-2-first-last-frame" },
   { "cat": "tool", "title": "Video-Editor", "desc": "简单免费的在线视频编辑工具。", "url": "https://online-video-cutter.com/cn/video-editor" }
 ]
