@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PING网络测试</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Microsoft YaHei";
+}
+
+body{
+    background:#f5f5f5;
+}
+
+.container{
+    max-width:500px;
+    margin:auto;
+    padding:20px;
+}
+
+.title{
+    text-align:center;
+    font-size:32px;
+    margin:20px 0;
+}
+
+.ping-box{
+    background:#fff;
+    border:2px solid #3fb950;
+    border-radius:12px;
+    padding:20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+
+.site{
+    color:#3fb950;
+    font-size:26px;
+}
+
+.ms{
+    color:#d28a2e;
+    font-size:54px;
+}
+
+.arrow{
+    font-size:30px;
+    cursor:pointer;
+}
+
+.desc{
+    margin:20px 0;
+    color:#666;
+    font-size:22px;
+}
+
+.chart{
+    background:#e9f7fb;
+    border-radius:8px;
+    height:260px;
+    padding:10px;
+}
+
+canvas{
+    width:100%;
+    height:100%;
+}
+
+.tip{
+    margin-top:15px;
+    color:#d28a2e;
+    font-size:18px;
+}
+
+.btn{
+    width:100%;
+    margin-top:50px;
+    background:#14c20e;
+    color:#fff;
+    border:none;
+    border-radius:10px;
+    padding:18px;
+    font-size:28px;
+}
+
+/* 弹窗 */
+.modal{
+    position:fixed;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,.4);
+    display:none;
+    align-items:flex-end;
+}
+
+.sheet{
+    width:100%;
+    background:#fff;
+    border-radius:20px 20px 0 0;
+}
+
+.item{
+    padding:24px;
+    text-align:center;
+    border-bottom:1px solid #eee;
+    font-size:30px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="title">PING网络测试</div>
+
+    <div class="ping-box">
+        <div class="site" id="siteName">百度</div>
+        <div class="ms" id="pingText">检测中...</div>
+        <div class="arrow" onclick="openModal()">⌄</div>
+    </div>
+
+    <div class="desc">
+        您访问<span id="descSite">百度</span>的网络时延：
+    </div>
+
+    <div class="chart">
+        <canvas id="chart"></canvas>
+    </div>
+
+    <div class="tip">
+        提示：1ms = 1毫秒，1秒 = 1000毫秒
+    </div>
+
+    <button class="btn">分享给好友</button>
+
+</div>
+
+<!-- 选择网站 -->
+<div class="modal" id="modal">
+    <div class="sheet">
+        <div class="item" onclick="changeSite('https://www.baidu.com','百度')">百度</div>
+        <div class="item" onclick="changeSite('https://www.qq.com','QQ')">QQ</div>
+        <div class="item" onclick="changeSite('https://www.sina.com.cn','新浪')">新浪</div>
+        <div class="item" onclick="changeSite('https://www.taobao.com','淘宝')">淘宝</div>
+        <div class="item" onclick="changeSite('https://www.jd.com','京东')">京东</div>
+        <div class="item" onclick="changeSite('https://www.360.cn','360')">360</div>
+        <div class="item" onclick="closeModal()">取消</div>
+    </div>
+</div>
+
+<script>
+
+let currentUrl = "https://www.baidu.com";
+let pingData = [];
+
+const pingText = document.getElementById("pingText");
+
+function openModal(){
+    document.getElementById("modal").style.display="flex";
+}
+
+function closeModal(){
+    document.getElementById("modal").style.display="none";
+}
+
+function changeSite(url,name){
+
+    currentUrl = url;
+
+    document.getElementById("siteName").innerText=name;
+    document.getElementById("descSite").innerText=name;
+
+    closeModal();
+
+    ping();
+}
+
+/* 本地真实测速 */
+async function ping(){
+
+    const img = new Image();
+
+    const start = performance.now();
+
+    img.onload = img.onerror = function(){
+
+        const end = performance.now();
+
+        const ms = Math.floor(end - start);
+
+        pingText.innerText = ms + "ms";
+
+        addData(ms);
+    }
+
+    img.src = currentUrl + "/favicon.ico?t=" + Date.now();
+}
+
+/* 图表数据 */
+function addData(ms){
+
+    pingData.push(ms);
+
+    if(pingData.length > 20){
+        pingData.shift();
+    }
+
+    drawChart();
+}
+
+/* 绘制折线图 */
+function drawChart(){
+
+    const canvas = document.getElementById("chart");
+
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    // 网格
+    ctx.strokeStyle="#d8e4ea";
+
+    for(let i=0;i<5;i++){
+
+        let y=i*50;
+
+        ctx.beginPath();
+        ctx.moveTo(0,y);
+        ctx.lineTo(canvas.width,y);
+        ctx.stroke();
+    }
+
+    if(pingData.length<2)return;
+
+    ctx.beginPath();
+
+    pingData.forEach((v,i)=>{
+
+        let x=i*(canvas.width/(pingData.length-1));
+
+        let y=canvas.height-(v*2);
+
+        if(i===0){
+            ctx.moveTo(x,y);
+        }else{
+            ctx.lineTo(x,y);
+        }
+    });
+
+    const gradient = ctx.createLinearGradient(0,0,canvas.width,0);
+
+    gradient.addColorStop(0,"#d9a23a");
+    gradient.addColorStop(.5,"#d54c64");
+    gradient.addColorStop(1,"#6b42d7");
+
+    ctx.strokeStyle=gradient;
+
+    ctx.lineWidth=4;
+
+    ctx.stroke();
+}
+
+/* 每2秒ping一次 */
+setInterval(()=>{
+    ping();
+},2000);
+
+ping();
+
+</script>
+
+</body>
+</html>
