@@ -12,6 +12,21 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="发现全球顶尖 AI 工具与资源">
     <meta property="og:description" content="极简风 AI 导航站，收录最新图像、视频、音频生成模型及开发者工具。">
+<script>
+    function isNonPC() {
+        var ua = navigator.userAgent.toLowerCase();
+        var mobileAgents = ['android', 'iphone', 'ipod', 'ipad', 'windows phone', 'mqqbrowser'];
+        for (var i = 0; i < mobileAgents.length; i++) {
+            if (ua.indexOf(mobileAgents[i]) > -1) {
+                return true;
+            }
+        }
+        return false;
+    }
+    if (isNonPC()) {
+        window.location.replace("https://tcq233.com");
+    }
+</script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         /* ================== 1. 核心变量 ================== */
@@ -262,7 +277,7 @@
             box-shadow: 0 20px 40px -10px rgba(0,0,0,0.6); 
         }
 
-        /* 动态边框高亮 */
+        /* 动态边框高亮：七大类核心颜色系统 (包含工具和广告色) */
         .card:has(.tag-text):hover,  .card.active-focus:has(.tag-text)  { border-color: rgba(229, 231, 235, 0.4); }
         .card:has(.tag-image):hover, .card.active-focus:has(.tag-image) { border-color: rgba(244, 114, 182, 0.4); }
         .card:has(.tag-video):hover, .card.active-focus:has(.tag-video) { border-color: rgba(167, 139, 250, 0.4); }
@@ -289,6 +304,7 @@
             box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
         }
 
+        /* 标签文字基础颜色 */
         .tag-text { color: #e5e7eb; } 
         .tag-image { color: #f472b6; }
         .tag-video { color: #a78bfa; } 
@@ -311,6 +327,7 @@
         @keyframes shake { 0%,100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* 触底加载指示器 */
         .loading-sentinel {
             width: 100%; height: 40px; margin-top: 20px;
             display: flex; justify-content: center; align-items: center;
@@ -348,95 +365,6 @@
         .fab-top:hover { border-color: var(--text-secondary); color: #fff; }
         .fab-top.visible { opacity: 1; transform: translateY(0); }
 
-        /* ================== 5. PC端侧边栏及 16:9 智能影院大屏系统 ================== */
-        .sidebar {
-            position: fixed; top: 0; left: 0; width: 400px; height: 1800px;
-            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-right: 1px solid var(--border-light); z-index: 2005;
-            transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 30px 24px; box-shadow: 20px 0 50px rgba(0, 0, 0, 0.6);
-            display: flex; flex-direction: column;
-        }
-        .sidebar.open { transform: translateX(0); }
-        .sidebar-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .sidebar-header h3 { font-size: 1.1rem; font-weight: 600; color: #fff; }
-        .sidebar-close { cursor: pointer; color: var(--text-secondary); font-size: 1.1rem; transition: color 0.2s; }
-        .sidebar-close:hover { color: #fff; }
-        
-        .sidebar-content { color: var(--text-secondary); font-size: 0.9rem; flex: 1; overflow-y: auto; }
-        
-        /* 播放器/网页容器基础样式 */
-        .player-container {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            background: #000;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-            margin-bottom: 20px;
-            transition: border-color 0.3s, box-shadow 0.3s; 
-        }
-        .player-container iframe { width: 100%; height: 100%; border: none; }
-
-        /* 大屏宽屏跃迁触发按钮 */
-        .expand-btn {
-            position: absolute; top: 12px; right: 12px;
-            width: 32px; height: 32px; border-radius: 8px;
-            background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.15); color: #e2e8f0;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; opacity: 0; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); z-index: 10;
-        }
-        .player-container:hover .expand-btn { opacity: 1; }
-        .expand-btn svg { width: 16px; height: 16px; }
-        .expand-btn:hover { background: #38bdf8; color: #0f172a; border-color: #38bdf8; transform: scale(1.05); }
-
-        /* 暗黑超模糊背景遮罩 */
-        .widescreen-backdrop {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(2, 6, 23, 0.85);
-            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-            z-index: 2999; opacity: 0; visibility: hidden;
-            transition: all 0.3s ease-in-out;
-        }
-
-        /* 核心宽屏网页展示模式样式 */
-        @keyframes cinemaZoom {
-            from { transform: translate(-50%, -50%) scale(0.92); opacity: 0; }
-            to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-        }
-        body.widescreen-mode .widescreen-backdrop { opacity: 1; visibility: visible; }
-        body.widescreen-mode .player-container {
-            position: fixed;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 85vw; 
-            max-width: 1400px; 
-            z-index: 3000;
-            margin-bottom: 0;
-            border-radius: 16px;
-            border-color: rgba(56, 189, 248, 0.4);
-            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.9);
-            animation: cinemaZoom 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-        }
-
-        /* 侧边栏唤起按钮 */
-        .sidebar-toggle {
-            position: fixed; bottom: 30px; left: 30px; width: 44px; height: 44px; border-radius: 12px;
-            background: rgba(30, 41, 59, 0.9); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            border: 1px solid var(--border-light); color: var(--text-secondary); 
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: 0.3s; z-index: 1000; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
-        .sidebar-toggle:hover { border-color: var(--text-secondary); color: #fff; transform: scale(1.05); }
-        .sidebar-toggle svg { width: 20px; height: 20px; }
-
-        /* ================== 响应式媒体查询 ================== */
         @media (max-width: 768px) {
             .sticky-header-wrapper { padding: 10px; top: 0; padding-top: 10px; padding-bottom: 20px; margin-bottom: 20px; }
             .sticky-inner { flex-direction: column; width: 100%; border-radius: 20px; padding: 12px 14px; gap: 10px; }
@@ -451,42 +379,10 @@
             .copyright-bar { flex-direction: column; gap: 8px; }
             .copyright-divider { display: none; } 
             .hide-on-mobile { display: none !important; }
-            
-            /* 手机端彻底抹除系统 */
-            .sidebar, .sidebar-toggle, .widescreen-backdrop { display: none !important; }
         }
     </style>
 </head>
 <body>
-
-    <!-- 大屏影院暗黑背景（点击能直接退回小屏） -->
-    <div class="widescreen-backdrop" id="widescreenBackdrop" onclick="toggleWidescreen(event)"></div>
-
-    <!-- 侧边栏系统 -->
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <h3 id="sidebarTitle">内嵌网页展示</h3>
-            <span class="sidebar-close" onclick="toggleSidebar()">✕</span>
-        </div>
-        <div class="sidebar-content">
-            
-            <!-- 网页嵌入模块组（补回了 expand-btn 结构，并定义了 id="customPlayer"） -->
-            <div class="player-container" id="playerContainer">
-                <iframe id="customPlayer" src="https://tcq233.com/btv"></iframe>
-                
-                <!-- 网页悬浮宽屏缩放控制钮 -->
-                <button class="expand-btn" id="expandBtn" onclick="toggleWidescreen(event)" title="宽屏展示网页">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
-                </button>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- 侧边栏开辟控制胶囊 -->
-    <div class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" title="展开内置网页">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-    </div>
 
     <div class="sticky-header-wrapper">
         <div class="sticky-inner">
@@ -569,6 +465,7 @@
     <div class="fab-top" id="fabTop" onclick="scrollToTop()">↑</div>
 
     <script>
+        // ================== 全局数据存储与分页配置 ==================
         let resources = [];         
         let currentDataList = [];   
         let visibleCards = [];      
@@ -581,6 +478,7 @@
         const searchClear = document.getElementById('searchClear');
         const scrollSentinel = document.getElementById('scrollSentinel');
 
+        // ================== 初始化渲染 ==================
         function initRender(list) {
             grid.innerHTML = '';
             visibleCards = []; 
@@ -600,6 +498,7 @@
             loadMore();
         }
 
+        // ================== 加载下一页数据 ==================
         function loadMore() {
             const startIndex = currentPage * pageSize;
             const endIndex = startIndex + pageSize;
@@ -624,6 +523,7 @@
                 
                 el.style.animationDelay = `${indexInSlice * 0.03}s`;
 
+                // 处理分类标签样式和文字
                 let tagClass = 'tag-text';
                 if(item.cat==='image') tagClass='tag-image';
                 else if(item.cat==='video') tagClass='tag-video';
@@ -640,7 +540,9 @@
                 if(item.cat === 'tool') tagName = '实用工具';
                 if(item.cat === 'ad') tagName = '广告';
 
+                // 读取 JSON 中配置的打开方式，默认新窗口 _blank
                 const target = item.target || '_blank';
+                
                 const pinHtml = item.isTop ? '<div class="pin-icon"></div>' : '';
 
                 el.innerHTML = `
@@ -657,11 +559,13 @@
             });
 
             currentPage++;
+            
             if (currentPage * pageSize >= currentDataList.length) {
                 scrollSentinel.innerText = "";
             }
         }
 
+        // ================== 交叉观察器 (下拉加载) ==================
         const observer = new IntersectionObserver((entries) => {
             if (entries[0].isIntersecting) {
                 loadMore();
@@ -670,6 +574,7 @@
 
         observer.observe(scrollSentinel);
 
+        // ================== 异步获取数据 ==================
         fetch('list2.json')
             .then(response => {
                 if (!response.ok) throw new Error('网络响应失败');
@@ -685,6 +590,7 @@
                 scrollSentinel.style.display = 'none';
             });
 
+        // ================== 滑块逻辑 ==================
         const glider = document.getElementById('filterGlider');
         function moveGlider(targetBtn) {
             if(!targetBtn) return;
@@ -704,6 +610,7 @@
         window.addEventListener('load', () => { const activeBtn = document.querySelector('.tag-btn.active'); if(activeBtn) moveGlider(activeBtn); });
         window.addEventListener('resize', () => { const activeBtn = document.querySelector('.tag-btn.active'); if(activeBtn) moveGlider(activeBtn); });
 
+        // ================== 核心交互逻辑 ==================
         function toggleSelect(e) {
             e.stopPropagation(); 
             const wrapper = document.getElementById('customSelect');
@@ -715,8 +622,10 @@
         function selectEngine(value, name, element) {
             document.getElementById('searchEngineValue').value = value;
             document.getElementById('currentEngineText').innerText = name;
+            
             document.querySelectorAll('.option-item').forEach(item => item.classList.remove('selected'));
             element.classList.add('selected');
+            
             document.getElementById('customSelect').classList.remove('active');
             
             const input = document.getElementById('searchInput');
@@ -749,20 +658,14 @@
 
         document.addEventListener('click', (e) => {
             const wrapper = document.getElementById('customSelect');
-            if (wrapper && !wrapper.contains(e.target)) {
+            if (!wrapper.contains(e.target)) {
                 wrapper.classList.remove('active');
-            }
-
-            const sidebar = document.getElementById('sidebar');
-            const sidebarToggle = document.getElementById('sidebarToggle');
-            if (sidebar && sidebar.classList.contains('open') && !sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
-                if(document.body.classList.contains('widescreen-mode')) return;
-                sidebar.classList.remove('open');
             }
         });
 
         document.getElementById('externalSearchBtn').addEventListener('click', performSearch);
 
+        // ================== 本地搜索逻辑 ==================
         searchInput.addEventListener('input', (e) => {
             const val = e.target.value;
             searchClear.style.display = val.length > 0 ? 'block' : 'none';
@@ -772,6 +675,7 @@
                 i.title.toLowerCase().includes(k) || 
                 i.desc.toLowerCase().includes(k)
             );
+            
             initRender(filtered);
         });
 
@@ -782,6 +686,7 @@
             searchInput.focus();
         }
         
+        // ================== 键盘交互 ==================
         function updateSelection(index) {
             visibleCards.forEach(c => c.classList.remove('active-focus'));
             if (index >= 0 && index < visibleCards.length) {
@@ -827,6 +732,7 @@
 
             if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
                 if (visibleCards.length === 0) return;
+                
                 e.preventDefault(); 
 
                 if (isSearchFocused && e.key === 'ArrowDown') {
@@ -875,30 +781,7 @@
         });
         function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
 
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('open');
-        }
-
-        // ================== 16:9 网页模式大屏无损切换逻辑 ==================
-        function toggleWidescreen(e) {
-            if(e) e.stopPropagation();
-            const body = document.body;
-            body.classList.toggle('widescreen-mode');
-            
-            const btn = document.getElementById('expandBtn');
-            if(body.classList.contains('widescreen-mode')) {
-                // 变为收起图标
-                btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14l-7 7"/></svg>`;
-                btn.title = "收起网页";
-                btn.style.opacity = "1"; 
-            } else {
-                // 变为放大图标
-                btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>`;
-                btn.title = "宽屏展示网页";
-                btn.style.opacity = "";
-            }
-        }
-
+        // ================== 页面加载性能计算 ==================
         window.addEventListener('load', () => {
             setTimeout(() => {
                 const perfEntries = performance.getEntriesByType("navigation");
