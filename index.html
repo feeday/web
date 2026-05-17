@@ -348,9 +348,9 @@
         .fab-top:hover { border-color: var(--text-secondary); color: #fff; }
         .fab-top.visible { opacity: 1; transform: translateY(0); }
 
-        /* ================== 5. PC端侧边栏系统 (集成高级播放器) ================== */
+        /* ================== 5. PC端侧边栏及 16:9 智能影院大屏系统 ================== */
         .sidebar {
-            position: fixed; top: 0; left: 0; width: 360px; height: 100vh; /* 宽度调宽至360px更适合播视频 */
+            position: fixed; top: 0; left: 0; width: 360px; height: 100vh;
             background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-right: 1px solid var(--border-light); z-index: 2005;
             transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -368,47 +368,61 @@
         
         .sidebar-content { color: var(--text-secondary); font-size: 0.9rem; flex: 1; overflow-y: auto; }
         
-        /* --- 新增：16:9 智能自适应播放器包裹器 --- */
+        /* 播放器/网页容器基础样式 */
         .player-container {
+            position: relative;
             width: 100%;
-            aspect-ratio: 16 / 9; /* 强制锁定黄金比例，拒绝黑边与拉伸 */
+            aspect-ratio: 16 / 9;
             background: #000;
             border-radius: 12px;
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
             margin-bottom: 20px;
+            transition: border-color 0.3s, box-shadow 0.3s; 
         }
-        .player-container iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
+        .player-container iframe { width: 100%; height: 100%; border: none; }
+
+        /* 大屏宽屏跃迁触发按钮 */
+        .expand-btn {
+            position: absolute; top: 12px; right: 12px;
+            width: 32px; height: 32px; border-radius: 8px;
+            background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.15); color: #e2e8f0;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; opacity: 0; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); z-index: 10;
+        }
+        .player-container:hover .expand-btn { opacity: 1; }
+        .expand-btn svg { width: 16px; height: 16px; }
+        .expand-btn:hover { background: #38bdf8; color: #0f172a; border-color: #38bdf8; transform: scale(1.05); }
+
+        /* 暗黑超模糊背景遮罩 */
+        .widescreen-backdrop {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(2, 6, 23, 0.85);
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            z-index: 2999; opacity: 0; visibility: hidden;
+            transition: all 0.3s ease-in-out;
         }
 
-        /* --- 新增：切歌/切视频微光列表 --- */
-        .video-playlist {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-top: 15px;
+        /* 核心宽屏网页展示模式样式 */
+        @keyframes cinemaZoom {
+            from { transform: translate(-50%, -50%) scale(0.92); opacity: 0; }
+            to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
         }
-        .playlist-item {
-            padding: 12px 14px;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            transition: all 0.2s ease;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .playlist-item:hover, .playlist-item.active {
-            background: rgba(56, 189, 248, 0.1);
-            border-color: rgba(56, 189, 248, 0.3);
-            color: #38bdf8;
+        body.widescreen-mode .widescreen-backdrop { opacity: 1; visibility: visible; }
+        body.widescreen-mode .player-container {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 85vw; 
+            max-width: 1400px; 
+            z-index: 3000;
+            margin-bottom: 0;
+            border-radius: 16px;
+            border-color: rgba(56, 189, 248, 0.4);
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.9);
+            animation: cinemaZoom 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
         }
 
         /* 侧边栏唤起按钮 */
@@ -438,41 +452,39 @@
             .copyright-divider { display: none; } 
             .hide-on-mobile { display: none !important; }
             
-            /* 手机端隐藏侧边栏及其按钮 */
-            .sidebar, .sidebar-toggle { display: none !important; }
+            /* 手机端彻底抹除系统 */
+            .sidebar, .sidebar-toggle, .widescreen-backdrop { display: none !important; }
         }
     </style>
 </head>
 <body>
 
-    <!-- 侧边栏容器 (带 iframe 播放器结构) -->
+    <!-- 大屏影院暗黑背景（点击能直接退回小屏） -->
+    <div class="widescreen-backdrop" id="widescreenBackdrop" onclick="toggleWidescreen(event)"></div>
+
+    <!-- 侧边栏系统 -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <h3 id="sidebarTitle">媒体随身听</h3>
+            <h3 id="sidebarTitle">内嵌网页展示</h3>
             <span class="sidebar-close" onclick="toggleSidebar()">✕</span>
         </div>
         <div class="sidebar-content">
             
-            <!-- 播放器核心包裹层 -->
-            <div class="player-container">
-                <!-- 预设了一个无需登录可跨域直接看猫咪的示例流，你可以随时把 src 换成你的本地或第三方播放地址 -->
-                <iframe id="customPlayer" src="https://tcq233.com/btv" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-            </div>
-
-            <!-- 快捷切换播放源菜单 -->
-            <div style="margin-top: 15px; font-size: 0.8rem; color: var(--text-tertiary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">播放列表</div>
-            <div class="video-playlist">
-                <div class="playlist-item active" onclick="switchMedia('https://player.vimeo.com/video/76979871', '治愈萌猫流', this)">🎵 媒体源 A：治愈系风景线</div>
-                <div class="playlist-item" onclick="switchMedia('https://music.163.com/outchain/player?type=2&id=1407557410&auto=0&height=66', '网易云音乐外链', this, true)">🎵 媒体源 B：背景白噪音/Mp3</div>
-                <!-- 提示：如果你想塞B站视频，src 换成 //player.bilibili.com/player.html?bvid=你的BV号 即可 -->
+            <!-- 网页嵌入模块组（补回了 expand-btn 结构，并定义了 id="customPlayer"） -->
+            <div class="player-container" id="playerContainer">
+                <iframe id="customPlayer" src="https://tcq233.com/btv"></iframe>
+                
+                <!-- 网页悬浮宽屏缩放控制钮 -->
+                <button class="expand-btn" id="expandBtn" onclick="toggleWidescreen(event)" title="宽屏展示网页">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+                </button>
             </div>
 
         </div>
     </div>
 
-    <!-- 侧边栏展开小按钮 -->
-    <div class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" title="展开播放器">
-        <!-- 换成了富有科技律动感的播放图标 -->
+    <!-- 侧边栏开辟控制胶囊 -->
+    <div class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" title="展开内置网页">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
     </div>
 
@@ -744,6 +756,7 @@
             const sidebar = document.getElementById('sidebar');
             const sidebarToggle = document.getElementById('sidebarToggle');
             if (sidebar && sidebar.classList.contains('open') && !sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
+                if(document.body.classList.contains('widescreen-mode')) return;
                 sidebar.classList.remove('open');
             }
         });
@@ -866,19 +879,24 @@
             document.getElementById('sidebar').classList.toggle('open');
         }
 
-        // ================== 新增：控制 iframe 播放器切源的 JS 脚本 ==================
-        function switchMedia(url, title, element, isMusic = false) {
-            const player = document.getElementById('customPlayer');
-            const titleContainer = document.getElementById('sidebarTitle');
+        // ================== 16:9 网页模式大屏无损切换逻辑 ==================
+        function toggleWidescreen(e) {
+            if(e) e.stopPropagation();
+            const body = document.body;
+            body.classList.toggle('widescreen-mode');
             
-            // 更换源地址
-            player.src = url;
-            // 联动更改侧边栏标题头部名称
-            titleContainer.innerText = title;
-
-            // 切换菜单高亮样式
-            document.querySelectorAll('.playlist-item').forEach(item => item.classList.remove('active'));
-            element.classList.add('active');
+            const btn = document.getElementById('expandBtn');
+            if(body.classList.contains('widescreen-mode')) {
+                // 变为收起图标
+                btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14l-7 7"/></svg>`;
+                btn.title = "收起网页";
+                btn.style.opacity = "1"; 
+            } else {
+                // 变为放大图标
+                btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>`;
+                btn.title = "宽屏展示网页";
+                btn.style.opacity = "";
+            }
         }
 
         window.addEventListener('load', () => {
