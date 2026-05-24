@@ -17,6 +17,8 @@
   { "cat": "ad", "title": "Google AdSense", "desc": "谷歌广告联盟", "url": "https://adsense.google.com/adsense", "target": "_blank" },
   { "cat": "ad", "title": "腾讯轻量云", "desc": "2核2G 不限流量高带宽每月 ¥40-45", "url": "https://cloud.tencent.com/act/cps/redirect?redirect=37529&cps_key=615609c54e8bcced8b02c202a43b5570",  "target": "_blank" },
   { "cat": "tool", "title": "鼠标测试", "desc": "在线鼠标测试", "url": "https://cps-check.com/cn/polling-rate-check", "target": "_self" },
+  { "cat": "tool", "title": "cloudflare", "desc": "域名解析", "url": "https://dash.cloudflare.com/", "target": "_self" },
+  
 
   { "cat": "multi", "title": "Models", "desc": "HuggingFace 在线模型生成。", "url": "https://huggingface.co/spaces" },
   { "cat": "multi", "title": "Models", "desc": "HuggingFace 国内镜像站。", "url": "https://hf-mirror.com/"},
