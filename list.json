@@ -4,7 +4,7 @@
   { "cat": "ad", "title": "Gemini-3.1-Pro", "desc": "Poixe AI 提供服务万字七毛", "url": "https://poixe.com/playground?i=token", "isTop": true },
   { "cat": "ad", "title": "gpt-image-2", "desc": "Apimart 提供服务 单张五分。", "url": "https://apimart.ai/register?aff=token", "isTop": true }, 
   { "cat": "image", "title": "NanoBananaPro", "desc": "Banana 官网图像生成", "url": "https://labs.google/fx/zh/tools/flow", "isTop": true },
-  { "cat": "tool", "title": "Cloud Studio", "desc": "腾讯云代码编辑与开发。", "url": "https://cloudstudio.net/", "hideOnMobile": true },
+  { "cat": "tool", "title": "Cloud Studio", "desc": "腾讯云代码编辑与开发。", "url": "https://cloudstudio.net/", "isTop": true  },
   { "cat": "tool", "title": "AI-工具集", "desc": "发现最新AI产品工具和使用技巧。", "url": "https://ai-bot.cn/ai-tools/", "isTop": true },
   { "cat": "text", "title": "AI-日报", "desc": "AI资讯日报，最前沿的AI信息。", "url": "https://gorden-sun.notion.site/527689cd2b294e60912f040095e803c5?v=4f6cc12006c94f47aee4dc909511aeb5", "isTop": true},
   { "cat": "text", "title": "AI-信息", "desc": "AI 自动挑选的高价值内容。", "url": "https://aihot.virxact.com", "isTop": true },
