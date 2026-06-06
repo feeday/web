@@ -4,7 +4,8 @@
   { "cat": "image", "title": "NanoBananaPro", "desc": "Banana 官网图像生成", "url": "https://labs.google/fx/zh/tools/flow", "isTop": true },
   { "cat": "ad", "title": "Gemini-3.1-Pro", "desc": "Poixe AI 提供服务万字七毛", "url": "https://poixe.com/pricing?i=token", "isTop": true },
   { "cat": "tool", "title": "Cloud Studio", "desc": "腾讯云代码编辑与开发。", "url": "https://cloudstudio.net/", "isTop": true  },
-  { "cat": "tool", "title": "Orcaterm", "desc": "腾讯邮箱", "url": "https://orcaterm.cloud.tencent.com/terminal", "isTop": true },
+  { "cat": "tool", "title": "Orcaterm", "desc": "腾讯服务器终端管理", "url": "https://orcaterm.cloud.tencent.com/terminal", "isTop": true },
+  { "cat": "ad", "title": "腾讯轻量云", "desc": "2核2G 不限流量高带宽每月 ¥40-45", "url": "https://cloud.tencent.com/act/cps/redirect?redirect=37529&cps_key=615609c54e8bcced8b02c202a43b5570",  "target": "_blank" },
   { "cat": "tool", "title": "AI-工具集", "desc": "发现最新AI产品工具和使用技巧。", "url": "https://ai-bot.cn/ai-tools/", "isTop": true },
   { "cat": "text", "title": "AI-日报", "desc": "AI资讯日报，最前沿的AI信息。", "url": "https://gorden-sun.notion.site/527689cd2b294e60912f040095e803c5?v=4f6cc12006c94f47aee4dc909511aeb5", "isTop": true},
   { "cat": "text", "title": "AI-信息", "desc": "AI 自动挑选的高价值内容。", "url": "https://aihot.virxact.com", "isTop": true },
@@ -17,7 +18,6 @@
   { "cat": "video", "title": "MagicArena", "desc": "在线图像与视频模型对战。", "url": "https://aigcarena.com/", "isTop": true  },
   { "cat": "ad", "title": "京东联盟", "desc": "CPS联盟平台", "url": "https://union.jd.com/index",  "target": "_blank" },
   { "cat": "ad", "title": "Google AdSense", "desc": "谷歌广告联盟", "url": "https://adsense.google.com/adsense", "target": "_blank" },
-  { "cat": "ad", "title": "腾讯轻量云", "desc": "2核2G 不限流量高带宽每月 ¥40-45", "url": "https://cloud.tencent.com/act/cps/redirect?redirect=37529&cps_key=615609c54e8bcced8b02c202a43b5570",  "target": "_blank" },
   { "cat": "tool", "title": "鼠标测试", "desc": "在线鼠标测试", "url": "https://cps-check.com/cn/polling-rate-check", "target": "_self" },
   { "cat": "tool", "title": "cloudflare", "desc": "域名解析", "url": "https://dash.cloudflare.com/", "target": "_self" },
   
