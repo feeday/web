@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LLM AI API Test</title>
+    <meta name="description" content="API Test with Custom BaseURL and Models">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ================== 1. 全局与变量 ================== */
+        :root {
+            --bg-body: #020617; 
+            --bg-card: rgba(15, 23, 42, 0.7);
+            --bg-panel: rgba(30, 41, 59, 0.4);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-tertiary: #64748b;
+            --border-light: rgba(255, 255, 255, 0.08);
+            --theme-blue: #38bdf8;
+            --theme-blue-hover: #7dd3fc;
+            --theme-green: #34d399;
+            --chat-user-bg: rgba(56, 189, 248, 0.1);
+            --chat-ai-bg: rgba(255, 255, 255, 0.03);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-body);
+            background-image: 
+                radial-gradient(circle at 50% -20%, #1e293b 0%, transparent 60%),
+                radial-gradient(circle at 50% 10%, rgba(56, 189, 248, 0.05) 0%, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            line-height: 1.6;
+            margin: 0;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden; 
+            padding: 2vh 2vw;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        .workspace {
+            width: 100%; max-width: 1600px; height: 96vh; background: var(--bg-card);
+            border: 1px solid var(--border-light); border-radius: 20px;
+            box-shadow: 0 30px 60px -15px rgba(0,0,0,0.8);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            display: flex; overflow: hidden; animation: fadeUp 0.6s ease backwards;
+        }
+
+        .left-panel {
+            width: 360px; flex-shrink: 0; height: 100%; display: flex; flex-direction: column;
+            border-right: 1px solid var(--border-light); background: var(--bg-panel); position: relative;
+        }
+
+        .left-scroll-area {
+            flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px;
+        }
+        .left-scroll-area::-webkit-scrollbar { width: 4px; }
+        .left-scroll-area::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+
+        .left-footer { padding: 20px 25px; border-top: 1px solid var(--border-light); background: rgba(0, 0, 0, 0.2); }
+
+        .right-panel {
+            flex: 1; height: 100%; display: flex; flex-direction: column;
+            background: radial-gradient(circle at center, rgba(15, 23, 42, 0.3) 0%, transparent 100%); position: relative;
+        }
+
+        .brand-title {
+            font-size: 1.3rem; font-weight: 700; background: linear-gradient(135deg, #fff, #38bdf8);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            display: flex; align-items: center; gap: 8px; margin-bottom: 5px;
+        }
+        .form-group { display: flex; flex-direction: column; flex-shrink: 0; }
+        label { margin-bottom: 8px; font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;}
+        .label-hint { color: var(--theme-blue); font-size: 0.7rem; font-weight: 400; text-transform: none; margin-left: 4px; }
+
+        .glass-input { 
+            width: 100%; background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.08); 
+            border-radius: 10px; color: var(--text-primary); padding: 10px 14px; font-family: inherit; font-size: 0.9rem; transition: 0.2s; 
+        }
+        .glass-input:focus { background: rgba(0, 0, 0, 0.4); border-color: rgba(56, 189, 248, 0.4); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1); }
+        .glass-input:disabled { background: rgba(0, 0, 0, 0.1); cursor: not-allowed; opacity: 0.5; }
+        
+        input[type="file"].glass-input { padding: 6px 10px; cursor: pointer; }
+        input[type="file"].glass-input::-webkit-file-upload-button { background: rgba(255,255,255,0.1); border: none; border-radius: 6px; padding: 6px 12px; color: #fff; cursor: pointer; margin-right: 10px; }
+
+        select.glass-input { appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 12px center; background-size: 14px; padding-right: 30px; cursor: pointer; }
+        select.glass-input option, select.glass-input optgroup { background-color: #0f172a; color: #fff; }
+
+        .btn-api {
+            width: 100%; padding: 12px; border-radius: 10px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            background: rgba(255,255,255,0.04); color: var(--text-secondary); border: 1px solid rgba(255,255,255,0.08); text-decoration: none;
+        }
+        .btn-api:hover { background: rgba(255,255,255,0.08); color: #fff; }
+
+        .divider { border-bottom: 1px dashed rgba(255,255,255,0.1); margin: 5px 0; }
+
+        .model-vision-hint {
+            font-size: 0.78rem; color: var(--theme-blue); margin-top: 6px;
+            padding: 6px 10px; background: rgba(56,189,248,0.07); border-radius: 8px;
+            border: 1px solid rgba(56,189,248,0.15); display: none;
+        }
+
+        #imagePreviewContainer { display: none; flex-wrap: wrap; gap: 8px; margin-top: 10px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); }
+        .thumb-wrapper { position: relative; width: 46px; height: 46px; }
+        .thumb-img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; border: 1px solid var(--border-light); }
+        .thumb-del { position: absolute; top: -5px; right: -5px; background: #ef4444; color: #fff; border: none; border-radius: 50%; width: 16px; height: 16px; cursor: pointer; font-size: 10px; line-height: 16px; padding: 0; }
+        .gallery-header { display: flex; justify-content: space-between; width: 100%; font-size: 0.75rem; color: var(--text-tertiary); margin-bottom: 5px; }
+        .clear-all-btn { cursor: pointer; color: var(--text-secondary); transition: 0.2s; }
+
+        .chat-history {
+            flex: 1; min-height: 0; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; gap: 24px; scroll-behavior: smooth;
+        }
+        .chat-history::-webkit-scrollbar { width: 6px; }
+        .chat-history::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+
+        .msg-wrapper { display: flex; flex-direction: column; max-width: 80%; animation: fadeIn 0.3s ease; }
+        .wrapper-user { align-self: flex-end; align-items: flex-end; }
+        .wrapper-ai { align-self: flex-start; align-items: flex-start; }
+
+        .chat-bubble { padding: 14px 18px; border-radius: 16px; line-height: 1.6; font-size: 0.95rem; word-wrap: break-word; white-space: pre-wrap; max-width: 100%; }
+        .user-msg { background: var(--chat-user-bg); border: 1px solid rgba(56, 189, 248, 0.2); border-bottom-right-radius: 4px; color: #e0f2fe; }
+        .ai-msg { background: var(--chat-ai-bg); border: 1px solid var(--border-light); border-bottom-left-radius: 4px; color: var(--text-primary); }
+        
+        .bubble-images { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+        .bubble-images img { height: 60px; width: 60px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); }
+
+        .msg-tools { font-size: 0.75rem; color: var(--text-tertiary); margin-top: 8px; display: flex; gap: 15px; align-items: center; flex-wrap: wrap; padding: 0 4px; }
+        .action-btn { cursor: pointer; color: var(--theme-blue); display: inline-flex; align-items: center; gap: 4px; transition: 0.2s; opacity: 0.8; }
+        .action-btn:hover { opacity: 1; color: var(--theme-blue-hover); }
+        .stat-info { color: var(--text-tertiary); font-family: monospace; }
+
+        .sys-hint { margin: auto; width: 100%; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .sys-hint-icon { width: 64px; height: 64px; border-radius: 16px; background: rgba(56, 189, 248, 0.05); border: 1px solid rgba(56, 189, 248, 0.1); display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+        .sys-hint-icon svg { width: 32px; height: 32px; color: var(--text-secondary); opacity: 0.8; }
+        .sys-hint h3 { color: var(--text-primary); font-size: 1.1rem; margin-bottom: 10px; font-weight: 600; }
+        .sys-hint p { color: var(--text-secondary); font-size: 0.9rem; margin: 0; line-height: 1.8; }
+        
+        .chat-input-area {
+            flex-shrink: 0; padding: 15px 30px 25px 30px; background: rgba(15, 23, 42, 0.6);
+            border-top: 1px solid var(--border-light); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+        }
+        
+        .memory-toolbar {
+            display: flex; gap: 15px; margin-bottom: 10px; margin-left: 5px; color: var(--text-secondary); font-size: 1.1rem;
+        }
+        .memory-btn { cursor: pointer; transition: 0.2s; opacity: 0.7; display: flex; align-items: center; gap: 5px; font-size: 0.85rem;}
+        .memory-btn:hover { opacity: 1; color: var(--theme-blue); }
+
+        .chat-input-wrapper {
+            display: flex; align-items: flex-end; gap: 12px; background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 8px 12px; transition: 0.3s;
+        }
+        .chat-input-wrapper:focus-within { border-color: rgba(56, 189, 248, 0.4); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1); }
+        .chat-input-wrapper textarea {
+            flex: 1; background: transparent; border: none; color: var(--text-primary);
+            font-family: inherit; font-size: 0.95rem; line-height: 1.5; resize: none;
+            max-height: 120px; padding: 6px 4px; outline: none;
+        }
+        
+        .action-buttons {
+            display: flex; gap: 8px; flex-shrink: 0; align-items: flex-end; margin-bottom: 2px;
+        }
+        .btn-action {
+            height: 40px; padding: 0 16px; border-radius: 10px; font-size: 0.9rem; font-weight: 600; 
+            display: inline-flex; align-items: center; justify-content: center; gap: 6px; 
+            cursor: pointer; transition: 0.2s; border: none; flex-shrink: 0; white-space: nowrap;
+        }
+        .btn-chat { background: var(--theme-blue); color: #020617; }
+        .btn-chat:hover { background: var(--theme-blue-hover); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(56,189,248,0.3); }
+        .btn-action:disabled { background: rgba(255,255,255,0.1) !important; color: var(--text-tertiary) !important; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+
+        .api-url-bar {
+            margin-top: 12px; display: flex; align-items: center; gap: 10px; 
+            background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.1); 
+            border-radius: 10px; padding: 8px 12px; transition: 0.3s;
+        }
+        .api-url-bar:focus-within { border-color: rgba(56, 189, 248, 0.4); box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.1); }
+
+        .typing-indicator { display: none; align-self: flex-start; padding: 12px 20px; background: var(--chat-ai-bg); border-radius: 16px; border-bottom-left-radius: 4px; border: 1px solid var(--border-light); margin-bottom: 20px; margin-left: 30px; }
+        .typing-indicator span { display: inline-block; width: 6px; height: 6px; background: var(--theme-blue); border-radius: 50%; margin: 0 2px; animation: bounce 1.4s infinite ease-in-out both; }
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+
+        /* ================== 移动端适配 ================== */
+        .mobile-header { display: none; } 
+
+        @media (max-width: 900px) {
+            body { padding: 0; }
+            .workspace { flex-direction: column; height: 100vh; width: 100%; border-radius: 0; border: none; position: relative; }
+            
+            .mobile-header {
+                display: flex; justify-content: space-between; align-items: center;
+                padding: 12px 20px; background: rgba(15, 23, 42, 0.9);
+                border-bottom: 1px solid var(--border-light);
+                z-index: 100; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            }
+            .brand-title-mobile { font-size: 1.1rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 6px; }
+            .mobile-toggle-btn {
+                background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3);
+                color: var(--theme-blue); padding: 6px 12px; border-radius: 8px;
+                font-size: 0.85rem; font-weight: 600; cursor: pointer;
+                display: flex; align-items: center; gap: 6px; transition: 0.2s;
+            }
+            .mobile-toggle-btn:active { transform: scale(0.95); }
+
+            .left-panel {
+                position: absolute; top: 53px; 
+                left: 0; right: 0; bottom: 0; width: 100%; height: calc(100vh - 53px);
+                background: rgba(15, 23, 42, 0.98); 
+                backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+                border-right: none; border-bottom: 1px solid var(--border-light);
+                z-index: 99; transform: translateY(-120%); opacity: 0; pointer-events: none;
+                transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+            }
+            .left-panel.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
+
+            .right-panel { height: calc(100vh - 53px); flex: none; }
+            .chat-history { padding: 15px; gap: 15px; }
+            .chat-input-area { padding: 10px 15px 15px 15px; }
+            .btn-action { padding: 0 12px; font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="workspace">
+
+    <div class="mobile-header">
+        <div class="brand-title-mobile">LLM AI API Test</div>
+        <button class="mobile-toggle-btn" id="mobileToggleBtn" onclick="toggleMobilePanel()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            展开配置
+        </button>
+    </div>
+
+    <div class="left-panel" id="leftPanel">
+        <div class="left-scroll-area">
+            
+            <div class="brand-title">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--theme-blue)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                前端直连测试终端 
+            </div>
+
+            <div class="form-group">
+                <label for="apiKey">🔑 API Key</label>
+                <input type="password" id="apiKey" class="glass-input" placeholder="请输入你的 API Key">
+            </div>
+
+            <div class="form-group">
+                <label for="unifiedModel">🤖 AI 引擎模型</label>
+                <select id="unifiedModel" class="glass-input" onchange="onModelChange()">
+                    <option value="gemini-3.1-pro-preview" selected>Gemini-3.1-pro-preview</option>
+                    <option value="claude-opus-4-8">Claude-opus-4-8</option>
+                    <option value="deepseek-v4-flash">DeepSeek-V4-flash</option>
+                    <option value="gpt4o-reverse-prompt">GPT4o-反推提示词</option>
+                </select>
+                <input type="text" id="customModel" class="glass-input" placeholder="输入自定义模型名以覆盖上方选择" style="margin-top: 8px;">
+            </div>
+
+            <!-- 图片上传区域：默认隐藏，仅在选中 gpt4o-reverse-prompt 时显示 -->
+            <div class="form-group" id="uploadGroup" style="display: none;">
+                <label>🖼️ 上传图像 <span class="label-hint">(当前模式必传)</span></label>
+                <input type="file" id="referenceImage" class="glass-input" accept="image/png, image/jpeg, image/webp">
+                <div class="model-vision-hint" id="visionHint" style="display: block; margin-top: 8px;">📷 将对上传的图片进行深度的画风与提示词反推分析</div>
+                <div id="imagePreviewContainer">
+                    <div class="gallery-header">
+                        <span id="galleryCount">已选 0 张</span>
+                        <span class="clear-all-btn" onclick="clearUpload()">清空</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="form-group">
+                <label>🌐 浏览器原生音色 <span class="label-hint">(不填自定义节点时生效)</span></label>
+                <select id="browserVoice" class="glass-input">
+                    <option value="">加载系统内置声音中...</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="ttsUrl">🔊 自定义 TTS 节点 <span class="label-hint">(优先使用)</span></label>
+                <input type="text" id="ttsUrl" class="glass-input" placeholder="例如: http://127.0.0.1:8080/api/tts">
+            </div>
+            <div class="form-group">
+                <label for="ttsVoice">🗣️ 自定义发音人</label>
+                <input type="text" id="ttsVoice" class="glass-input" placeholder="如: 晓伊">
+            </div>
+
+        </div>
+
+        <!-- 新增底部链接区域 -->
+        <div class="left-footer">
+            <a href="https://poixe.com/pricing?i=token" target="_blank" class="btn-api">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                Gemini-3.1-Pro 万字七毛
+            </a>
+        </div>
+    </div>
+
+    <div class="right-panel" id="rightPanel">
+        
+        <div class="chat-history" id="chatHistory">
+            <div class="sys-hint" id="emptyPlaceholder">
+                <div class="sys-hint-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                </div>
+                <h3>纯前端直连测试已就绪</h3>
+                <p>
+                    👈 请在左侧配置 API Key 及模型<br>
+                    👇 下方确认 API URL 后即可开始对话测试
+                </p>
+            </div>
+        </div>
+
+        <div class="typing-indicator" id="typingIndicator">
+            <span></span><span></span><span></span>
+            <div id="progressText" style="display:inline-block; font-size:12px; margin-left: 10px; color:var(--theme-blue);"></div>
+        </div>
+
+        <div class="chat-input-area">
+            <div class="memory-toolbar">
+                <span class="memory-btn" onclick="document.getElementById('file-input').click()" title="导入记忆">📁 导入</span>
+                <span class="memory-btn" onclick="exportHistory()" title="导出记忆">💾 导出</span>
+                <span class="memory-btn" onclick="clearHistory()" title="清空对话">🗑️ 清空</span>
+                <input type="file" id="file-input" style="display: none;" accept=".json" onchange="handleImport(event)">
+            </div>
+
+            <div class="chat-input-wrapper">
+                <textarea id="unifiedPrompt" placeholder="在这里输入指令..." rows="1" oninput="this.style.height = '';this.style.height = this.scrollHeight + 'px'"></textarea>
+                <div class="action-buttons">
+                    <button id="btnChat" class="btn-action btn-chat" onclick="handleChatAction()" title="发送请求">
+                        发送
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="api-url-bar">
+                <label for="apiBaseUrl" style="margin: 0; font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); white-space: nowrap; text-transform: uppercase;">🌐 API URL:</label>
+                <input type="text" id="apiBaseUrl" value="https://api.poixe.com/v1/" placeholder="https://api.poixe.com/v1/" style="background: transparent; border: none; color: var(--text-primary); font-family: inherit; font-size: 0.85rem; width: 100%; outline: none;">
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // ==========================================
+    // 常量 & 状态
+    // ==========================================
+    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+    let uploadedImages = [];    // { dataUrl, base64, mimeType }
+    let textChatContext = [];   // { id, role, content }
+
+    // ==========================================
+    // 初始化
+    // ==========================================
+    window.addEventListener('load', () => {
+        const savedKey = localStorage.getItem('frontend_api_key');
+        if (savedKey) document.getElementById('apiKey').value = savedKey;
+
+        const savedBaseUrl = localStorage.getItem('frontend_base_url');
+        if (savedBaseUrl) document.getElementById('apiBaseUrl').value = savedBaseUrl;
+
+        const savedTtsUrl = localStorage.getItem('frontend_tts_url');
+        if (savedTtsUrl !== null) document.getElementById('ttsUrl').value = savedTtsUrl;
+
+        const savedTtsVoice = localStorage.getItem('frontend_tts_voice');
+        if (savedTtsVoice) document.getElementById('ttsVoice').value = savedTtsVoice;
+
+        initBrowserVoices();
+        onModelChange(); 
+
+        document.getElementById('referenceImage').addEventListener('change', handleImageUpload);
+
+        document.getElementById('unifiedPrompt').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleChatAction();
+            }
+        });
+
+        // 移动端面板处理
+        document.getElementById('rightPanel').addEventListener('click', () => {
+            const panel = document.getElementById('leftPanel');
+            if (panel.classList.contains('show')) closeMobilePanel();
+        });
+    });
+
+    // ==========================================
+    // 获取配置参数
+    // ==========================================
+    function getApiKey() {
+        const key = document.getElementById('apiKey').value.trim();
+        if (key) localStorage.setItem('frontend_api_key', key);
+        else localStorage.removeItem('frontend_api_key');
+        return key;
+    }
+
+    function getBaseUrl() {
+        let url = document.getElementById('apiBaseUrl').value.trim();
+        if (!url) url = "https://api.poixe.com/v1/";
+        if (!url.endsWith('/')) url += '/';
+        localStorage.setItem('frontend_base_url', url);
+        return url;
+    }
+
+    function getSelectedModel() {
+        const customModel = document.getElementById('customModel').value.trim();
+        return customModel || document.getElementById('unifiedModel').value;
+    }
+
+    // ==========================================
+    // 模型切换联动
+    // ==========================================
+    function onModelChange() {
+        const model = getSelectedModel();
+        const uploadGroup = document.getElementById('uploadGroup');
+
+        // 只有选择图像反推才能上传图像
+        if (model === 'gpt4o-reverse-prompt') {
+            uploadGroup.style.display = 'flex';
+        } else {
+            uploadGroup.style.display = 'none';
+            clearUpload();
+        }
+    }
+
+    // ==========================================
+    // 浏览器 TTS 初始化
+    // ==========================================
+    function initBrowserVoices() {
+        if (!('speechSynthesis' in window)) return;
+        const populate = () => {
+            const voices = window.speechSynthesis.getVoices();
+            const selectEl = document.getElementById('browserVoice');
+            if (voices.length === 0 || !selectEl) return;
+            const savedURI = localStorage.getItem('frontend_browser_voice') || '';
+            selectEl.innerHTML = '<option value="">(使用系统默认声音)</option>';
+            voices.forEach(voice => {
+                if (voice.lang.includes('zh') || voice.lang.includes('cmn')) {
+                    const opt = document.createElement('option');
+                    opt.value = voice.voiceURI;
+                    opt.textContent = `${voice.name} (${voice.lang})`;
+                    if (voice.voiceURI === savedURI) opt.selected = true;
+                    selectEl.appendChild(opt);
+                }
+            });
+        };
+        populate();
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = populate;
+        }
+    }
+
+    function toggleButtons(disabled) {
+        document.getElementById('btnChat').disabled = disabled;
+    }
+
+    function hidePlaceholder() {
+        document.getElementById('emptyPlaceholder').style.display = 'none';
+    }
+
+    function genId() {
+        return 'msg_' + Date.now() + Math.random().toString(36).substr(2, 5);
+    }
+
+    // ==========================================
+    // 图片上传 & 画廊 (强制限制单张图片用于反推)
+    // ==========================================
+    async function handleImageUpload(e) {
+        const file = e.target.files[0]; // 仅允许单张处理
+        if (!file) return;
+        
+        uploadedImages = []; // 清空之前的
+        
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            uploadedImages.push({
+                dataUrl: event.target.result,
+                base64: event.target.result.split(',')[1],
+                mimeType: file.type || 'image/png'
+            });
+            renderGallery();
+        };
+        reader.readAsDataURL(file);
+        e.target.value = '';
+    }
+
+    function renderGallery() {
+        const container = document.getElementById('imagePreviewContainer');
+        container.querySelectorAll('.thumb-wrapper').forEach(el => el.remove());
+
+        const hasImage = uploadedImages.length > 0;
+        if (!hasImage) {
+            container.style.display = 'none';
+            return;
+        }
+        
+        container.style.display = 'flex';
+        document.getElementById('galleryCount').innerText = `已选 ${uploadedImages.length} 张`;
+
+        uploadedImages.forEach((img, idx) => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'thumb-wrapper';
+            wrapper.innerHTML = `<img src="${img.dataUrl}" class="thumb-img"><button class="thumb-del" onclick="removeImage(${idx})">×</button>`;
+            container.appendChild(wrapper);
+        });
+    }
+
+    function removeImage(idx) { uploadedImages.splice(idx, 1); renderGallery(); }
+
+    function clearUpload() {
+        uploadedImages = [];
+        renderGallery();
+        document.getElementById('referenceImage').value = '';
+    }
+
+    // ==========================================
+    // 复制 & 朗读
+    // ==========================================
+    function copyText(text, btnElement) {
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(() => showCopySuccess(btnElement));
+        } else {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            document.body.appendChild(textArea);
+            textArea.focus(); textArea.select();
+            try { document.execCommand('copy'); showCopySuccess(btnElement); } catch (err) { alert('复制失败，请手动复制'); }
+            textArea.remove();
+        }
+    }
+
+    function showCopySuccess(btnElement) {
+        const originalText = btnElement.innerHTML;
+        btnElement.innerHTML = '✅ 已复制';
+        btnElement.style.color = 'var(--theme-green)';
+        setTimeout(() => { btnElement.innerHTML = originalText; btnElement.style.color = ''; }, 2000);
+    }
+
+    async function playVoiceClient(text, btnElement) {
+        const ttsUrl = document.getElementById('ttsUrl').value.trim();
+        const ttsVoice = document.getElementById('ttsVoice').value.trim();
+        const browserVoiceURI = document.getElementById('browserVoice').value;
+
+        localStorage.setItem('frontend_tts_url', ttsUrl);
+        localStorage.setItem('frontend_tts_voice', ttsVoice);
+        localStorage.setItem('frontend_browser_voice', browserVoiceURI);
+
+        const cleanText = text.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{2B50}\u{2B55}\u{23E9}-\u{23F3}\u{23F8}-\u{23FA}]/gu, '');
+
+        if (ttsUrl) {
+            if (btnElement.audioObj && !btnElement.audioObj.paused) {
+                btnElement.audioObj.pause(); btnElement.innerHTML = '🔊 朗读'; return;
+            }
+            if (btnElement.audioObj && btnElement.audioObj.paused) {
+                btnElement.audioObj.play(); btnElement.innerHTML = '⏹️ 停止'; return;
+            }
+
+            const originalText = btnElement.innerHTML;
+            btnElement.innerHTML = '⏳ 转化中...';
+            btnElement.style.color = '#ff9800';
+
+            try {
+                let base_url = ttsUrl.replace(/\/+$/, '');
+                if (!base_url.endsWith('/api/tts')) base_url += '/api/tts';
+
+                const payload = { text: cleanText };
+                if (ttsVoice) payload.voice = ttsVoice;
+
+                const res = await fetch(base_url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) throw new Error("自定义 TTS 生成失败");
+
+                const blob = await res.blob();
+                const audioUrl = URL.createObjectURL(blob);
+                const audio = new Audio(audioUrl);
+                btnElement.audioObj = audio;
+
+                audio.onplay = () => { btnElement.innerHTML = '⏹️ 停止'; btnElement.style.color = 'var(--theme-green)'; };
+                audio.onended = () => { btnElement.innerHTML = '🔊 朗读'; btnElement.style.color = ''; btnElement.audioObj = null; };
+                audio.play();
+            } catch (err) {
+                alert("语音请求异常！请检查：\n1. 自定义节点是否启动？\n2. 是否已开启 CORS 跨域许可？");
+                btnElement.innerHTML = originalText; btnElement.style.color = '';
+            }
+        } else {
+            if (!('speechSynthesis' in window)) { alert("您的浏览器不支持系统语音播报功能"); return; }
+
+            if (btnElement.isNativePlaying) {
+                window.speechSynthesis.cancel();
+                btnElement.isNativePlaying = false;
+                btnElement.innerHTML = '🔊 朗读';
+                return;
+            }
+
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            const voices = window.speechSynthesis.getVoices();
+            const selectedVoice = voices.find(v => v.voiceURI === browserVoiceURI);
+            if (selectedVoice) utterance.voice = selectedVoice;
+            else utterance.lang = 'zh-CN';
+
+            utterance.onstart = () => { btnElement.isNativePlaying = true; btnElement.innerHTML = '⏹️ 停止'; btnElement.style.color = 'var(--theme-green)'; };
+            utterance.onend = () => { btnElement.isNativePlaying = false; btnElement.innerHTML = '🔊 朗读'; btnElement.style.color = ''; };
+            utterance.onerror = utterance.onend;
+            window.speechSynthesis.speak(utterance);
+        }
+    }
+
+    // ==========================================
+    // 导入 / 导出 / 清空对话
+    // ==========================================
+    function exportHistory() {
+        if (textChatContext.length === 0) { alert("当前记忆为空，无需导出。"); return; }
+
+        const exportData = textChatContext.map(m => {
+            let content = m.content;
+            if (Array.isArray(content)) {
+                const textParts = content.filter(p => p.type === 'text').map(p => p.text).join('\n');
+                content = textParts || '[图片消息]';
+            }
+            return { role: m.role, content };
+        });
+
+        const dataStr = JSON.stringify(exportData, null, 2);
+        const blob = new Blob([dataStr], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `chat_memory_${Date.now()}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    function handleImport(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const importedData = JSON.parse(e.target.result);
+                if (!Array.isArray(importedData)) throw new Error("无效的格式");
+                textChatContext = importedData.map(msg => ({
+                    id: genId(),
+                    role: msg.role,
+                    content: msg.content
+                }));
+                document.querySelectorAll('.msg-wrapper').forEach(el => el.remove());
+                document.getElementById('emptyPlaceholder').style.display = 'flex';
+                textChatContext.forEach(msg => {
+                    appendTextBubble(msg.role === 'assistant' ? 'ai' : 'user', msg.content, false, true, null, msg.id, null);
+                });
+                event.target.value = '';
+            } catch (err) {
+                alert("导入失败：JSON 格式不正确");
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    function clearHistory() {
+        if (!confirm("确定清空当前的聊天记忆吗？")) return;
+        textChatContext = [];
+        clearUpload();
+        document.querySelectorAll('.msg-wrapper').forEach(el => el.remove());
+        document.getElementById('emptyPlaceholder').style.display = 'flex';
+    }
+
+    // ==========================================
+    // UI 渲染：气泡
+    // ==========================================
+    function appendTextBubble(role, text, isAction = false, showTools = false, statsHtml = null, msgId = null, imageDataUrls = null) {
+        hidePlaceholder();
+        const container = document.getElementById('chatHistory');
+
+        const wrapper = document.createElement('div');
+        wrapper.className = `msg-wrapper ${role === 'user' ? 'wrapper-user' : 'wrapper-ai'}`;
+        if (msgId) wrapper.dataset.id = msgId;
+
+        const displayText = typeof text === 'string' ? text : (Array.isArray(text) ? text.filter(p => p.type === 'text').map(p => p.text).join('\n') : String(text));
+        wrapper.dataset.rawText = displayText;
+
+        if (imageDataUrls && imageDataUrls.length > 0) {
+            const imgRow = document.createElement('div');
+            imgRow.className = 'bubble-images';
+            imageDataUrls.forEach(url => {
+                const img = document.createElement('img');
+                img.src = url;
+                imgRow.appendChild(img);
+            });
+            wrapper.appendChild(imgRow);
+        }
+
+        const bubble = document.createElement('div');
+        bubble.className = `chat-bubble ${role === 'user' ? 'user-msg' : 'ai-msg'}`;
+        bubble.innerHTML = isAction ? `🎨 <b>系统指令：</b><br>${displayText}` : displayText;
+        wrapper.appendChild(bubble);
+
+        if (showTools) {
+            const toolsDiv = document.createElement('div');
+            toolsDiv.className = 'msg-tools';
+
+            const copyBtn = document.createElement('span');
+            copyBtn.className = 'action-btn';
+            copyBtn.innerHTML = '📋 复制';
+            copyBtn.onclick = function() { copyText(wrapper.dataset.rawText, this); };
+            toolsDiv.appendChild(copyBtn);
+
+            if (role === 'ai') {
+                const ttsBtn = document.createElement('span');
+                ttsBtn.className = 'action-btn';
+                ttsBtn.innerHTML = '🔊 朗读';
+                ttsBtn.onclick = function() { playVoiceClient(wrapper.dataset.rawText, this); };
+                toolsDiv.appendChild(ttsBtn);
+            }
+
+            if (role === 'user') {
+                const editBtn = document.createElement('span');
+                editBtn.className = 'action-btn';
+                editBtn.innerHTML = '✏️ 编辑';
+                editBtn.onclick = function() { toggleEditMode(wrapper, msgId, toolsDiv, bubble); };
+                toolsDiv.appendChild(editBtn);
+
+                const resendBtn = document.createElement('span');
+                resendBtn.className = 'action-btn';
+                resendBtn.innerHTML = '🔄 重发';
+                resendBtn.onclick = function() {
+                    const stored = textChatContext.find(m => m.id === msgId);
+                    const content = stored ? stored.content : wrapper.dataset.rawText;
+                    executeChatTask(getApiKey(), wrapper.dataset.rawText, content, null, true);
+                };
+                toolsDiv.appendChild(resendBtn);
+            }
+
+            const wordCountSpan = document.createElement('span');
+            wordCountSpan.className = 'stat-info wc';
+            wordCountSpan.innerHTML = `📝 ${displayText.length}字`;
+            toolsDiv.appendChild(wordCountSpan);
+
+            if (statsHtml) {
+                const statsSpan = document.createElement('span');
+                statsSpan.className = 'stat-info';
+                statsSpan.innerHTML = statsHtml;
+                toolsDiv.appendChild(statsSpan);
+            }
+
+            wrapper.appendChild(toolsDiv);
+        }
+
+        container.appendChild(wrapper);
+        container.scrollTop = container.scrollHeight;
+    }
+
+    function toggleEditMode(wrapper, msgId, toolsDiv, bubble) {
+        const currentText = wrapper.dataset.rawText;
+        toolsDiv.style.display = 'none';
+        bubble.style.display = 'none';
+
+        const editContainer = document.createElement('div');
+        editContainer.style.cssText = 'width:100%; margin-top:10px;';
+
+        const textarea = document.createElement('textarea');
+        textarea.className = 'glass-input';
+        textarea.style.cssText = 'width:100%; min-height:100px; resize:vertical; color:var(--text-primary);';
+        textarea.value = currentText;
+
+        const btnGroup = document.createElement('div');
+        btnGroup.style.cssText = 'display:flex; gap:10px; margin-top:10px; justify-content:flex-end;';
+
+        const cancelBtn = document.createElement('button');
+        cancelBtn.className = 'btn-action';
+        cancelBtn.style.cssText = 'background:rgba(255,255,255,0.1); color:#fff;';
+        cancelBtn.innerHTML = '取消';
+        cancelBtn.onclick = () => {
+            bubble.style.display = 'block';
+            toolsDiv.style.display = 'flex';
+            editContainer.remove();
+        };
+
+        const saveBtn = document.createElement('button');
+        saveBtn.className = 'btn-action btn-chat';
+        saveBtn.innerHTML = '保存修改';
+        saveBtn.onclick = () => {
+            const newText = textarea.value.trim();
+            if (!newText) { alert('内容不能为空'); return; }
+
+            wrapper.dataset.rawText = newText;
+            bubble.innerHTML = newText;
+
+            const stored = textChatContext.find(m => m.id === msgId);
+            if (stored) {
+                if (Array.isArray(stored.content)) {
+                    const textIdx = stored.content.findIndex(p => p.type === 'text');
+                    if (textIdx !== -1) stored.content[textIdx].text = newText;
+                    else stored.content.push({ type: 'text', text: newText });
+                } else {
+                    stored.content = newText;
+                }
+            }
+
+            editContainer.remove();
+            bubble.style.display = 'block';
+            toolsDiv.style.display = 'flex';
+            const wcSpan = toolsDiv.querySelector('.stat-info.wc');
+            if (wcSpan) wcSpan.innerHTML = `📝 ${newText.length}字`;
+        };
+
+        btnGroup.appendChild(cancelBtn);
+        btnGroup.appendChild(saveBtn);
+        editContainer.appendChild(textarea);
+        editContainer.appendChild(btnGroup);
+        wrapper.insertBefore(editContainer, toolsDiv);
+    }
+
+    // ==========================================
+    // 对话核心逻辑：包括超强反推 Prompt 组装
+    // ==========================================
+    async function handleChatAction() {
+        const apiKey = getApiKey();
+        if (!apiKey) { alert("❌ 请输入 API Key！"); document.getElementById('apiKey').focus(); return; }
+
+        const selectedModel = getSelectedModel();
+        const chatInput = document.getElementById('unifiedPrompt');
+        const text = chatInput.value.trim();
+
+        // 【拦截逻辑】如果是反推模式
+        if (selectedModel === 'gpt4o-reverse-prompt') {
+            if (uploadedImages.length === 0) {
+                alert("❌ 该模型必须先在左侧上传图片！");
+                return;
+            }
+
+            const reversePrompt = `You are an expert visual describer and professional prompt engineer.
+Write a beautifully flowing, highly detailed natural language paragraph describing this image. 
+
+CRITICAL INSTRUCTIONS:
+- Use complete, grammatically correct sentences. 
+- ABSOLUTELY DO NOT use comma-separated tags, bullet points, or isolated keywords.
+- Write EXACTLY ONE cohesive paragraph.
+
+Your description should seamlessly weave together:
+1. The main subject (age, appearance, expression, clothing).
+2. The action and detailed environment.
+3. The mood, lighting (e.g., soft cinematic lighting), and photography style/camera settings (e.g., captured with a prime lens, shallow depth of field).
+
+Example of the requested style: "A young boy with short dark hair and a playful expression stands confidently in a brightly lit indoor gym. He is wearing a vivid blue t-shirt made of soft cotton..."
+
+Output the paragraph in English ONLY.`;
+
+            // 封装多模态上下文
+            const messageContent = [
+                { type: "text", text: reversePrompt },
+                { type: "image_url", image_url: { url: uploadedImages[0].dataUrl } }
+            ];
+            
+            const imagePreviews = [uploadedImages[0].dataUrl];
+            clearUpload(); 
+            // 强行使用 gpt-4o 发送
+            await executeChatTask(apiKey, "🖼️ [执行图像深度反推]", messageContent, chatInput, false, imagePreviews, "gpt-4o");
+            return;
+        }
+
+        // 常规文本对话
+        if (!text) { alert("❌ 请输入对话内容"); return; }
+        await executeChatTask(apiKey, text, text, chatInput, false, null, selectedModel);
+    }
+
+    async function executeChatTask(apiKey, displayText, messageContent, inputEl, isResend = false, imagePreviews = null, overrideApiModel = null) {
+        const indicator = document.getElementById('typingIndicator');
+        const baseUrl = getBaseUrl();
+        const apiModel = overrideApiModel || getSelectedModel();
+
+        if (!isResend) {
+            const msgId = genId();
+            appendTextBubble('user', displayText, overrideApiModel === "gpt-4o" && imagePreviews != null, true, null, msgId, imagePreviews);
+            if (inputEl) { inputEl.value = ''; inputEl.style.height = ''; }
+            // 重点：对于反推，我们只用单轮不携带历史记忆（避免 token 浪费），但 UI 仍展示流
+            if (overrideApiModel === "gpt-4o" && imagePreviews != null) {
+                // 暂时不存入长记忆数组，反推通常是单次工作
+            } else {
+                textChatContext.push({ id: msgId, role: "user", content: messageContent });
+            }
+        }
+
+        toggleButtons(true);
+        indicator.style.display = 'inline-block';
+        document.getElementById('progressText').innerText = '正在思考...';
+        document.getElementById('chatHistory').scrollTop = document.getElementById('chatHistory').scrollHeight;
+
+        const startTime = Date.now();
+
+        try {
+            let apiMessages;
+            
+            if (overrideApiModel === "gpt-4o" && imagePreviews != null) {
+                // 强制孤立请求，不发送上下文
+                apiMessages = [{ role: "user", content: messageContent }];
+            } else {
+                apiMessages = textChatContext.map((m, idx) => {
+                    const isLast = idx === textChatContext.length - 1;
+                    let content = m.content;
+                    if (!isLast && Array.isArray(content)) {
+                        const textParts = content.filter(p => p.type === 'text').map(p => p.text).join('\n');
+                        content = textParts || '[图片]';
+                    }
+                    return { role: m.role, content };
+                });
+            }
+
+            const endpoint = baseUrl + 'chat/completions';
+            
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 
+                    'Authorization': `Bearer ${apiKey}`, 
+                    'Content-Type': 'application/json' 
+                },
+                body: JSON.stringify({ 
+                    model: apiModel, 
+                    messages: apiMessages,
+                    max_tokens: 4096 
+                })
+            });
+
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                let errMsg = errData?.error?.message || `HTTP ${response.status}`;
+                throw new Error(errMsg);
+            }
+
+            const data = await response.json();
+            const endTime = Date.now();
+            const duration = ((endTime - startTime) / 1000).toFixed(2);
+
+            let aiReply = data.choices?.[0]?.message?.content || "";
+            const totalTokens = data.usage?.total_tokens || "未知";
+
+            if (aiReply) {
+                const aiMsgId = genId();
+                if (!(overrideApiModel === "gpt-4o" && imagePreviews != null)) {
+                    textChatContext.push({ id: aiMsgId, role: "assistant", content: aiReply });
+                }
+                const statsHtml = `| ⏱️ ${duration}s | 🪙 ${totalTokens} Tokens`;
+                appendTextBubble('ai', aiReply, false, true, statsHtml, aiMsgId, null);
+            } else {
+                throw new Error("API 未返回有效文本内容");
+            }
+        } catch (err) {
+            appendTextBubble('ai', `❌ 对话请求失败: ${err.message}`, false, true);
+        } finally {
+            toggleButtons(false);
+            indicator.style.display = 'none';
+            document.getElementById('progressText').innerText = '';
+        }
+    }
+
+    // ==========================================
+    // 移动端面板控制
+    // ==========================================
+    function closeMobilePanel() {
+        const panel = document.getElementById('leftPanel');
+        const btn = document.getElementById('mobileToggleBtn');
+        panel.classList.remove('show');
+        btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg> 展开配置`;
+        btn.style.color = 'var(--theme-blue)';
+        btn.style.borderColor = 'rgba(56, 189, 248, 0.3)';
+        btn.style.background = 'rgba(56, 189, 248, 0.15)';
+    }
+
+    function toggleMobilePanel() {
+        const panel = document.getElementById('leftPanel');
+        const btn = document.getElementById('mobileToggleBtn');
+        const isShowing = panel.classList.toggle('show');
+
+        if (isShowing) {
+            btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> 收起配置`;
+            btn.style.color = '#f87171';
+            btn.style.borderColor = 'rgba(248, 113, 113, 0.3)';
+            btn.style.background = 'rgba(248, 113, 113, 0.1)';
+        } else {
+            closeMobilePanel();
+        }
+    }
+</script>
+</body>
+</html>
