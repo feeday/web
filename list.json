@@ -2,7 +2,7 @@
   { "cat": "image", "title": "Leaderboard", "desc": "模型排行榜", "url": "https://artificialanalysis.ai/", "isTop": true }, 
   { "cat": "text", "title": "Artificial Intelligence", "desc": "人工智能领域相关论文", "url": "https://arxiv.org/list/cs.AI/recent", "isTop": true },
   { "cat": "image", "title": "NanoBananaPro", "desc": "Banana 官网图像生成", "url": "https://labs.google/fx/zh/tools/flow", "isTop": true },
-  { "cat": "ad", "title": "Gemini-3.1-Pro", "desc": "Poixe AI 提供服务万字七毛", "url": "https://poixe.com/pricing?i=token", "isTop": true },
+  { "cat": "ad", "title": "LLM-API-Test", "desc": "测试语言大模型接口", "url": "https://datxy.com/api.html", "isTop": true },
   { "cat": "tool", "title": "Cloud Studio", "desc": "腾讯云代码编辑与开发。", "url": "https://cloudstudio.net/", "isTop": true  },
   { "cat": "tool", "title": "Orcaterm", "desc": "腾讯服务器终端管理", "url": "https://orcaterm.cloud.tencent.com/terminal", "isTop": true },
   { "cat": "ad", "title": "腾讯轻量云", "desc": "2核2G 不限流量高带宽每月 ¥40-45", "url": "https://cloud.tencent.com/act/cps/redirect?redirect=37529&cps_key=615609c54e8bcced8b02c202a43b5570",  "target": "_blank" },
