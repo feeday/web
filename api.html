@@ -370,6 +370,9 @@
     // 常量 & 状态
     // ==========================================
     const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+    const COMPLETION_MAX_TOKENS = 8192;
+    const MAX_CONTINUATION_ROUNDS = 3;
+    const CONTINUE_PROMPT = '上一条回复因长度限制中断了。请严格从断点继续输出，不要重复已经输出过的内容，也不要重新开头。';
 
     let uploadedImages = [];    // { dataUrl, base64, mimeType }
     let textChatContext = [];   // { id, role, content }
@@ -937,39 +940,66 @@ Output the paragraph in English ONLY.`;
             }
 
             const endpoint = baseUrl + 'chat/completions';
-            
-            const response = await fetch(endpoint, {
-                method: 'POST',
-                headers: { 
-                    'Authorization': `Bearer ${apiKey}`, 
-                    'Content-Type': 'application/json' 
-                },
-                body: JSON.stringify({ 
-                    model: apiModel, 
-                    messages: apiMessages,
-                    max_tokens: 4096 
-                })
-            });
+            let requestMessages = apiMessages;
+            let aiReply = "";
+            let totalTokens = 0;
+            let finishReason = null;
+            let continuationRounds = 0;
 
-            if (!response.ok) {
-                const errData = await response.json().catch(() => ({}));
-                let errMsg = errData?.error?.message || `HTTP ${response.status}`;
-                throw new Error(errMsg);
+            while (continuationRounds <= MAX_CONTINUATION_ROUNDS) {
+                document.getElementById('progressText').innerText = continuationRounds === 0
+                    ? '正在思考...'
+                    : `回复较长，正在自动续写第 ${continuationRounds} 次...`;
+
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: apiModel,
+                        messages: requestMessages,
+                        max_tokens: COMPLETION_MAX_TOKENS
+                    })
+                });
+
+                if (!response.ok) {
+                    const errData = await response.json().catch(() => ({}));
+                    let errMsg = errData?.error?.message || `HTTP ${response.status}`;
+                    throw new Error(errMsg);
+                }
+
+                const data = await response.json();
+                const chunk = data.choices?.[0]?.message?.content || "";
+                finishReason = data.choices?.[0]?.finish_reason || null;
+                totalTokens += Number(data.usage?.total_tokens || 0);
+
+                if (!chunk) break;
+
+                aiReply += chunk;
+                if (finishReason !== 'length') break;
+                if (continuationRounds >= MAX_CONTINUATION_ROUNDS) break;
+
+                continuationRounds += 1;
+                requestMessages = [
+                    ...apiMessages,
+                    { role: "assistant", content: aiReply },
+                    { role: "user", content: CONTINUE_PROMPT }
+                ];
             }
 
-            const data = await response.json();
             const endTime = Date.now();
             const duration = ((endTime - startTime) / 1000).toFixed(2);
-
-            let aiReply = data.choices?.[0]?.message?.content || "";
-            const totalTokens = data.usage?.total_tokens || "未知";
+            const tokenText = totalTokens > 0 ? totalTokens : "未知";
 
             if (aiReply) {
                 const aiMsgId = genId();
                 if (!(overrideApiModel === "gpt-4o" && imagePreviews != null)) {
                     textChatContext.push({ id: aiMsgId, role: "assistant", content: aiReply });
                 }
-                const statsHtml = `| ⏱️ ${duration}s | 🪙 ${totalTokens} Tokens`;
+                const lengthHint = finishReason === 'length' ? ' | ⚠️ 仍可能达到长度上限' : '';
+                const statsHtml = `| ⏱️ ${duration}s | 🪙 ${tokenText} Tokens | ↩️ 自动续写 ${continuationRounds} 次${lengthHint}`;
                 appendTextBubble('ai', aiReply, false, true, statsHtml, aiMsgId, null);
             } else {
                 throw new Error("API 未返回有效文本内容");
