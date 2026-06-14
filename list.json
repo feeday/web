@@ -42,7 +42,7 @@
   { "cat": "ad", "title": "Colab", "desc": "谷歌云端 Python 代码笔记。", "url": "https://colab.new/", "hideOnMobile": true },
   { "cat": "tool", "title": "船舶定位", "desc": "全球船舶位置动态跟踪。", "url": "http://www.shipxy.com/" },
   { "cat": "tool", "title": "航班定位", "desc": "实时航班跟踪。", "url": "https://zh.flightaware.com/live/" },
-
+  { "cat": "tool", "title": "koboldcpp", "desc": "快速运行GGUF模型。", "url": "https://github.com/LostRuins/koboldcpp" },
 
   { "cat": "audio", "title": "Fish Audio", "desc": "最佳AI文字转语音和免费语音克隆。", "url": "https://fish.audio/zh-CN/discovery/" },
   { "cat": "audio", "title": "Weights", "desc": "使用 AI 创作音乐、人声翻唱等更多内容。", "url": "https://www.weights.com/zh/create" },
