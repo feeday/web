@@ -12,6 +12,7 @@
   { "cat": "text", "title": "AI-信息", "desc": "AI 自动挑选的高价值内容。", "url": "https://aihot.virxact.com", "isTop": true },
   { "cat": "ad", "title": "Cloud Studio", "desc": "腾讯云代码编辑与开发。", "url": "https://cloudstudio.net/", "isTop": true  },
   { "cat": "tool", "title": "Web Ping", "desc": "网站负载时延情况。", "url": "https://ping.chinaz.com/datxy.com", "isTop": true  },
+  { "cat": "ad", "title": "Lighthouse", "desc": "腾讯跨境电商轻量云。", "url": "https://cloud.tencent.com/act/cps/redirect?redirect=5333&cps_key=615609c54e8bcced8b02c202a43b5570&from=console", "isTop": true  },
 
   { "cat": "text", "title": "谷歌翻译", "desc": "谷歌文档文字在线翻译。", "url": "https://translate.google.com/", "isTop": true },
   { "cat": "tool", "title": "IP-地址查询", "desc": "高精度IP地址归属地查询。", "url": "http://ping0.cc/", "isTop": true },
