@@ -681,6 +681,36 @@
                 selectedCardIndex = -1;
             }
         }
+  // ================== ip 切换搜索 ==================
+        async function detectIPEngine() {
+    try {
+        const res = await fetch('https://ipapi.co/json/');
+        const data = await res.json();
+
+        const country = data.country_code;
+
+        if (country === 'CN') {
+            selectEngine(
+                'https://www.baidu.com/s?wd=',
+                '百度',
+                document.querySelectorAll('.option-item')[3]
+            );
+        } else {
+            selectEngine(
+                'https://www.google.com/search?q=',
+                'Google',
+                document.querySelectorAll('.option-item')[0]
+            );
+        }
+
+    } catch (e) {
+        console.log('IP检测失败');
+    }
+}
+
+        window.addEventListener('load', () => {
+    detectIPEngine();
+});
 
         document.addEventListener('keydown', (e) => {
             const isSearchFocused = (document.activeElement === searchInput);
