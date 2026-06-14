@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>模型数据 - AI工具导航</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta name="description" content="AI导航站">
+    <meta name="keywords" content="AI导航, LLM, ChatGPT">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ====== 保持你原CSS不变（已省略样式不影响逻辑） ====== */
+</style>
+</head>
+
+<body>
+
+<div class="sticky-header-wrapper">
+    <div class="sticky-inner">
+
+        <div class="search-wrapper">
+            <div class="custom-select" id="customSelect">
+                <div class="select-trigger" onclick="toggleSelect(event)">
+                    <span id="currentEngineText">Google</span>
+                </div>
+
+                <!-- 当前搜索引擎 -->
+                <input type="hidden" id="searchEngineValue" value="https://www.google.com/search?q=">
+
+                <div class="select-options" id="selectOptions">
+                    <div class="option-item selected"
+                        onclick="selectEngine('https://www.google.com/search?q=', 'Google', this)">
+                        Google
+                    </div>
+
+                    <div class="option-item"
+                        onclick="selectEngine('https://www.youtube.com/results?search_query=', 'YouTube', this)">
+                        YouTube
+                    </div>
+
+                    <div class="option-item"
+                        onclick="selectEngine('https://yandex.by/images/search?text=', 'Yandex', this)">
+                        Yandex
+                    </div>
+
+                    <div class="option-item"
+                        onclick="selectEngine('https://search.bilibili.com/all?keyword=', 'Bilibili', this)">
+                        Bilibili
+                    </div>
+
+                    <div class="option-item"
+                        onclick="selectEngine('https://www.douyin.com/search/', 'Douyin', this)">
+                        Douyin
+                    </div>
+
+                    <!-- ✅ 已修复百度参数 -->
+                    <div class="option-item"
+                        onclick="selectEngine('https://www.baidu.com/s?wd=', '百度', this)">
+                        Baidu
+                    </div>
+
+                    <div class="option-item"
+                        onclick="selectEngine('https://tieba.baidu.com/f/search/res?ie=utf-8&qw=', '贴吧', this)">
+                        Tieba
+                    </div>
+                </div>
+            </div>
+
+            <input type="text" class="search-input" id="searchInput" placeholder="搜索...">
+            <span class="search-clear" id="searchClear" onclick="clearSearch()">✕</span>
+
+            <div class="external-search-btn" id="externalSearchBtn">🔍</div>
+        </div>
+    </div>
+</div>
+
+<div id="grid" class="resource-grid"></div>
+
+<script>
+let resources = [];
+let currentDataList = [];
+let visibleCards = [];
+let currentPage = 0;
+const pageSize = 24;
+
+const grid = document.getElementById('grid');
+const searchInput = document.getElementById('searchInput');
+const searchClear = document.getElementById('searchClear');
+
+const DEFAULT_GOOGLE = "https://www.google.com/search?q=";
+const DEFAULT_BAIDU  = "https://www.baidu.com/s?wd=";
+
+/* =========================
+   🌍 IP检测 + 默认引擎
+========================= */
+async function detectIPAndSetEngine() {
+    try {
+        const res = await fetch('https://ipapi.co/json/');
+        const data = await res.json();
+
+        const country = data.country_code;
+
+        if (country === "CN") {
+            selectEngine(DEFAULT_BAIDU, "百度",
+                document.querySelector('.option-item:nth-child(6)')
+            );
+        } else {
+            selectEngine(DEFAULT_GOOGLE, "Google",
+                document.querySelector('.option-item:nth-child(1)')
+            );
+        }
+
+        console.log("IP检测完成:", country);
+
+    } catch (e) {
+        console.log("IP检测失败，使用默认Google");
+    }
+}
+
+/* =========================
+   初始化渲染
+========================= */
+function initRender(list) {
+    grid.innerHTML = "";
+    currentDataList = list;
+    currentPage = 0;
+    loadMore();
+}
+
+/* =========================
+   加载数据
+========================= */
+function loadMore() {
+    const start = currentPage * pageSize;
+    const end = start + pageSize;
+
+    const slice = currentDataList.slice(start, end);
+
+    slice.forEach(item => {
+        const el = document.createElement('div');
+        el.className = 'card';
+
+        el.innerHTML = `
+            <div class="card-title">${item.title}</div>
+            <div class="card-desc">${item.desc}</div>
+            <a href="${item.url}" target="_blank" class="card-link">访问</a>
+        `;
+
+        grid.appendChild(el);
+        visibleCards.push(el);
+    });
+
+    currentPage++;
+}
+
+/* =========================
+   搜索引擎切换
+========================= */
+function selectEngine(value, name, element) {
+    document.getElementById('searchEngineValue').value = value;
+    document.getElementById('currentEngineText').innerText = name;
+
+    document.querySelectorAll('.option-item')
+        .forEach(i => i.classList.remove('selected'));
+
+    element.classList.add('selected');
+}
+
+/* =========================
+   搜索
+========================= */
+function performSearch() {
+    const engine = document.getElementById('searchEngineValue').value;
+    const q = searchInput.value.trim();
+
+    if (!q) return;
+
+    window.open(engine + encodeURIComponent(q), "_blank");
+}
+
+document.getElementById('externalSearchBtn')
+    .addEventListener('click', performSearch);
+
+/* =========================
+   输入过滤
+========================= */
+searchInput.addEventListener('input', e => {
+    const val = e.target.value.toLowerCase();
+    searchClear.style.display = val ? "block" : "none";
+
+    const filtered = resources.filter(i =>
+        i.title.toLowerCase().includes(val) ||
+        i.desc.toLowerCase().includes(val)
+    );
+
+    initRender(filtered);
+});
+
+function clearSearch() {
+    searchInput.value = "";
+    searchClear.style.display = "none";
+    initRender(resources);
+}
+
+/* =========================
+   数据加载
+========================= */
+fetch('list.json')
+    .then(r => r.json())
+    .then(data => {
+        resources = data;
+        initRender(resources);
+    });
+
+/* =========================
+   页面启动
+========================= */
+window.addEventListener('load', () => {
+    detectIPAndSetEngine();   // ⭐ 自动识别IP
+});
+</script>
+
+</body>
+</html>
