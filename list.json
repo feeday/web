@@ -46,6 +46,7 @@
 
   { "cat": "audio", "title": "Fish Audio", "desc": "最佳AI文字转语音和免费语音克隆。", "url": "https://fish.audio/zh-CN/discovery/" },
   { "cat": "audio", "title": "Weights", "desc": "使用 AI 创作音乐、人声翻唱等更多内容。", "url": "https://www.weights.com/zh/create" },
+  { "cat": "audio", "title": "VoxCPM2 ", "desc": "多语种免费语音克隆。", "url": "https://huggingface.co/spaces/openbmb/VoxCPM-Demo" },
   { "cat": "audio", "title": "IndexTTS-2", "desc": "开源在线声音克隆。", "url": "https://huggingface.co/spaces/IndexTeam/IndexTTS-2-Demo" },
   { "cat": "audio", "title": "VibeVoice", "desc": "微软在线语言识别。", "url": "https://aka.ms/vibevoice-asr" },
   { "cat": "video", "title": "Wan2.2", "desc": "开源在线首尾帧生成视频。", "url": "https://huggingface.co/spaces/multimodalart/wan-2-2-first-last-frame" }
