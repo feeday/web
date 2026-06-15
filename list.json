@@ -1,7 +1,7 @@
 [
   { "cat": "ad", "title": "Leaderboard", "desc": "模型排行榜", "url": "https://artificialanalysis.ai/", "isTop": true }, 
   { "cat": "text", "title": "Artificial Intelligence", "desc": "人工智能领域相关论文", "url": "https://arxiv.org/list/cs.AI/recent", "isTop": true },
-  { "cat": "multi", "title": "Models", "desc": "HuggingFace 镜像站。", "url": "https://hf-mirror.com/", "isTop": true },
+  { "cat": "ad", "title": "Models", "desc": "HuggingFace 镜像站。", "url": "https://hf-mirror.com/", "isTop": true },
 
   { "cat": "image", "title": "NanoBananaPro", "desc": "Banana 官网图像生成", "url": "https://labs.google/fx/zh/tools/flow", "isTop": true },
   { "cat": "ad", "title": "LLM-API-Test", "desc": "测试语言大模型接口", "url": "/api", "isTop": true },
@@ -36,6 +36,7 @@
   { "cat": "image", "title": "Midjourney", "desc": "艺术级 AI 绘图生成工具。", "url": "https://www.midjourney.com/" },
   { "cat": "image", "title": "FLUX.2-klein-9B", "desc": "在线图生图模型", "url": "https://huggingface.co/spaces/black-forest-labs/FLUX.2-klein-9B" },
   { "cat": "image", "title": "Qwen-Image-Edit", "desc": "开源在线图像修改。", "url": "https://huggingface.co/spaces/multimodalart/Qwen-Image-Edit-Fast" },
+  { "cat": "image", "title": "bonsai-image-webgpu", "desc": "文生图网页端运行。", "url": "https://huggingface.co/spaces/webml-community/bonsai-image-webgpu" },
 
   { "cat": "text", "title": "Llama 3", "desc": "Meta 开源的最强语言模型，支持本地部署。", "url": "https://llama.meta.com/" },
 
