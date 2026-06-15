@@ -10,8 +10,8 @@
   { "cat": "video", "title": "OpenCut", "desc": "在线视频编辑工具。", "url": "https://opencut.app/projects", "isTop": true },
   { "cat": "ad", "title": "AI-工具集", "desc": "发现最新AI产品工具和使用技巧。", "url": "https://ai-bot.cn/ai-tools/", "isTop": true },
   { "cat": "text", "title": "AI-信息", "desc": "AI 自动挑选的高价值内容。", "url": "https://aihot.virxact.com", "isTop": true },
-  { "cat": "ad", "title": "Cloud Studio", "desc": "腾讯云代码编辑与开发。", "url": "https://cloudstudio.net/", "isTop": true  },
-  { "cat": "video", "title": "Seedance-2.0", "desc": "每天5条10秒视频豆包免费生成。", "url": "https://www.doubao.com/chat/create-image", "isTop": true },
+  { "cat": "video", "title": "Seedance 2.0", "desc": "每天5条10秒视频豆包免费生成。", "url": "https://www.doubao.com/chat/create-image", "isTop": true },
+  { "cat": "ad", "title": "Cloud Studio", "desc": "每天领取2机时GPU算力。", "url": "https://cloudstudio.net/", "isTop": true  },
 
   { "cat": "tool", "title": "Web Ping", "desc": "网站负载时延情况。", "url": "https://ping.chinaz.com/datxy.com", "isTop": true  },
   { "cat": "ad", "title": "Lighthouse", "desc": "腾讯跨境电商轻量云。", "url": "https://cloud.tencent.com/act/cps/redirect?redirect=5333&cps_key=615609c54e8bcced8b02c202a43b5570&from=console", "isTop": true  },
