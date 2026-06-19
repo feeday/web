@@ -84,6 +84,10 @@ $status_text.default = function(){
 };
 $status_text.default();
 
+function update_canvas_status(){
+	$status_size.text(canvas.width + "×" + canvas.height + " @ " + Math.round(magnification * 100) + "%");
+}
+
 var $toolbox = $ToolBox();
 var $colorbox = $ColorBox();
 
@@ -125,7 +129,9 @@ $canvas.on("user-resized", function(e, _x, _y, width, height){
 
 $canvas_area.on("resize", function(){
 	update_magnified_canvas_size();
+	update_canvas_status();
 });
+$G.on("resize option-changed", update_canvas_status);
 
 storage.get({
 	width: default_canvas_width,
@@ -152,6 +158,9 @@ $("body").on("dragover dragenter", function(e){
 		return;
 	}
 	e.preventDefault();
+	$canvas_area.addClass("drag-over");
+}).on("dragleave dragend", function(e){
+	$canvas_area.removeClass("drag-over");
 }).on("drop", function(e){
 	if(
 		e.target instanceof HTMLInputElement ||
@@ -162,6 +171,7 @@ $("body").on("dragover dragenter", function(e){
 	e.preventDefault();
 	var dt = e.originalEvent.dataTransfer;
 	if(dt && dt.files && dt.files.length){
+		$canvas_area.removeClass("drag-over");
 		open_from_FileList(dt.files, "dropped");
 	}
 });
@@ -280,6 +290,21 @@ $G.on("keydown", function(e){
 		e.preventDefault();
 		return;
 	}else if(e.ctrlKey){
+		if(e.keyCode === 187 || e.keyCode === 61 || e.keyCode === 107){
+			set_magnification(Math.min(8, magnification * 2));
+			e.preventDefault();
+			return;
+		}
+		if(e.keyCode === 189 || e.keyCode === 173 || e.keyCode === 109){
+			set_magnification(Math.max(0.25, magnification / 2));
+			e.preventDefault();
+			return;
+		}
+		if(e.keyCode === 48 || e.keyCode === 96){
+			set_magnification(1);
+			e.preventDefault();
+			return;
+		}
 		var key = String.fromCharCode(e.keyCode).toUpperCase();
 		if(textbox){
 			switch(key){
