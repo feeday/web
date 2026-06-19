@@ -59,6 +59,7 @@
   { "cat": "tool", "title": "Steam", "desc": "Steam 游戏平台。", "url": "https://store.steampowered.com/about/" },
   { "cat": "tool", "title": "File Converter", "desc": "视频音频转换工具", "url": "https://file-converter.io/" },
   { "cat": "tool", "title": "TrafficMonitor", "desc": "任务栏显示小工具", "url": "https://github.com/zhongyang219/TrafficMonitor" },
+  { "cat": "tool", "title": "Conda", "desc": "Conda 环境工具下载", "url": "https://docs.conda.io/projects/conda/en/stable/" },
   { "cat": "ad", "title": "夸克网盘", "desc": "离线模型工具分享", "url": "https://pan.quark.cn/s/e272d9cfa18d" },
  
   { "cat": "audio", "title": "Suno", "desc": "AI音乐生成模型", "url": "https://suno.com/" },
