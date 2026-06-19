@@ -21,6 +21,10 @@
   { "cat": "tool", "title": "Ping", "desc": "网站时延测试", "url": "https://ping.pe/", "isTop": true  },
   { "cat": "text", "title": "Claude", "desc": "文本编程模型", "url": "https://claude.ai/new", "isTop": true },
   { "cat": "text", "title": "Gemini", "desc": "Google 图像视频分析模型。", "url": "https://gemini.google.com/", "isTop": true },
+  { "cat": "text", "title": "Codex", "desc": "代码编辑器。", "url": "https://chatgpt.com/codex/cloud", "isTop": true },
+  { "cat": "text", "title": "Claude Code", "desc": "终端代码编辑器", "url": "https://claude.ai/code/disabled", "isTop": true },
+  { "cat": "text", "title": "Keys", "desc": "OpenAI API 密钥管理。", "url": "https://platform.openai.com/api-keys", "isTop": true },
+  
   { "cat": "image", "title": "GPT Image 2", "desc": "ChatGPT 图像生成模型", "url": "https://chat.openai.com/", "isTop": true },
   { "cat": "multi", "title": "Workflow", "desc": "ComfyUI 工作流", "url": "https://www.runninghub.ai/page-workflow", "isTop": true },
   { "cat": "ad", "title": "Detection Fake", "desc": "腾讯朱雀文视图鉴伪。", "url": "https://matrix.tencent.com/ai-detect/", "isTop": true  },
