@@ -7,6 +7,9 @@ function update_magnified_canvas_size(){
 function set_magnification(scale){
 	magnification = scale;
 	update_magnified_canvas_size();
+	if(typeof update_canvas_status === "function"){
+		update_canvas_status();
+	}
 	$G.triggerHandler("resize");
 }
 
@@ -45,7 +48,7 @@ function reset_canvas(){
 }
 
 function update_title(){
-	document.title = file_name + " - Paint";
+	document.title = file_name + " - 老版画图";
 }
 
 function create_and_trigger_input(attrs, callback){
@@ -63,7 +66,7 @@ function create_and_trigger_input(attrs, callback){
 // TODO: rename these functions to lowercase (and maybe say "files" in this case)
 function get_FileList_from_file_select_dialog(callback){
 	// TODO: specify mime types?
-	create_and_trigger_input({type: "file"}, function(input){
+	create_and_trigger_input({type: "file", accept: "image/*"}, function(input){
 		callback(input.files);
 	});
 }
@@ -218,12 +221,18 @@ function file_load_from_url(){
 	$w.$main.html("<label>URL: <input type='url' required value='' class='url-input'/></label>");
 	var $input = $w.$main.find(".url-input");
 	$w.$Button("Load", function(){
+		var url = $input.val().trim();
+		if(!url){
+			show_error_message("Please enter an image URL.");
+			$input.focus();
+			return;
+		}
 		$w.close();
 		// TODO: retry loading if same URL entered
 		// actually, make it change the hash only after loading successfully
 		// (but still load from the hash when necessary)
 		// make sure it doesn't overwrite the old session before switching
-		location.hash = "load:" + encodeURIComponent($input.val());
+		location.hash = "load:" + encodeURIComponent(url);
 	}).focus();
 	$w.$Button("Cancel", function(){
 		$w.close();
