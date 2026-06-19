@@ -44,8 +44,6 @@
   { "cat": "image", "title": "Qwen-Image-Edit", "desc": "开源在线图像修改。", "url": "https://huggingface.co/spaces/multimodalart/Qwen-Image-Edit-Fast" },
   { "cat": "image", "title": "bonsai-image-webgpu", "desc": "文生图网页端运行。", "url": "https://huggingface.co/spaces/webml-community/bonsai-image-webgpu" },
 
-  { "cat": "text", "title": "Llama 3", "desc": "Meta 开源的最强语言模型，支持本地部署。", "url": "https://llama.meta.com/" },
-
   { "cat": "ad", "title": "Colab", "desc": "谷歌云端 Python 代码笔记。", "url": "https://colab.new/", "hideOnMobile": true },
   { "cat": "tool", "title": "船舶定位", "desc": "全球船舶位置动态跟踪。", "url": "http://www.shipxy.com/" },
   { "cat": "tool", "title": "航班定位", "desc": "实时航班跟踪。", "url": "https://zh.flightaware.com/live/" },
