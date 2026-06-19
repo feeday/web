@@ -59,6 +59,8 @@
   { "cat": "audio", "title": "IndexTTS-2", "desc": "开源在线声音克隆。", "url": "https://huggingface.co/spaces/IndexTeam/IndexTTS-2-Demo" },
   { "cat": "audio", "title": "VibeVoice", "desc": "微软在线语言识别。", "url": "https://aka.ms/vibevoice-asr" },
   { "cat": "audio", "title": "Whisper", "desc": "开源语音转文字。", "url": "https://huggingface.co/spaces/openai/whisper" },
+  { "cat": "audio", "title": "Radio", "desc": "全球广播电台。", "url": "https://radio.garden/" },
+  { "cat": "audio", "title": "Spotify", "desc": "在线音乐博客。", "url": "https://open.spotify.com/" }, 
   
   { "cat": "video", "title": "LTX-2.3", "desc": "在线图生视频带音效。", "url": "https://huggingface.co/spaces/Lightricks/LTX-2-3" },
   { "cat": "video", "title": "Wan2.2", "desc": "开源在线首尾帧生成视频。", "url": "https://huggingface.co/spaces/multimodalart/wan-2-2-first-last-frame" }
