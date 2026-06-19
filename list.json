@@ -43,6 +43,7 @@
   { "cat": "image", "title": "FLUX.2-klein-9B", "desc": "在线图生图模型", "url": "https://huggingface.co/spaces/black-forest-labs/FLUX.2-klein-9B" },
   { "cat": "image", "title": "Qwen-Image-Edit", "desc": "开源在线图像修改。", "url": "https://huggingface.co/spaces/multimodalart/Qwen-Image-Edit-Fast" },
   { "cat": "image", "title": "bonsai-image-webgpu", "desc": "文生图网页端运行。", "url": "https://huggingface.co/spaces/webml-community/bonsai-image-webgpu" },
+  { "cat": "image", "title": "Mspaint", "desc": "在线画图工具。", "url": "https://datxy.com/mspaint" },
 
   { "cat": "ad", "title": "Colab", "desc": "谷歌云端 Python 代码笔记。", "url": "https://colab.new/", "hideOnMobile": true },
   { "cat": "tool", "title": "船舶定位", "desc": "全球船舶位置动态跟踪。", "url": "http://www.shipxy.com/" },
