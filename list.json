@@ -49,6 +49,7 @@
   { "cat": "tool", "title": "航班定位", "desc": "实时航班跟踪。", "url": "https://zh.flightaware.com/live/" },
   { "cat": "tool", "title": "koboldcpp", "desc": "快速运行GGUF模型。", "url": "https://github.com/LostRuins/koboldcpp" },
   { "cat": "tool", "title": "GPU Test", "desc": "GPU在线显卡测试。", "url": "https://datxy.com/gpu" },
+  { "cat": "tool", "title": "LLM 本地测试", "desc": "测你机器能部署哪些模型。", "url": "https://www.canirun.ai/" },
 
   { "cat": "audio", "title": "Suno", "desc": "AI音乐生成模型", "url": "https://suno.com/" },
   { "cat": "audio", "title": "Fish Audio", "desc": "最佳AI文字转语音和免费语音克隆。", "url": "https://fish.audio/zh-CN/discovery/" },
