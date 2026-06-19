@@ -22,6 +22,7 @@
   { "cat": "text", "title": "Claude", "desc": "文本编程模型", "url": "https://claude.ai/new", "isTop": true },
   { "cat": "text", "title": "Gemini", "desc": "Google 图像视频分析模型。", "url": "https://gemini.google.com/", "isTop": true },
   { "cat": "text", "title": "Codex", "desc": "代码编辑器。", "url": "https://chatgpt.com/codex/cloud", "isTop": true },
+  { "cat": "text", "title": "Codex Usage", "desc": "Codex 用量查询。", "url": "https://chatgpt.com/codex/cloud/settings/analytics#usage", "isTop": true },
   { "cat": "text", "title": "Claude Code", "desc": "终端代码编辑器", "url": "https://claude.ai/code/disabled", "isTop": true },
   { "cat": "text", "title": "Keys", "desc": "OpenAI API 密钥管理。", "url": "https://platform.openai.com/api-keys", "isTop": true },
   
