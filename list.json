@@ -80,10 +80,8 @@
   { "cat": "video", "title": "LTX-2.3", "desc": "在线图生视频带音效。", "url": "https://huggingface.co/spaces/Lightricks/LTX-2-3" },
   { "cat": "video", "title": "央视新闻", "desc": "央视频电视直播。", "url": "https://www.yangshipin.cn/tv/home?pid=600001811" },
   { "cat": "video", "title": "虎牙直播", "desc": "虎牙影视轮播。", "url": "https://www.huya.com/g/2135" },
-  { "cat": "video", "title": "哔哩动漫", "desc": "最新更新的动漫。", "url": "  https://www.bilibili.com/anime/index/?from_spmid=666.4.index.0#st=1&order=0&season_version=-1&spoken_language_type=-1&area=-1&is_finish=-1&copyright=-1&season_status=-1&season_month=-1&year=-1&style_id=-1&sort=0&page=1
-" },
-  { "cat": "video", "title": "腾讯电影", "desc": "最新更新的电影。", "url": "  https://v.qq.com/tv-series-list/v-index.html?filter_params=sort%3D75&page_id=channel_list_second_page&channel_id=100173
-" },
+  { "cat": "video", "title": "哔哩动漫", "desc": "最新更新的动漫。", "url": "https://www.bilibili.com/anime/index/?from_spmid=666.4.index.0#st=1&order=0&season_version=-1&spoken_language_type=-1&area=-1&is_finish=-1&copyright=-1&season_status=-1&season_month=-1&year=-1&style_id=-1&sort=0&page=1" },
+  { "cat": "video", "title": "腾讯电影", "desc": "最新更新的电影。", "url": "https://v.qq.com/tv-series-list/v-index.html?filter_params=sort%3D75&page_id=channel_list_second_page&channel_id=100173" },
   { "cat": "video", "title": "Wan2.2", "desc": "开源在线首尾帧生成视频。", "url": "https://huggingface.co/spaces/multimodalart/wan-2-2-first-last-frame" }
 
 ]
