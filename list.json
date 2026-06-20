@@ -10,6 +10,7 @@
   { "cat": "video", "title": "OpenCut", "desc": "在线视频编辑工具。", "url": "https://opencut.app/projects", "isTop": true },
   { "cat": "ad", "title": "AI-工具集", "desc": "发现最新AI产品工具和使用技巧。", "url": "https://ai-bot.cn/ai-tools/", "isTop": true },
   { "cat": "text", "title": "AI-信息", "desc": "AI 自动挑选的高价值内容。", "url": "https://aihot.virxact.com", "isTop": true },
+  { "cat": "text", "title": "吐槽墙", "desc": "AI 豆包吐槽留言。", "url": "https://tcq233.com/btv", "isTop": true },
   { "cat": "text", "title": "谷歌翻译", "desc": "谷歌文档文字在线翻译。", "url": "https://translate.google.com/", "isTop": true },
   { "cat": "text", "title": "谷歌邮箱", "desc": "谷歌邮箱收件箱。", "url": "https://mail.google.com/mail/u/0/#inbox", "isTop": true },
   
