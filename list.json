@@ -55,6 +55,10 @@
   { "cat": "tool", "title": "航班定位", "desc": "实时航班跟踪。", "url": "https://zh.flightaware.com/live/" },
   { "cat": "tool", "title": "koboldcpp", "desc": "快速运行GGUF模型。", "url": "https://github.com/LostRuins/koboldcpp" },
   { "cat": "tool", "title": "GPU Test", "desc": "GPU在线显卡测试。", "url": "https://datxy.com/gpu" },
+  { "cat": "tool", "title": "屏幕刷新", "desc": "显示器测试。", "url": "https://www.shijuezu.com/" },
+  { "cat": "tool", "title": "鼠标测试", "desc": "鼠标的轮询速率。", "url": "https://cps-check.com/cn/polling-rate-check" },
+  { "cat": "tool", "title": "手柄测试", "desc": "游戏手柄测试。", "url": "https://hardwaretester.com/gamepad" },
+ 
   { "cat": "tool", "title": "LLM 本地测试", "desc": "测你机器能部署哪些模型。", "url": "https://www.canirun.ai/" },
   { "cat": "tool", "title": "Github", "desc": "Github 桌面版。", "url": "https://desktop.github.com/download/" },
   { "cat": "tool", "title": "VS Code", "desc": "Visual Studio Code 桌面版。", "url": "https://code.visualstudio.com/" },
