@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>音频分析台</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #0d1117; color: #c9d1d9; font-family: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; touch-action: manipulation; }
+        
+        /* 顶部控制台 */
+        .header { display: flex; flex-direction: column; background: #161b22; padding: 10px 14px; border-bottom: 1px solid #30363d; box-shadow: 0 4px 12px rgba(0,0,0,0.5); flex-shrink: 0; z-index: 100; }
+        .header-row1 { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+        .header-title { font-weight: bold; font-size: 16px; color: #58a6ff; white-space: nowrap; }
+        .btn-group { display: flex; gap: 6px; flex-wrap: wrap; }
+        .header-row2 { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; align-items: center; }
+        .control-group { display: flex; align-items: center; gap: 5px; background: #0d1117; border: 1px solid #30363d; border-radius: 6px; padding: 4px 8px; flex-shrink: 0; }
+        label { font-size: 11px; font-weight: bold; color: #8b949e; white-space: nowrap; }
+        input[type="range"] { width: 80px; accent-color: #238636; cursor: pointer; height: 18px; }
+        .val-display { min-width: 30px; font-family: monospace; font-size: 11px; color: #fff; text-align: right; }
+        select { background-color: #0d1117; color: #c9d1d9; border: 1px solid #30363d; border-radius: 4px; padding: 4px 6px; font-size: 11px; cursor: pointer; }
+        button { padding: 6px 12px; font-weight: bold; border-radius: 6px; cursor: pointer; border: none; transition: 0.15s; font-size: 12px; white-space: nowrap; flex-shrink: 0; }
+        
+        .btn-start { background-color: #238636; color: white; }
+        .btn-start.active { background-color: #da3633; }
+        .btn-pause { background-color: #1f6feb; color: white; }
+        .btn-pause.active { background-color: #d29922; }
+        .btn-rec { background-color: #6e40c9; color: white; }
+        .btn-rec.active { background-color: #f85149; animation: pulse 1s infinite; }
+        .btn-save { background-color: #388bfd; color: white; }
+        
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+        
+        /* 数值监控面板 */
+        .monitor-bar { display: flex; flex-wrap: wrap; gap: 6px; padding: 6px 14px; background: #0d1117; border-bottom: 1px solid #21262d; flex-shrink: 0; font-family: monospace; font-size: 11px; }
+        .monitor-item { display: flex; align-items: center; gap: 4px; background: #161b22; padding: 3px 8px; border-radius: 4px; border: 1px solid #21262d; }
+        .monitor-label { color: #8b949e; }
+        .monitor-val { color: #7ee787; min-width: 50px; text-align: right; }
+        .monitor-val.warn { color: #d29922; }
+        .monitor-val.clip { color: #f85149; }
+        
+        /* 5宫格自适应布局 */
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 480px), 1fr)); grid-auto-rows: minmax(160px, 1fr); gap: 8px; flex: 1; overflow-y: auto; padding: 8px; -webkit-overflow-scrolling: touch; }
+        .panel { background: #000; border: 1px solid #333; border-radius: 6px; position: relative; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 2px 8px rgba(0,0,0,0.3); min-height: 150px; }
+        .panel-title { position: absolute; top: 6px; left: 8px; font-size: 10px; color: rgba(255,255,255,0.85); background: rgba(0,0,0,0.7); padding: 3px 7px; border-radius: 4px; z-index: 10; letter-spacing: 0.3px; pointer-events: none; }
+        .panel-save-btn { position: absolute; top: 6px; right: 8px; z-index: 10; background: rgba(56,139,253,0.8); color: #fff; border: none; border-radius: 4px; padding: 2px 8px; font-size: 10px; cursor: pointer; opacity: 0.6; transition: opacity 0.2s; }
+        .panel-save-btn:hover { opacity: 1; }
+        canvas { display: block; width: 100%; height: 100%; }
+        
+        /* 独立面板样式 */
+        #panel-ecg { background-color: #ffe8e8; }
+        
+        /* 交互反馈层 */
+        .cursor-info { position: absolute; bottom: 6px; right: 8px; font-size: 10px; font-family: monospace; color: #fff; background: rgba(0,0,0,0.75); padding: 3px 7px; border-radius: 4px; z-index: 10; pointer-events: none; display: none; }
+        .pause-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); display: none; justify-content: center; align-items: center; z-index: 5; pointer-events: none; }
+        .pause-overlay.visible { display: flex; }
+        .pause-overlay span { color: #d29922; font-size: 14px; font-weight: bold; background: rgba(0,0,0,0.7); padding: 4px 12px; border-radius: 4px; }
+        
+        /* 录音指示器 */
+        .rec-indicator { display: none; align-items: center; gap: 4px; color: #f85149; font-size: 11px; font-weight: bold; }
+        .rec-indicator.visible { display: flex; }
+        .rec-dot { width: 8px; height: 8px; background: #f85149; border-radius: 50%; animation: pulse 1s infinite; }
+        
+        /* 滚动条美化 */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0d1117; }
+        ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
+        
+        /* 移动端与多尺寸适配 */
+        @media (max-width: 600px) {
+            .header { padding: 8px 10px; }
+            .header-title { font-size: 14px; }
+            button { padding: 6px 10px; font-size: 11px; }
+            .grid-container { grid-template-columns: 1fr; grid-auto-rows: minmax(140px, 1fr); gap: 6px; padding: 6px; }
+            input[type="range"] { width: 60px; }
+            .control-group { padding: 3px 6px; }
+            label { font-size: 10px; }
+            .val-display { font-size: 10px; }
+            .monitor-bar { padding: 4px 10px; gap: 4px; }
+            .monitor-item { padding: 2px 6px; font-size: 10px; }
+        }
+        @media (max-width: 400px) {
+            .header-row2 { gap: 4px; }
+            .btn-group { gap: 4px; }
+            button { padding: 5px 8px; font-size: 10px; }
+            input[type="range"] { width: 50px; }
+        }
+      /* PC 大屏适配：3列2行，右侧纵向拉通 */
+        @media (min-width: 1200px) {
+            .grid-container {
+                grid-template-columns: repeat(3, 1fr);
+                grid-template-rows: 1fr 1fr;
+            }
+            
+            /* 让图3 (纵向瀑布) 固定在第3列，并垂直跨越 2 行 */
+            #panel-vert {
+                grid-column: 3;
+                grid-row: 1 / span 2;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-row1">
+        <div class="header-title">🎙️ 5-in-1 全能音频工作台</div>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <div class="rec-indicator" id="recIndicator">
+                <div class="rec-dot"></div>
+                <span>REC <span id="recTime">00:00</span></span>
+            </div>
+            <div class="btn-group">
+                <button class="btn-start" id="startBtn">开启监听</button>
+                <button class="btn-pause" id="pauseBtn" disabled>暂停</button>
+                <button class="btn-rec" id="recBtn" disabled>录音</button>
+                <button class="btn-save" id="saveAllBtn" disabled>全部截图</button>
+            </div>
+        </div>
+    </div>
+    <div class="header-row2">
+        <div class="control-group">
+            <label for="gainSlider">系统增益:</label>
+            <input type="range" id="gainSlider" min="0.1" max="5.0" step="0.1" value="1.0">
+            <span class="val-display" id="gainValue">1.0x</span>
+        </div>
+        <div class="control-group">
+            <label for="fftSelect">FFT Size:</label>
+            <select id="fftSelect">
+                <option value="1024">1024</option>
+                <option value="2048" selected>2048</option>
+                <option value="4096">4096</option>
+                <option value="8192">8192</option>
+                <option value="16384">16384</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label for="smoothSlider">阻尼平滑:</label>
+            <input type="range" id="smoothSlider" min="0" max="0.95" step="0.05" value="0.8">
+            <span class="val-display" id="smoothValue">0.80</span>
+        </div>
+        <div class="control-group">
+            <label for="speedSlider">ECG走速:</label>
+            <input type="range" id="speedSlider" min="1" max="8" step="1" value="4">
+            <span class="val-display" id="speedValue">4</span>
+        </div>
+        <div class="control-group">
+            <label for="themeSelect">瀑布主题:</label>
+            <select id="themeSelect">
+                <option value="blue">纯蓝 (Blue)</option>
+                <option value="thermal">热力 (Thermal)</option>
+                <option value="magma">岩浆 (Magma)</option>
+                <option value="green">矩阵绿 (Matrix)</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label for="dbMinSlider">dB 底限:</label>
+            <input type="range" id="dbMinSlider" min="-150" max="-40" step="5" value="-120">
+            <span class="val-display" id="dbMinValue">-120</span>
+        </div>
+        <div class="control-group">
+            <label for="dbMaxSlider">dB 顶限:</label>
+            <input type="range" id="dbMaxSlider" min="-30" max="0" step="5" value="-10">
+            <span class="val-display" id="dbMaxValue">-10</span>
+        </div>
+    </div>
+</div>
+
+<div class="monitor-bar" id="monitorBar">
+    <div class="monitor-item"><span class="monitor-label">RMS:</span><span class="monitor-val" id="monRMS">--</span><span class="monitor-label">dB</span></div>
+    <div class="monitor-item"><span class="monitor-label">Peak:</span><span class="monitor-val" id="monPeak">--</span><span class="monitor-label">dB</span></div>
+    <div class="monitor-item"><span class="monitor-label">主要频段:</span><span class="monitor-val" id="monFreq">--</span><span class="monitor-label">Hz</span></div>
+    <div class="monitor-item"><span class="monitor-label">采样率:</span><span class="monitor-val" id="monSR">--</span></div>
+    <div class="monitor-item"><span class="monitor-label">Bins (频带数):</span><span class="monitor-val" id="monBins">--</span></div>
+    <div class="monitor-item"><span class="monitor-label">动态波峰因数:</span><span class="monitor-val" id="monCrest">--</span><span class="monitor-label">dB</span></div>
+</div>
+
+<div class="grid-container">
+    <div class="panel" id="panel-ecg">
+        <div class="panel-title">1. ECG Waveform (时域脉冲 - 仿心电图)</div>
+        <button class="panel-save-btn" data-panel="cvsECG">Save</button>
+        <div class="cursor-info" id="cursorECG"></div>
+        <div class="pause-overlay" id="pauseOvECG"><span>PAUSED</span></div>
+        <canvas id="cvsECG"></canvas>
+    </div>
+
+    <div class="panel" id="panel-rta">
+        <div class="panel-title">2. RTA Spectrum (对数频响仪 - 物理分贝)</div>
+        <button class="panel-save-btn" data-panel="cvsRTA">Save</button>
+        <div class="cursor-info" id="cursorRTA"></div>
+        <div class="pause-overlay" id="pauseOvRTA"><span>PAUSED</span></div>
+        <canvas id="cvsRTA"></canvas>
+    </div>
+
+    <div class="panel" id="panel-vert">
+        <div class="panel-title">3. RTA Spectrogram (对数纵向瀑布 - 同步对齐)</div>
+        <button class="panel-save-btn" data-panel="cvsVertRTA">Save</button>
+        <div class="cursor-info" id="cursorVert"></div>
+        <div class="pause-overlay" id="pauseOvVert"><span>PAUSED</span></div>
+        <canvas id="cvsVertRTA"></canvas>
+    </div>
+
+    <div class="panel" id="panel-simple">
+        <div class="panel-title">4. Simple Spectrum (线性频谱 - 基础特征)</div>
+        <button class="panel-save-btn" data-panel="cvsSimpleSpec">Save</button>
+        <div class="cursor-info" id="cursorSimple"></div>
+        <div class="pause-overlay" id="pauseOvSimple"><span>PAUSED</span></div>
+        <canvas id="cvsSimpleSpec"></canvas>
+    </div>
+
+    <div class="panel" id="panel-horiz">
+        <div class="panel-title">5. Horizontal Spectrogram (线性横向瀑布 - 主题可切)</div>
+        <button class="panel-save-btn" data-panel="cvsHorizBase">Save</button>
+        <div class="cursor-info" id="cursorHoriz"></div>
+        <div class="pause-overlay" id="pauseOvHoriz"><span>PAUSED</span></div>
+        <canvas id="cvsHorizBase"></canvas>
+    </div>
+</div>
+
+<script>
+    // ==================== DOM 元素获取 ====================
+    const startBtn = document.getElementById('startBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const recBtn = document.getElementById('recBtn');
+    const saveAllBtn = document.getElementById('saveAllBtn');
+    
+    const gainSlider = document.getElementById('gainSlider');
+    const gainValueTxt = document.getElementById('gainValue');
+    const fftSelect = document.getElementById('fftSelect');
+    const smoothSlider = document.getElementById('smoothSlider');
+    const smoothValueTxt = document.getElementById('smoothValue');
+    const speedSlider = document.getElementById('speedSlider');
+    const speedValueTxt = document.getElementById('speedValue');
+    const themeSelect = document.getElementById('themeSelect');
+    const dbMinSlider = document.getElementById('dbMinSlider');
+    const dbMinValueTxt = document.getElementById('dbMinValue');
+    const dbMaxSlider = document.getElementById('dbMaxSlider');
+    const dbMaxValueTxt = document.getElementById('dbMaxValue');
+    
+    const recIndicator = document.getElementById('recIndicator');
+
+    const monRMS = document.getElementById('monRMS');
+    const monPeak = document.getElementById('monPeak');
+    const monFreq = document.getElementById('monFreq');
+    const monSR = document.getElementById('monSR');
+    const monBins = document.getElementById('monBins');
+    const monCrest = document.getElementById('monCrest');
+
+    const canvasIds = ['cvsECG', 'cvsRTA', 'cvsVertRTA', 'cvsSimpleSpec', 'cvsHorizBase'];
+    const ctxMap = {};
+    canvasIds.forEach(id => {
+        ctxMap[id] = document.getElementById(id).getContext('2d', { willReadFrequently: true });
+    });
+    const ctxECG = ctxMap.cvsECG;
+    const ctxRTA = ctxMap.cvsRTA;
+    const ctxVertRTA = ctxMap.cvsVertRTA;
+    const ctxSimpleSpec = ctxMap.cvsSimpleSpec;
+    const ctxHorizBase = ctxMap.cvsHorizBase;
+
+    // ==================== 核心状态管理 ====================
+    let audioCtx, analyser, sourceNode, mediaStream;
+    let dataTime, dataFreqByte, dataFreqFloat, smoothRTA;
+    
+    let isRunning = false;
+    let isPaused = false;
+    let animationId = null;
+    let ecgX = 0; // 心电图探针位置
+
+    // 用户参数
+    let globalGain = 1.0;
+    let ecgSpeed = 4;
+    let userMinDB = -120;
+    let userMaxDB = -10;
+
+    // 录音相关
+    let mediaRecorder = null;
+    let recChunks = [];
+    let recStartTime = 0;
+    let recTimerInterval = null;
+
+    // 绘图基础常数
+    const MIN_FREQ = 20;
+    const MAX_FREQ = 20000;
+    const FREQ_TICKS = [20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000];
+    const DB_TICKS_RTA = [-120, -100, -80, -60, -40, -20, 0];
+
+    // ==================== UI 事件监听 ====================
+    gainSlider.addEventListener('input', e => {
+        globalGain = parseFloat(e.target.value);
+        gainValueTxt.textContent = globalGain.toFixed(1) + 'x';
+    });
+    smoothSlider.addEventListener('input', e => {
+        const v = parseFloat(e.target.value);
+        smoothValueTxt.textContent = v.toFixed(2);
+        if (analyser) analyser.smoothingTimeConstant = v;
+    });
+    speedSlider.addEventListener('input', e => {
+        ecgSpeed = parseInt(e.target.value);
+        speedValueTxt.textContent = ecgSpeed;
+    });
+    dbMinSlider.addEventListener('input', e => {
+        userMinDB = parseInt(e.target.value);
+        dbMinValueTxt.textContent = userMinDB;
+    });
+    dbMaxSlider.addEventListener('input', e => {
+        userMaxDB = parseInt(e.target.value);
+        dbMaxValueTxt.textContent = userMaxDB;
+    });
+    fftSelect.addEventListener('change', () => {
+        if (analyser) {
+            analyser.fftSize = parseInt(fftSelect.value);
+            reallocBuffers();
+        }
+    });
+
+    // ==================== 内存分配与系统控制 ====================
+    function reallocBuffers() {
+        if(!analyser) return;
+        dataTime = new Uint8Array(analyser.fftSize);
+        dataFreqByte = new Uint8Array(analyser.frequencyBinCount);
+        dataFreqFloat = new Float32Array(analyser.frequencyBinCount);
+        smoothRTA = new Float32Array(analyser.frequencyBinCount).fill(userMinDB);
+        monBins.textContent = analyser.frequencyBinCount;
+    }
+
+    async function initAudio() {
+        try {
+            mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioCtx.createAnalyser();
+            analyser.fftSize = parseInt(fftSelect.value);
+            analyser.smoothingTimeConstant = parseFloat(smoothSlider.value);
+            
+            sourceNode = audioCtx.createMediaStreamSource(mediaStream);
+            sourceNode.connect(analyser);
+            
+            monSR.textContent = audioCtx.sampleRate + ' Hz';
+            reallocBuffers();
+            resizeCanvases();
+            
+            isRunning = true;
+            isPaused = false;
+            
+            // 更新 UI
+            startBtn.textContent = '停止系统';
+            startBtn.classList.add('active');
+            pauseBtn.disabled = false;
+            recBtn.disabled = false;
+            saveAllBtn.disabled = false;
+            document.querySelectorAll('.pause-overlay').forEach(el => el.classList.remove('visible'));
+            
+            renderLoop();
+        } catch (err) { 
+            alert('麦克风权限调用失败，请确保在 localhost 或 HTTPS 环境下运行，并授予浏览器麦克风权限。详情: ' + err.message); 
+        }
+    }
+
+    function stopAudio() {
+        isRunning = false;
+        if (animationId) cancelAnimationFrame(animationId);
+        if (mediaStream) mediaStream.getTracks().forEach(t => t.stop());
+        if (audioCtx) audioCtx.close();
+        if (mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
+        
+        startBtn.textContent = '开启监听';
+        startBtn.classList.remove('active');
+        pauseBtn.disabled = true;
+        recBtn.disabled = true;
+        saveAllBtn.disabled = true;
+        pauseBtn.textContent = '暂停';
+        pauseBtn.classList.remove('active');
+    }
+
+    startBtn.addEventListener('click', () => {
+        if (isRunning) stopAudio(); else initAudio();
+    });
+
+    pauseBtn.addEventListener('click', () => {
+        if (!isRunning) return;
+        isPaused = !isPaused;
+        pauseBtn.textContent = isPaused ? '继续' : '暂停';
+        pauseBtn.classList.toggle('active', isPaused);
+        document.querySelectorAll('.pause-overlay').forEach(el => el.classList.toggle('visible', isPaused));
+    });
+
+    // ==================== 自适应与探针 ====================
+    function resizeCanvases() {
+        const dpr = window.devicePixelRatio || 1;
+        document.querySelectorAll('.panel canvas').forEach(cvs => {
+            const rect = cvs.parentElement.getBoundingClientRect();
+            cvs.width = Math.round(rect.width * dpr);
+            cvs.height = Math.round(rect.height * dpr);
+            cvs.style.width = rect.width + 'px';
+            cvs.style.height = rect.height + 'px';
+        });
+        ecgX = 0; // 重置 ECG
+        if(!isRunning) drawECGGrid(ctxECG.canvas.width, ctxECG.canvas.height); // 初始化背景
+    }
+
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(resizeCanvases, 100);
+    });
+    // 初次加载触发
+    resizeCanvases();
+
+    function freqFromLogX(x, w) {
+        const p = x / w;
+        return Math.pow(10, Math.log10(MIN_FREQ) + p * (Math.log10(MAX_FREQ) - Math.log10(MIN_FREQ)));
+    }
+
+    function setupCursorProbe(canvasId, infoId, mapFn) {
+        const cvs = document.getElementById(canvasId);
+        const info = document.getElementById(infoId);
+        function handler(clientX, clientY) {
+            if (!isRunning) return;
+            const rect = cvs.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            const x = (clientX - rect.left) * dpr;
+            const y = (clientY - rect.top) * dpr;
+            const w = cvs.width, h = cvs.height;
+            if (x < 0 || y < 0 || x > w || y > h) { info.style.display = 'none'; return; }
+            const text = mapFn(x, y, w, h);
+            if (text) { info.textContent = text; info.style.display = 'block'; }
+        }
+        cvs.addEventListener('mousemove', e => handler(e.clientX, e.clientY));
+        cvs.addEventListener('touchmove', e => { e.preventDefault(); handler(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
+        cvs.addEventListener('mouseleave', () => info.style.display = 'none');
+        cvs.addEventListener('touchend', () => info.style.display = 'none');
+    }
+
+    setupCursorProbe('cvsECG', 'cursorECG', (x, y, w, h) => {
+        const amp = ((h / 2 - y) / (h / 2)).toFixed(3);
+        return `Amp: ${amp}`;
+    });
+    setupCursorProbe('cvsRTA', 'cursorRTA', (x, y, w, h) => {
+        const freq = freqFromLogX(x, w);
+        const db = userMaxDB - (y / h) * (userMaxDB - userMinDB);
+        return `${freq.toFixed(0)} Hz | ${db.toFixed(1)} dB`;
+    });
+    setupCursorProbe('cvsVertRTA', 'cursorVert', (x, y, w, h) => {
+        const freq = freqFromLogX(x, w);
+        return `${freq.toFixed(0)} Hz`;
+    });
+    setupCursorProbe('cvsSimpleSpec', 'cursorSimple', (x, y, w, h) => {
+        if (!audioCtx) return '';
+        const maxBins = Math.floor(dataFreqByte.length * 0.75);
+        const barW = (w / maxBins) * 2;
+        const bin = Math.floor(x / barW);
+        const freq = bin * (audioCtx.sampleRate / analyser.fftSize);
+        const amp = ((h - y) / h * 100).toFixed(0);
+        return `${freq.toFixed(0)} Hz | ${amp}%`;
+    });
+    setupCursorProbe('cvsHorizBase', 'cursorHoriz', (x, y, w, h) => {
+        if (!audioCtx) return '';
+        const maxBins = Math.floor(dataFreqByte.length * 0.7);
+        const binH = h / maxBins;
+        const bin = Math.floor((h - y) / binH);
+        const freq = bin * (audioCtx.sampleRate / analyser.fftSize);
+        return `${freq.toFixed(0)} Hz`;
+    });
+
+    // ==================== 录音与截图 ====================
+    function getTimestamp() {
+        const d = new Date();
+        return d.getFullYear() + ('0'+(d.getMonth()+1)).slice(-2) + ('0'+d.getDate()).slice(-2) + '_' + ('0'+d.getHours()).slice(-2) + ('0'+d.getMinutes()).slice(-2) + ('0'+d.getSeconds()).slice(-2);
+    }
+
+    function saveCanvasAsImage(canvas, name) {
+        const link = document.createElement('a');
+        link.download = name + '_' + getTimestamp() + '.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    }
+
+    document.querySelectorAll('.panel-save-btn').forEach(btn => {
+        btn.addEventListener('click', () => saveCanvasAsImage(document.getElementById(btn.dataset.panel), btn.dataset.panel));
+    });
+
+    saveAllBtn.addEventListener('click', () => {
+        canvasIds.forEach(id => saveCanvasAsImage(document.getElementById(id), id));
+    });
+
+    recBtn.addEventListener('click', () => {
+        if (!mediaStream) return;
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
+            mediaRecorder.stop();
+            recBtn.textContent = '录音';
+            recBtn.classList.remove('active');
+            recIndicator.classList.remove('visible');
+            clearInterval(recTimerInterval);
+        } else {
+            recChunks = [];
+            mediaRecorder = new MediaRecorder(mediaStream);
+            mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recChunks.push(e.data); };
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(recChunks, { type: 'audio/webm' });
+                const link = document.createElement('a');
+                link.download = 'recording_' + getTimestamp() + '.webm';
+                link.href = URL.createObjectURL(blob);
+                link.click();
+            };
+            mediaRecorder.start();
+            recStartTime = Date.now();
+            recBtn.textContent = '停止录音';
+            recBtn.classList.add('active');
+            recIndicator.classList.add('visible');
+            recTimerInterval = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - recStartTime) / 1000);
+                const m = String(Math.floor(elapsed / 60)).padStart(2, '0');
+                const s = String(elapsed % 60).padStart(2, '0');
+                document.getElementById('recTime').textContent = m + ':' + s;
+            }, 200);
+        }
+    });
+
+    // ==================== 核心数学与刻度 ====================
+    function getLogX(freq, width) {
+        if (freq < MIN_FREQ) return 0;
+        return ((Math.log10(freq) - Math.log10(MIN_FREQ)) / (Math.log10(MAX_FREQ) - Math.log10(MIN_FREQ))) * width;
+    }
+
+    // 完成断开的绘制刻度函数 (X轴 对数频率)
+    function drawFreqAxisLog(ctx, w, h) {
+        const dpr = window.devicePixelRatio || 1;
+        const fontSize = Math.max(9, Math.round(10 * dpr));
+        ctx.font = fontSize + 'px monospace';
+        ctx.fillStyle = 'rgba(255,255,255,0.6)';
+        ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        FREQ_TICKS.forEach(f => {
+            const x = getLogX(f, w);
+            ctx.moveTo(x, 0); ctx.lineTo(x, h);
+            const label = f >= 1000 ? (f / 1000) + 'k' : f + '';
+            ctx.fillText(label, x + 4, h - 4);
+        });
+        ctx.stroke();
+    }
+
+    // 绘制 Y 轴分贝刻度
+    function drawDbAxisRTA(ctx, w, h) {
+        const dpr = window.devicePixelRatio || 1;
+        const fontSize = Math.max(9, Math.round(10 * dpr));
+        ctx.font = fontSize + 'px monospace';
+        ctx.fillStyle = 'rgba(255,255,255,0.6)';
+        ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        DB_TICKS_RTA.forEach(db => {
+            if (db < userMinDB || db > userMaxDB) return;
+            const y = (-(db - userMaxDB) / (userMaxDB - userMinDB)) * h;
+            ctx.moveTo(0, y); ctx.lineTo(w, y);
+            ctx.fillText(db + 'dB', 4, y - 4);
+        });
+        ctx.stroke();
+    }
+
+    // 色彩映射
+    function getColorRTA(db, minDb, maxDb) {
+        let p = Math.max(0, Math.min(1, (db - minDb) / (maxDb - minDb)));
+        if (p < 0.05) return '#050a14';
+        return `hsl(${220 + p * 110}, ${60 + p * 40}%, ${10 + p * 70}%)`;
+    }
+    const themeFuncs = {
+        blue: val => { let p = Math.max(0, Math.min(1, (val * globalGain) / 255)); return `rgb(${p*50}, ${p*150}, ${p*255})`; },
+        thermal: val => { let p = Math.max(0, Math.min(1, (val * globalGain) / 255)); return `hsl(${(1-p)*120}, 100%, ${p*50+5}%)`; },
+        magma: val => { let p = Math.max(0, Math.min(1, (val * globalGain) / 255)); return `rgb(${p*255}, ${p*p*100}, ${Math.sqrt(p)*180})`; },
+        green: val => { let p = Math.max(0, Math.min(1, (val * globalGain) / 255)); return `rgb(0, ${p*255}, ${p*60})`; }
+    };
+
+    // ==================== 数据分析与渲染 ====================
+    function updateMonitors() {
+        let sumSq = 0, peakSq = 0;
+        for (let i = 0; i < dataTime.length; i++) {
+            let norm = (dataTime[i] / 128.0) - 1.0;
+            norm *= globalGain;
+            let sq = norm * norm;
+            sumSq += sq;
+            if (sq > peakSq) peakSq = sq;
+        }
+        let rms = Math.sqrt(sumSq / dataTime.length);
+        let rmsDb = rms > 0.0001 ? 20 * Math.log10(rms) : -120;
+        let peak = Math.sqrt(peakSq);
+        let peakDb = peak > 0.0001 ? 20 * Math.log10(peak) : -120;
+        
+        monRMS.textContent = rmsDb.toFixed(1);
+        monPeak.textContent = peakDb.toFixed(1);
+        monCrest.textContent = (peakDb - rmsDb).toFixed(1);
+        
+        monPeak.className = 'monitor-val' + (peakDb > -1 ? ' clip' : (peakDb > -6 ? ' warn' : ''));
+
+        let maxVal = -999, maxBin = 0;
+        for (let i = 0; i < dataFreqFloat.length; i++) {
+            if (dataFreqFloat[i] > maxVal) { maxVal = dataFreqFloat[i]; maxBin = i; }
+        }
+        monFreq.textContent = Math.round(maxBin * (audioCtx.sampleRate / analyser.fftSize));
+    }
+
+    function renderLoop() {
+        if (!isRunning) return;
+        animationId = requestAnimationFrame(renderLoop);
+        
+        if (isPaused) return; // 暂停不更新数据和画面
+
+        analyser.getByteTimeDomainData(dataTime);
+        analyser.getFloatFrequencyData(dataFreqFloat);
+        analyser.getByteFrequencyData(dataFreqByte);
+
+        updateMonitors();
+
+        renderECG();
+        renderRTA();
+        renderVertSpectrogram();
+        renderSimpleSpectrum();
+        
+        const colorFunc = themeFuncs[themeSelect.value];
+        renderHorizSpectrogram(colorFunc);
+    }
+
+    // 图1：ECG 时域卷轴
+    function drawECGGrid(w, h) {
+        ctxECG.fillStyle = '#ffe8e8'; ctxECG.fillRect(0, 0, w, h);
+        ctxECG.lineWidth = 1; ctxECG.strokeStyle = '#ffcccc';
+        ctxECG.beginPath();
+        for(let x=0; x<w; x+=20) { ctxECG.moveTo(x,0); ctxECG.lineTo(x,h); }
+        for(let y=0; y<h; y+=20) { ctxECG.moveTo(0,y); ctxECG.lineTo(w,y); }
+        ctxECG.stroke();
+    }
+    
+    function renderECG() {
+        const w = ctxECG.canvas.width; const h = ctxECG.canvas.height;
+        const speed = ecgSpeed * (window.devicePixelRatio || 1);
+        
+        let rawVal = dataTime[Math.floor(dataTime.length / 2)]; 
+        let mappedVal = ((rawVal - 128) * globalGain) + 128;
+        let y = (mappedVal / 255) * h;
+        y = Math.max(0, Math.min(h, y)); 
+
+        if (ecgX >= w) ecgX = 0;
+        
+        // 局部擦除并重绘网格
+        ctxECG.fillStyle = '#ffe8e8'; ctxECG.fillRect(ecgX, 0, speed + 10, h);
+        ctxECG.lineWidth = 1; ctxECG.strokeStyle = '#ffcccc'; ctxECG.beginPath();
+        for(let ty=0; ty<h; ty+=20) { ctxECG.moveTo(ecgX, ty); ctxECG.lineTo(ecgX+speed+10, ty); }
+        ctxECG.stroke();
+
+        ctxECG.fillStyle = '#111';
+        ctxECG.fillRect(ecgX, y - 2, speed, 4);
+        ecgX += speed;
+    }
+
+    // 图2：RTA 频谱仪
+    function renderRTA() {
+        const w = ctxRTA.canvas.width; const h = ctxRTA.canvas.height;
+        const freqRes = audioCtx.sampleRate / analyser.fftSize;
+        
+        ctxRTA.fillStyle = '#0a0a0a'; ctxRTA.fillRect(0, 0, w, h);
+        
+        drawFreqAxisLog(ctxRTA, w, h);
+        drawDbAxisRTA(ctxRTA, w, h);
+
+        // 平滑红线 (RMS/Smooth)
+        ctxRTA.lineWidth = 3; ctxRTA.strokeStyle = 'rgba(216, 67, 88, 0.9)'; ctxRTA.beginPath();
+        let isFirstR = true;
+        for(let i=0; i<dataFreqFloat.length; i++) {
+            let f = i * freqRes; if(f<MIN_FREQ || f>MAX_FREQ) continue;
+            smoothRTA[i] = smoothRTA[i] * 0.9 + dataFreqFloat[i] * 0.1;
+            let x = getLogX(f, w); 
+            let y = (-(smoothRTA[i] - userMaxDB) / (userMaxDB - userMinDB)) * h;
+            if (isFirstR) { ctxRTA.moveTo(x,y); isFirstR = false; } else ctxRTA.lineTo(x,y);
+        }
+        ctxRTA.stroke();
+
+        // 实时黄线 (Peak)
+        ctxRTA.lineWidth = 1.5; ctxRTA.strokeStyle = 'rgba(242, 211, 56, 0.6)'; ctxRTA.beginPath();
+        let isFirstY = true;
+        for(let i=0; i<dataFreqFloat.length; i++) {
+            let f = i * freqRes; if(f<MIN_FREQ || f>MAX_FREQ) continue;
+            let x = getLogX(f, w); 
+            let y = (-(dataFreqFloat[i] - userMaxDB) / (userMaxDB - userMinDB)) * h;
+            if (isFirstY) { ctxRTA.moveTo(x,y); isFirstY = false; } else ctxRTA.lineTo(x,y);
+        }
+        ctxRTA.stroke();
+    }
+
+    // 图3：对数纵向瀑布
+    function renderVertSpectrogram() {
+        const w = ctxVertRTA.canvas.width; const h = ctxVertRTA.canvas.height;
+        const freqRes = audioCtx.sampleRate / analyser.fftSize;
+        const scrollSpeed = 2;
+        
+        // 画面下移
+        const img = ctxVertRTA.getImageData(0, 0, w, h - scrollSpeed);
+        ctxVertRTA.putImageData(img, 0, scrollSpeed);
+
+        // 绘制顶栏
+        for(let i=0; i<dataFreqFloat.length; i++) {
+            let f = i * freqRes; if(f<MIN_FREQ || f>MAX_FREQ) continue;
+            let x = getLogX(f, w);
+            let nextX = getLogX((i+1)*freqRes, w);
+            ctxVertRTA.fillStyle = getColorRTA(dataFreqFloat[i], userMinDB, userMaxDB);
+            ctxVertRTA.fillRect(x, 0, Math.max(1, nextX - x + 0.5), scrollSpeed);
+        }
+    }
+
+    // 图4：简单线性频谱
+    function renderSimpleSpectrum() {
+        const w = ctxSimpleSpec.canvas.width; const h = ctxSimpleSpec.canvas.height;
+        ctxSimpleSpec.fillStyle = '#11151a'; ctxSimpleSpec.fillRect(0, 0, w, h);
+        
+        const maxDisplay = Math.floor(dataFreqByte.length * 0.75);
+        const barW = (w / maxDisplay); 
+        let x = 0;
+        
+        ctxSimpleSpec.beginPath(); ctxSimpleSpec.moveTo(0, h);
+        for(let i=0; i<maxDisplay; i++) {
+            let val = Math.min(255, dataFreqByte[i] * globalGain);
+            let barH = (val / 255) * h;
+            ctxSimpleSpec.lineTo(x, h - barH); x += barW * 2;
+        }
+        ctxSimpleSpec.lineTo(w, h);
+        ctxSimpleSpec.strokeStyle = '#d252b2'; ctxSimpleSpec.lineWidth = 2; ctxSimpleSpec.stroke();
+        ctxSimpleSpec.fillStyle = 'rgba(210, 82, 178, 0.2)'; ctxSimpleSpec.fill();
+    }
+
+    // 图5：线性横向瀑布
+    function renderHorizSpectrogram(colorFunc) {
+        const w = ctxHorizBase.canvas.width; const h = ctxHorizBase.canvas.height;
+        const scrollSpeed = 2;
+        
+        // 画面左移
+        const img = ctxHorizBase.getImageData(scrollSpeed, 0, w - scrollSpeed, h);
+        ctxHorizBase.putImageData(img, 0, 0); 
+        
+        const maxBins = Math.floor(dataFreqByte.length * 0.7);
+        const binH = h / maxBins;
+        
+        // 绘制右边缘
+        for(let i=0; i<maxBins; i++) {
+            let y = h - (i * binH);
+            ctxHorizBase.fillStyle = colorFunc(dataFreqByte[i]);
+            ctxHorizBase.fillRect(w - scrollSpeed, y - binH, scrollSpeed, binH + 0.5);
+        }
+    }
+</script>
+</body>
+</html>
