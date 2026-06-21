@@ -19,6 +19,7 @@
   { "cat": "ad", "title": "Cloud Studio", "desc": "每天免费领2小时T4-GPU算力。", "url": "https://cloudstudio.net/user-center", "isTop": true  },
 
   { "cat": "tool", "title": "Web Ping", "desc": "网站负载时延情况。", "url": "https://ping.chinaz.com/datxy.com", "isTop": true  },
+  { "cat": "tool", "title": "Internet Speed Test", "desc": "网络速度测试。", "url": "https://speed.cloudflare.com/", "isTop": true  },
   { "cat": "ad", "title": "Lighthouse", "desc": "腾讯跨境电商轻量云。", "url": "https://cloud.tencent.com/act/cps/redirect?redirect=5333&cps_key=615609c54e8bcced8b02c202a43b5570&from=console", "isTop": true  },
 
 
