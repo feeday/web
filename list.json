@@ -56,7 +56,7 @@
   { "cat": "tool", "title": "船舶定位", "desc": "全球船舶位置动态跟踪。", "url": "http://www.shipxy.com/" },
   { "cat": "tool", "title": "航班定位", "desc": "实时航班跟踪。", "url": "https://zh.flightaware.com/live/" },
   { "cat": "tool", "title": "koboldcpp", "desc": "电脑运行GGUF模型。", "url": "https://github.com/LostRuins/koboldcpp" },
-  { "cat": "tool", "title": "PocketPal", "desc": "手机运行GGUF模型。", "url": "hhttps://github.com/a-ghorbani/pocketpal-ai" },
+  { "cat": "tool", "title": "PocketPal", "desc": "手机运行GGUF模型。", "url": "https://github.com/a-ghorbani/pocketpal-ai" },
   { "cat": "tool", "title": "YAY", "desc": "Android ADB 桌面应用。", "url": "https://github.com/liriliri/aya" },
   { "cat": "tool", "title": "Termux", "desc": "Android 终端模拟器。", "url": "https://github.com/termux/termux-app" },
   
@@ -76,7 +76,6 @@
   { "cat": "tool", "title": "File Converter", "desc": "视频音频转换工具", "url": "https://file-converter.io/" },
   { "cat": "tool", "title": "TrafficMonitor", "desc": "任务栏显示小工具", "url": "https://github.com/zhongyang219/TrafficMonitor" },
   { "cat": "tool", "title": "Conda", "desc": "Conda 环境工具下载", "url": "https://docs.conda.io/projects/conda/en/stable/" },
-  { "cat": "ad", "title": "夸克网盘", "desc": "离线模型工具分享", "url": "https://pan.quark.cn/s/e272d9cfa18d" },
  
   { "cat": "audio", "title": "Suno", "desc": "AI音乐生成模型", "url": "https://suno.com/" },
   { "cat": "audio", "title": "Fish Audio", "desc": "最佳AI文字转语音和免费语音克隆。", "url": "https://fish.audio/zh-CN/discovery/" },
