@@ -58,6 +58,8 @@
   { "cat": "tool", "title": "koboldcpp", "desc": "电脑运行GGUF模型。", "url": "https://github.com/LostRuins/koboldcpp" },
   { "cat": "tool", "title": "PocketPal", "desc": "手机运行GGUF模型。", "url": "https://github.com/a-ghorbani/pocketpal-ai" },
   { "cat": "tool", "title": "YAY", "desc": "Android ADB 桌面应用。", "url": "https://github.com/liriliri/aya" },
+  { "cat": "tool", "title": "Disk Recovery", "desc": "磁盘数据恢复。", "url": "https://www.cgsecurity.org/wiki/TestDisk_Download" },
+  
   { "cat": "tool", "title": "Termux", "desc": "Android 终端模拟器。", "url": "https://github.com/termux/termux-app" },
   
   { "cat": "tool", "title": "屏幕刷新", "desc": "显示器测试。", "url": "https://www.shijuezu.com/" },
