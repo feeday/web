@@ -55,7 +55,11 @@
   { "cat": "ad", "title": "Colab", "desc": "谷歌云端 Python 代码笔记。", "url": "https://colab.new/", "hideOnMobile": true },
   { "cat": "tool", "title": "船舶定位", "desc": "全球船舶位置动态跟踪。", "url": "http://www.shipxy.com/" },
   { "cat": "tool", "title": "航班定位", "desc": "实时航班跟踪。", "url": "https://zh.flightaware.com/live/" },
-  { "cat": "tool", "title": "koboldcpp", "desc": "快速运行GGUF模型。", "url": "https://github.com/LostRuins/koboldcpp" },
+  { "cat": "tool", "title": "koboldcpp", "desc": "电脑运行GGUF模型。", "url": "https://github.com/LostRuins/koboldcpp" },
+  { "cat": "tool", "title": "PocketPal", "desc": "手机运行GGUF模型。", "url": "hhttps://github.com/a-ghorbani/pocketpal-ai" },
+  { "cat": "tool", "title": "YAY", "desc": "Android ADB 桌面应用。", "url": "https://github.com/liriliri/aya" },
+  { "cat": "tool", "title": "Termux", "desc": "Android 终端模拟器。", "url": "https://github.com/termux/termux-app" },
+  
   { "cat": "tool", "title": "屏幕刷新", "desc": "显示器测试。", "url": "https://www.shijuezu.com/" },
   { "cat": "tool", "title": "鼠标测试", "desc": "鼠标的轮询速率。", "url": "https://cps-check.com/cn/polling-rate-check" },
   { "cat": "tool", "title": "手柄测试", "desc": "游戏手柄测试。", "url": "https://hardwaretester.com/gamepad" },
