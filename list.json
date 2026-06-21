@@ -11,6 +11,7 @@
   { "cat": "ad", "title": "AI-工具集", "desc": "发现最新AI产品工具和使用技巧。", "url": "https://ai-bot.cn/ai-tools/", "isTop": true },
   { "cat": "text", "title": "AI-信息", "desc": "AI 自动挑选的高价值内容。", "url": "https://aihot.virxact.com", "isTop": true },
   { "cat": "text", "title": "AI-吐槽", "desc": "AI 豆包等模型吐槽留言。", "url": "https://tcq233.com/btv", "isTop": true },
+  { "cat": "tool", "title": "GPU Test", "desc": "GPU 显卡极限压力测试。", "url": "https://datxy.com/gpu", "isTop": true  },
   { "cat": "text", "title": "谷歌翻译", "desc": "谷歌文档文字在线翻译。", "url": "https://translate.google.com/", "isTop": true },
   { "cat": "text", "title": "谷歌邮箱", "desc": "谷歌邮箱收件箱。", "url": "https://mail.google.com/mail/u/0/#inbox", "isTop": true },
   
@@ -54,7 +55,6 @@
   { "cat": "tool", "title": "船舶定位", "desc": "全球船舶位置动态跟踪。", "url": "http://www.shipxy.com/" },
   { "cat": "tool", "title": "航班定位", "desc": "实时航班跟踪。", "url": "https://zh.flightaware.com/live/" },
   { "cat": "tool", "title": "koboldcpp", "desc": "快速运行GGUF模型。", "url": "https://github.com/LostRuins/koboldcpp" },
-  { "cat": "tool", "title": "GPU Test", "desc": "GPU在线显卡测试。", "url": "https://datxy.com/gpu" },
   { "cat": "tool", "title": "屏幕刷新", "desc": "显示器测试。", "url": "https://www.shijuezu.com/" },
   { "cat": "tool", "title": "鼠标测试", "desc": "鼠标的轮询速率。", "url": "https://cps-check.com/cn/polling-rate-check" },
   { "cat": "tool", "title": "手柄测试", "desc": "游戏手柄测试。", "url": "https://hardwaretester.com/gamepad" },
