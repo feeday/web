@@ -743,6 +743,37 @@
         setTimeout(() => { btnElement.innerHTML = originalText; btnElement.style.color = ''; }, 2000);
     }
 
+    function playBrowserVoice(cleanText, btnElement, browserVoiceURI) {
+        if (!('speechSynthesis' in window)) { alert("您的浏览器不支持系统语音播报功能"); return; }
+
+        if (btnElement.isNativePlaying) {
+            window.speechSynthesis.cancel();
+            btnElement.isNativePlaying = false;
+            btnElement.innerHTML = '🔊 朗读';
+            return;
+        }
+
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(cleanText);
+        const voices = window.speechSynthesis.getVoices();
+        const selectedVoice = voices.find(v => v.voiceURI === browserVoiceURI);
+        if (selectedVoice) utterance.voice = selectedVoice;
+        else utterance.lang = 'zh-CN';
+
+        utterance.onstart = () => { btnElement.isNativePlaying = true; btnElement.innerHTML = '⏹️ 停止'; btnElement.style.color = 'var(--theme-green)'; };
+        utterance.onend = () => { btnElement.isNativePlaying = false; btnElement.innerHTML = '🔊 朗读'; btnElement.style.color = ''; };
+        utterance.onerror = utterance.onend;
+        window.speechSynthesis.speak(utterance);
+    }
+
+    function isLikelyMixedContentRequest(url) {
+        try {
+            return window.location.protocol === 'https:' && new URL(url, window.location.href).protocol === 'http:';
+        } catch (e) {
+            return false;
+        }
+    }
+
     async function playVoiceClient(text, btnElement) {
         const ttsUrl = document.getElementById('ttsUrl').value.trim();
         const ttsVoice = document.getElementById('ttsVoice').value.trim();
@@ -766,10 +797,10 @@
             btnElement.innerHTML = '⏳ 转化中...';
             btnElement.style.color = '#ff9800';
 
-            try {
-                let base_url = ttsUrl.replace(/\/+$/, '');
-                if (!base_url.endsWith('/api/tts')) base_url += '/api/tts';
+            let base_url = ttsUrl.replace(/\/+$/, '');
+            if (!base_url.endsWith('/api/tts')) base_url += '/api/tts';
 
+            try {
                 const payload = { text: cleanText };
                 if (ttsVoice) payload.voice = ttsVoice;
 
@@ -790,30 +821,16 @@
                 audio.onended = () => { btnElement.innerHTML = '🔊 朗读'; btnElement.style.color = ''; btnElement.audioObj = null; };
                 audio.play();
             } catch (err) {
-                alert("语音请求异常！请检查：\n1. 自定义节点是否启动？\n2. 是否已开启 CORS 跨域许可？");
+                console.error('TTS request failed:', err);
+                const mixedContentTip = isLikelyMixedContentRequest(base_url)
+                    ? "\n\n当前页面是 HTTPS，浏览器会拦截 HTTP 语音节点。请改用 HTTP 页面打开本工具，或给语音节点配置 HTTPS/同域反代。"
+                    : '';
+                alert("自定义 TTS 请求异常，将自动改用浏览器原生语音。\n请检查：\n1. 自定义节点是否启动？\n2. 是否已开启 CORS 跨域许可？" + mixedContentTip);
                 btnElement.innerHTML = originalText; btnElement.style.color = '';
+                playBrowserVoice(cleanText, btnElement, browserVoiceURI);
             }
         } else {
-            if (!('speechSynthesis' in window)) { alert("您的浏览器不支持系统语音播报功能"); return; }
-
-            if (btnElement.isNativePlaying) {
-                window.speechSynthesis.cancel();
-                btnElement.isNativePlaying = false;
-                btnElement.innerHTML = '🔊 朗读';
-                return;
-            }
-
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(cleanText);
-            const voices = window.speechSynthesis.getVoices();
-            const selectedVoice = voices.find(v => v.voiceURI === browserVoiceURI);
-            if (selectedVoice) utterance.voice = selectedVoice;
-            else utterance.lang = 'zh-CN';
-
-            utterance.onstart = () => { btnElement.isNativePlaying = true; btnElement.innerHTML = '⏹️ 停止'; btnElement.style.color = 'var(--theme-green)'; };
-            utterance.onend = () => { btnElement.isNativePlaying = false; btnElement.innerHTML = '🔊 朗读'; btnElement.style.color = ''; };
-            utterance.onerror = utterance.onend;
-            window.speechSynthesis.speak(utterance);
+            playBrowserVoice(cleanText, btnElement, browserVoiceURI);
         }
     }
 
