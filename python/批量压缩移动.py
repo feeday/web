@@ -10,8 +10,8 @@
 - 自带 tqdm 进度条；如果本机没装 tqdm，会自动用国内 pip 源安装。
 
 使用方法：
-1. 直接修改下面的 SOURCE_DIR 和 OUT_DIR，然后运行：python 批量单文件压缩移动.py
-2. 也可以临时从命令行覆盖目录：python 批量单文件压缩移动.py "G:\\Submit" "G:\\ZipOut"
+1. 直接修改下面的 SOURCE_DIR 和 OUT_DIR，然后运行：python 批量压缩移动.py
+2. 也可以临时从命令行覆盖目录：python 批量压缩移动.py "G:\\Submit" "G:\\ZipOut"
 """
 
 from __future__ import annotations
