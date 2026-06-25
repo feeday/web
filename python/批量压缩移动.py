@@ -144,12 +144,14 @@ def unique_zip_path(out_dir: Path, relative_file: Path, overwrite: bool) -> Path
 def zip_file_with_progress(source_file: Path, temp_zip: Path, method: int, progress: tqdm) -> None:
     """用分块写入 zip 的方式更新字节级进度，避免大文件时进度条长时间不动。"""
     compresslevel = 6 if method == zipfile.ZIP_DEFLATED else None
-    mtime = datetime.fromtimestamp(source_file.stat().st_mtime)
+    stat = source_file.stat()
+    mtime = datetime.fromtimestamp(stat.st_mtime)
     zip_info = zipfile.ZipInfo(source_file.name, date_time=mtime.timetuple()[:6])
     zip_info.compress_type = method
+    zip_info.file_size = stat.st_size
 
     with zipfile.ZipFile(temp_zip, "w", compression=method, compresslevel=compresslevel) as zf:
-        with source_file.open("rb") as src, zf.open(zip_info, "w") as dst:
+        with source_file.open("rb") as src, zf.open(zip_info, "w", force_zip64=True) as dst:
             while True:
                 chunk = src.read(CHUNK_SIZE)
                 if not chunk:
