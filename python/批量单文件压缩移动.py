@@ -7,6 +7,7 @@
 - 每个文件生成一个 .zip 包，例如 a.mp4 -> a.zip。
 - 支持递归扫描子目录，并在输出目录保留相对目录结构，避免重名覆盖。
 - 多线程并发压缩，适合大量文件；每个压缩包先写到临时目录，成功后再原子移动到输出目录。
+- 自带 tqdm 进度条；如果本机没装 tqdm，会自动用国内 pip 源安装。
 
 使用方法：
 1. 直接修改下面的 SOURCE_DIR 和 OUT_DIR，然后运行：python 批量单文件压缩移动.py
@@ -16,13 +17,67 @@
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import os
 import shutil
+import subprocess
+import sys
 import tempfile
 import time
 import zipfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+
+
+def ensure_pip_package(module_name: str, package_name: str | None = None) -> bool:
+    """缺少依赖时自动用国内 pip 源安装；安装失败则返回 False。"""
+    if importlib.util.find_spec(module_name) is not None:
+        return True
+
+    package = package_name or module_name
+    print(f"缺少依赖 {package}，正在使用清华 pip 源自动安装...")
+    result = subprocess.run([
+        sys.executable,
+        "-m",
+        "pip",
+        "install",
+        "-i",
+        "https://pypi.tuna.tsinghua.edu.cn/simple",
+        "--trusted-host",
+        "pypi.tuna.tsinghua.edu.cn",
+        package,
+    ], check=False)
+    return result.returncode == 0 and importlib.util.find_spec(module_name) is not None
+
+
+if ensure_pip_package("tqdm"):
+    from tqdm import tqdm
+else:
+    class tqdm:  # noqa: N801 - 兼容 tqdm 的调用方式
+        """tqdm 安装失败时的简易进度条兜底。"""
+
+        def __init__(self, iterable, total: int, unit: str = "", desc: str = ""):
+            self.iterable = iterable
+            self.total = total
+            self.unit = unit
+            self.desc = desc
+            self.count = 0
+            self.ok = 0
+            self.fail = 0
+
+        def __iter__(self):
+            for item in self.iterable:
+                self.count += 1
+                print(f"{self.desc}: {self.count}/{self.total} {self.unit} ok={self.ok} fail={self.fail}")
+                yield item
+
+        def set_postfix(self, ok: int, fail: int, refresh: bool = False) -> None:
+            self.ok = ok
+            self.fail = fail
+
+        @staticmethod
+        def write(message: str) -> None:
+            print(message)
 
 
 # ===== 直接在这里写目录和默认参数 =====
@@ -140,15 +195,18 @@ def main() -> int:
 
     with ThreadPoolExecutor(max_workers=args.workers) as executor:
         futures = [executor.submit(compress_one_file, file, source_dir, out_dir, method, args.overwrite) for file in files]
-        for future in as_completed(futures):
+        progress = tqdm(as_completed(futures), total=len(futures), unit="file", desc="压缩进度")
+        for future in progress:
             try:
                 source_file, final_zip, size = future.result()
                 ok_count += 1
                 total_bytes += size
-                print(f"[{ok_count}/{len(files)}] OK {source_file} -> {final_zip}")
+                progress.set_postfix(ok=ok_count, fail=fail_count, refresh=False)
+                tqdm.write(f"[{ok_count}/{len(files)}] OK {source_file} -> {final_zip}")
             except CompressError as exc:
                 fail_count += 1
-                print(f"FAIL {exc}")
+                progress.set_postfix(ok=ok_count, fail=fail_count, refresh=False)
+                tqdm.write(f"FAIL {exc}")
 
     elapsed = time.time() - start
     speed = total_bytes / 1024 / 1024 / elapsed if elapsed > 0 else 0
