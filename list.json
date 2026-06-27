@@ -43,6 +43,7 @@
   { "cat": "ad", "title": "Kaggle", "desc": "Kaggle 综合数据集。", "url": "https://www.kaggle.com/datasets?sort=published" },
   { "cat": "ad", "title": "Replicate", "desc": "Replicate 模型生成汇总。", "url": "https://replicate.com/explore" },
   { "cat": "ad", "title": "fal.ai", "desc": "fal.ai 模型生成汇总。", "url": "https://fal.ai/explore" },
+  { "cat": "ad", "title": "Steam Info", "desc": "Steam 特价查询历史低价。", "url": "https://steamdb.info/sales/" },
   
   { "cat": "image", "title": "Z-Image-Turbo", "desc": "开源在线文生图模型。", "url": "https://huggingface.co/spaces/mrfakename/Z-Image-Turbo"},
   { "cat": "image", "title": "FireRed-Image-Edit", "desc": "图像编辑模型。", "url": "https://huggingface.co/spaces/prithivMLmods/FireRed-Image-Edit-1.0-Fast"},
