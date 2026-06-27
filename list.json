@@ -12,8 +12,9 @@
   { "cat": "image", "title": "Photopea", "desc": "在线PS，图形图层在线编辑器。", "url": "https://www.photopea.com/"},
   { "cat": "video", "title": "OpenCut", "desc": "在线视频编辑工具。", "url": "https://opencut.app/projects", "isTop": true },
   { "cat": "ad", "title": "AI-工具集", "desc": "发现最新AI产品工具和使用技巧。", "url": "https://ai-bot.cn/ai-tools/"},
-  { "cat": "text", "title": "AI-信息", "desc": "AI 自动挑选的高价值内容。", "url": "https://aihot.virxact.com", "isTop": true },
   { "cat": "text", "title": "AI-吐槽", "desc": "AI 豆包等模型吐槽留言。", "url": "https://tcq233.com/btv", "isTop": true },
+
+  { "cat": "text", "title": "AI-信息", "desc": "AI 自动挑选的高价值内容。", "url": "https://aihot.virxact.com", "isTop": true },
   { "cat": "tool", "title": "GPU Test", "desc": "GPU 显卡极限压力测试。", "url": "https://datxy.com/gpu", "isTop": true  },
   { "cat": "ad", "title": "Cloud Studio", "desc": "每天免费领2小时T4-GPU算力。", "url": "https://cloudstudio.net/user-center", "isTop": true  },
   { "cat": "tool", "title": "Web Ping", "desc": "网站负载时延情况。", "url": "https://ping.chinaz.com/datxy.com", "isTop": true  },
