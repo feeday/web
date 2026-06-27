@@ -8,7 +8,7 @@
   { "cat": "video", "title": "Seedance 2.0", "desc": "每天5条10秒视频豆包免费生成。", "url": "https://www.doubao.com/chat/create-image", "isTop": true },
   { "cat": "ad", "title": "API MD", "desc": "API 测试 MD 编辑", "url": "/aigc", "isTop": true },
   
-  { "cat": "image", "title": "Mspaint", "desc": "在线画图工具。", "url": "https://datxy.com/mspaint" },
+  { "cat": "image", "title": "Mspaint", "desc": "在线画图工具。", "url": "https://datxy.com/mspaint", "isTop": true },
   { "cat": "image", "title": "Photopea", "desc": "在线PS，图形图层在线编辑器。", "url": "https://www.photopea.com/"},
   { "cat": "video", "title": "OpenCut", "desc": "在线视频编辑工具。", "url": "https://opencut.app/projects", "isTop": true },
   { "cat": "ad", "title": "AI-工具集", "desc": "发现最新AI产品工具和使用技巧。", "url": "https://ai-bot.cn/ai-tools/"},
