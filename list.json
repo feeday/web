@@ -4,18 +4,19 @@
   { "cat": "ad", "title": "Models", "desc": "HuggingFace 镜像站。", "url": "https://hf-mirror.com/", "isTop": true },
   { "cat": "text", "title": "Codex", "desc": "代码编辑器。", "url": "https://chatgpt.com/codex/cloud", "isTop": true },
   { "cat": "image", "title": "NanoBananaPro", "desc": "Banana 官网图像生成", "url": "https://labs.google/fx/zh/tools/flow", "isTop": true },
+  { "cat": "video", "title": "Seedance 2.0", "desc": "每天5条10秒视频豆包免费生成。", "url": "https://www.doubao.com/chat/create-image", "isTop": true },
   { "cat": "ad", "title": "LLM-API-Test", "desc": "测试语言大模型接口", "url": "/api", "isTop": true },
   { "cat": "tool", "title": "MD-Edit", "desc": "文档编辑器支持传图", "url": "/md", "isTop": true },
-  { "cat": "image", "title": "Photopea", "desc": "在线PS，图形图层在线编辑器。", "url": "https://www.photopea.com/", "isTop": true },
+  { "cat": "image", "title": "Mspaint", "desc": "在线画图工具。", "url": "https://datxy.com/mspaint" },
+  { "cat": "image", "title": "Photopea", "desc": "在线PS，图形图层在线编辑器。", "url": "https://www.photopea.com/"},
   { "cat": "video", "title": "OpenCut", "desc": "在线视频编辑工具。", "url": "https://opencut.app/projects", "isTop": true },
-  { "cat": "ad", "title": "AI-工具集", "desc": "发现最新AI产品工具和使用技巧。", "url": "https://ai-bot.cn/ai-tools/", "isTop": true },
+  { "cat": "ad", "title": "AI-工具集", "desc": "发现最新AI产品工具和使用技巧。", "url": "https://ai-bot.cn/ai-tools/"},
   { "cat": "text", "title": "AI-信息", "desc": "AI 自动挑选的高价值内容。", "url": "https://aihot.virxact.com", "isTop": true },
   { "cat": "text", "title": "AI-吐槽", "desc": "AI 豆包等模型吐槽留言。", "url": "https://tcq233.com/btv", "isTop": true },
   { "cat": "tool", "title": "GPU Test", "desc": "GPU 显卡极限压力测试。", "url": "https://datxy.com/gpu", "isTop": true  },
   { "cat": "text", "title": "谷歌翻译", "desc": "谷歌文档文字在线翻译。", "url": "https://translate.google.com/", "isTop": true },
   { "cat": "text", "title": "谷歌邮箱", "desc": "谷歌邮箱收件箱。", "url": "https://mail.google.com/mail/u/0/#inbox", "isTop": true },
   
-  { "cat": "video", "title": "Seedance 2.0", "desc": "每天5条10秒视频豆包免费生成。", "url": "https://www.doubao.com/chat/create-image", "isTop": true },
   { "cat": "ad", "title": "Cloud Studio", "desc": "每天免费领2小时T4-GPU算力。", "url": "https://cloudstudio.net/user-center", "isTop": true  },
 
   { "cat": "tool", "title": "Web Ping", "desc": "网站负载时延情况。", "url": "https://ping.chinaz.com/datxy.com", "isTop": true  },
@@ -51,7 +52,7 @@
   { "cat": "image", "title": "FLUX.2-klein-9B", "desc": "在线图生图模型", "url": "https://huggingface.co/spaces/black-forest-labs/FLUX.2-klein-9B" },
   { "cat": "image", "title": "Qwen-Image-Edit", "desc": "开源在线图像修改。", "url": "https://huggingface.co/spaces/multimodalart/Qwen-Image-Edit-Fast" },
   { "cat": "image", "title": "bonsai-image-webgpu", "desc": "文生图网页端运行。", "url": "https://huggingface.co/spaces/webml-community/bonsai-image-webgpu" },
-  { "cat": "image", "title": "Mspaint", "desc": "在线画图工具。", "url": "https://datxy.com/mspaint" },
+
 
   { "cat": "ad", "title": "Colab", "desc": "谷歌云端 Python 代码笔记。", "url": "https://colab.new/", "hideOnMobile": true },
   { "cat": "tool", "title": "船舶定位", "desc": "全球船舶位置动态跟踪。", "url": "http://www.shipxy.com/" },
