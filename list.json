@@ -3,7 +3,8 @@
   { "cat": "text", "title": "Artificial Intelligence", "desc": "人工智能领域相关论文", "url": "https://arxiv.org/list/cs.AI/recent" },
   { "cat": "ad", "title": "Models", "desc": "HuggingFace 镜像站。", "url": "https://hf-mirror.com/", "isTop": true },
   { "cat": "text", "title": "Codex", "desc": "代码编辑器。", "url": "https://chatgpt.com/codex/cloud", "isTop": true },
-  { "cat": "image", "title": "NanoBananaPro", "desc": "Banana 官网图像生成", "url": "https://labs.google/fx/zh/tools/flow", "isTop": true },
+  { "cat": "text", "title": "GPT-Image 2", "desc": "GPT-Image 2 图像生成模型", "url": "https://chat.openai.com/", "isTop": true },
+
   { "cat": "video", "title": "Seedance 2.0", "desc": "每天5条10秒视频豆包免费生成。", "url": "https://www.doubao.com/chat/create-image", "isTop": true },
   { "cat": "ad", "title": "LLM-API-Test", "desc": "测试语言大模型接口", "url": "/api", "isTop": true },
   { "cat": "tool", "title": "MD-Edit", "desc": "文档编辑器支持传图", "url": "/md", "isTop": true },
@@ -18,7 +19,7 @@
 
   { "cat": "text", "title": "谷歌翻译", "desc": "谷歌文档文字在线翻译。", "url": "https://translate.google.com/", "isTop": true },
   { "cat": "text", "title": "谷歌邮箱", "desc": "谷歌邮箱收件箱。", "url": "https://mail.google.com/mail/u/0/#inbox", "isTop": true },
-  
+  { "cat": "image", "title": "NanoBananaPro", "desc": "Banana 官网图像生成", "url": "https://labs.google/fx/zh/tools/flow"},
 
   { "cat": "tool", "title": "Web Ping", "desc": "网站负载时延情况。", "url": "https://ping.chinaz.com/datxy.com", "isTop": true  },
   { "cat": "tool", "title": "Internet Speed Test", "desc": "网络速度测试。", "url": "https://speed.cloudflare.com/", "isTop": true  },
@@ -34,7 +35,6 @@
   { "cat": "text", "title": "Claude Code", "desc": "终端代码编辑器", "url": "https://claude.ai/code/disabled", "isTop": true },
   { "cat": "text", "title": "Keys", "desc": "OpenAI API 密钥管理。", "url": "https://platform.openai.com/api-keys", "isTop": true },
   
-  { "cat": "text", "title": "ChatGPT", "desc": "GPT-Image 2 图像生成模型", "url": "https://chat.openai.com/", "isTop": true },
   { "cat": "multi", "title": "Workflow", "desc": "ComfyUI 工作流", "url": "https://www.runninghub.ai/page-workflow", "isTop": true },
   { "cat": "ad", "title": "Detection Fake", "desc": "腾讯朱雀文视图鉴伪。", "url": "https://matrix.tencent.com/ai-detect/", "isTop": true  },
   { "cat": "ad", "title": "MagicArena", "desc": "在线图像与视频模型对战。", "url": "https://aigcarena.com/", "isTop": true  },
