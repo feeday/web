@@ -25,6 +25,8 @@
   { "cat": "image", "title": "NanoBananaPro", "desc": "Banana 官网图像生成", "url": "https://labs.google/fx/zh/tools/flow"},
 
   { "cat": "tool", "title": "Internet Speed Test", "desc": "网络速度测试。", "url": "https://speed.cloudflare.com/", "isTop": true  },
+  { "cat": "tool", "title": "BBN Speed Test", "desc": "北京联通宽带测速。", "url": "http://cs1.bbn.com.cn:8800/gzweb/", "isTop": true  },
+  
   { "cat": "ad", "title": "Lighthouse", "desc": "腾讯跨境电商轻量云。", "url": "https://cloud.tencent.com/act/cps/redirect?redirect=5333&cps_key=615609c54e8bcced8b02c202a43b5570&from=console", "isTop": true  },
 
 
