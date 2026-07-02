@@ -249,6 +249,31 @@
             apiFrame.srcdoc = restoreEmbeddedHtml('apiSource');
             mdFrame.srcdoc = restoreEmbeddedHtml('mdSource');
 
+            function writeMarkdownToEditor(markdown, mode = 'replace') {
+                if (!markdown) return;
+                setActivePanel('mdPanel');
+                const applyContent = () => {
+                    const mdDoc = getFrameDocument(mdFrame);
+                    const input = mdDoc?.getElementById('markdownInput');
+                    if (!input) return false;
+                    const current = input.value.trim();
+                    input.value = mode === 'append' && current ? `${current}\n\n---\n\n${markdown}` : markdown;
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                    input.focus();
+                    return true;
+                };
+                if (!applyContent()) {
+                    mdFrame.addEventListener('load', applyContent, { once: true });
+                }
+            }
+
+            window.addEventListener('message', (event) => {
+                const data = event.data || {};
+                if (data.type === 'aigc-export-chat-to-md') {
+                    writeMarkdownToEditor(data.markdown, data.mode || 'replace');
+                }
+            });
+
             function setActivePanel(targetId) {
                 tabs.forEach(tab => {
                     const isActive = tab.dataset.target === targetId;
@@ -669,7 +694,8 @@
         <div class="chat-input-area">
             <div class="memory-toolbar">
                 <span class="memory-btn" onclick="document.getElementById('file-input').click()" title="导入记忆">📁 导入</span>
-                <span class="memory-btn" onclick="exportHistory()" title="导出记忆">💾 导出</span>
+                <span class="memory-btn" onclick="exportHistory()" title="导出 JSON 记忆">💾 导出</span>
+                <span class="memory-btn" onclick="exportToMarkdownEditor()" title="将当前对话导出到 MD 编辑">📝 到MD</span>
                 <span class="memory-btn" onclick="clearHistory()" title="清空对话">🗑️ 清空</span>
                 <input type="file" id="file-input" style="display: none;" accept=".json" onchange="handleImport(event)">
             </div>
@@ -1107,17 +1133,43 @@
     // ==========================================
     // 导入 / 导出 / 清空对话
     // ==========================================
+    function normalizeMessageContent(content) {
+        if (Array.isArray(content)) {
+            const textParts = content.filter(p => p.type === 'text').map(p => p.text).join('\n');
+            const imageCount = content.filter(p => p.type === 'image_url').length;
+            return textParts || (imageCount ? `[图片消息 × ${imageCount}]` : '');
+        }
+        return content == null ? '' : String(content);
+    }
+
+    function getExportableMessages() {
+        return textChatContext.map(m => ({
+            role: m.role,
+            content: normalizeMessageContent(m.content)
+        }));
+    }
+
+    function buildChatMarkdown() {
+        const roleLabel = { user: '用户', assistant: 'AI', system: '系统' };
+        const lines = [
+            '# API 对话记录',
+            '',
+            `> 导出时间：${new Date().toLocaleString()}`,
+            '',
+        ];
+        getExportableMessages().forEach((msg, index) => {
+            lines.push(`## ${index + 1}. ${roleLabel[msg.role] || msg.role}`);
+            lines.push('');
+            lines.push(msg.content || '_（空消息）_');
+            lines.push('');
+        });
+        return lines.join('\n').trim() + '\n';
+    }
+
     function exportHistory() {
         if (textChatContext.length === 0) { alert("当前记忆为空，无需导出。"); return; }
 
-        const exportData = textChatContext.map(m => {
-            let content = m.content;
-            if (Array.isArray(content)) {
-                const textParts = content.filter(p => p.type === 'text').map(p => p.text).join('\n');
-                content = textParts || '[图片消息]';
-            }
-            return { role: m.role, content };
-        });
+        const exportData = getExportableMessages();
 
         const dataStr = JSON.stringify(exportData, null, 2);
         const blob = new Blob([dataStr], { type: "application/json" });
@@ -1127,6 +1179,15 @@
         a.download = `chat_memory_${Date.now()}.json`;
         a.click();
         URL.revokeObjectURL(url);
+    }
+
+    function exportToMarkdownEditor() {
+        if (textChatContext.length === 0) { alert("当前对话为空，无法导出到 MD 编辑。"); return; }
+        window.parent?.postMessage({
+            type: 'aigc-export-chat-to-md',
+            markdown: buildChatMarkdown(),
+            mode: 'replace'
+        }, '*');
     }
 
     function handleImport(event) {
