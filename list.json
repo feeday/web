@@ -8,8 +8,6 @@
       "hfCn": "https://hf-mirror.com/datasets/datxy/demo/resolve/main/win/WinDirStat-v2.2.2-x64.msi",
       "http": "https://kdirstat.sourceforge.net/"
     },
-    "isTop": true
-  },
   {
     "cat": "image",
     "title": "银河系全景图",
@@ -130,11 +128,5 @@
     "title": "MagicArena",
     "desc": "在线图像与视频模型对战。",
     "url": "https://aigcarena.com/"
-  },
-  {
-    "cat": "multi",
-    "title": "TapNow",
-    "desc": "AI视觉创作引擎",
-    "url": "https://www.tapnow.ai/referral/xEyLCori"
   }
 ]
