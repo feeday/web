@@ -28,7 +28,7 @@
 {"cat":"image","title":"Mspaint","desc":"在线画图工具。","url":"https://datxy.com/mspaint"},
 {"cat":"text","title":"谷歌翻译","desc":"谷歌文档文字在线翻译。","url":"https://translate.google.com/","isTop":true},
 {"cat":"tool","title":"Internet Speed Test","desc":"网络速度测试。","url":"https://speed.cloudflare.com/"},
-{"cat":"tool","title":"Ping","desc":"网站时延测试","url":"https://ping.pe/","isTop":true},
+{"cat":"tool","title":"Ping","desc":"网站时延测试","url":"https://ping.pe/datxy.com","isTop":true},
 {"cat":"text","title":"Claude","desc":"文本编程模型","url":"https://claude.ai/new","isTop":true},
 {"cat":"text","title":"Gemini","desc":"Google 图像视频分析模型。","url":"https://gemini.google.com/","isTop":true},
 {"cat":"multi","title":"Workflow","desc":"ComfyUI 工作流","url":"https://www.runninghub.ai/page-workflow","isTop":true},
