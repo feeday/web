@@ -1,0 +1,34 @@
+[
+  {
+   "cat": "tool",
+    "title": "磁盘空间整理",
+    "desc": "WinDirStat-v2.2.2-x64.msi",
+    "links": {
+      "hf": "https://huggingface.co/datasets/datxy/demo/resolve/main/win/WinDirStat-v2.2.2-x64.msi",
+      "hfCn": "https://hf-mirror.com/datasets/datxy/demo/resolve/main/win/WinDirStat-v2.2.2-x64.msi",
+      "http": "https://kdirstat.sourceforge.net/"
+    },
+    "isTop": true
+  },
+  {
+   "cat": "image",
+    "title": "银河系全景图",
+    "desc": "eso1242a.psb",
+    "links": {
+      "hf": "https://huggingface.co/datasets/datxy/demo/blob/main/test/eso1242a.psb",
+      "hfCn": "https://hf-mirror.com/datasets/datxy/demo/blob/main/test/eso1242a.psb",
+      "http": "https://www.eso.org/public/images/eso1242a/"
+    },
+    "isTop": true
+  },
+  { "cat": "text", "title": "Codex", "desc": "代码编辑器。", "url": "https://chatgpt.com/codex/cloud", "isTop": true },
+  { "cat": "ad", "title": "Colab", "desc": "谷歌云端 Python 代码笔记。", "url": "https://colab.new/", "hideOnMobile": true },
+  { "cat": "tool", "title": "Internet Speed Test", "desc": "网络速度测试。", "url": "https://speed.cloudflare.com/", "isTop": true  },
+  { "cat": "tool", "title": "BBN Speed Test", "desc": "北京联通宽带测速。", "url": "http://cs1.bbn.com.cn:8800/gzweb/", "isTop": true  },
+  { "cat": "ad", "title": "Lighthouse", "desc": "腾讯跨境电商轻量云。", "url": "https://cloud.tencent.com/act/cps/redirect?redirect=5333&cps_key=615609c54e8bcced8b02c202a43b5570&from=console", "isTop": true  },
+  { "cat": "image", "title": "NanoBananaPro", "desc": "Banana 官网图像生成", "url": "https://labs.google/fx/zh/tools/flow"},
+  { "cat": "video", "title": "Seedance 2.0", "desc": "每天5条10秒视频豆包免费生成。", "url": "https://www.doubao.com/chat/create-image", "isTop": true },
+  { "cat": "image", "title": "Photopea", "desc": "在线PS，图形图层在线编辑器。", "url": "https://www.photopea.com/"},
+  { "cat": "video", "title": "OpenCut", "desc": "在线视频编辑工具。", "url": "https://opencut.app/projects", "isTop": true },
+  { "cat": "ad", "title": "Cloud Studio", "desc": "每天免费领2小时T4-GPU算力。", "url": "https://cloudstudio.net/user-center", "isTop": true }
+]
