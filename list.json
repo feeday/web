@@ -8,7 +8,7 @@
       "hfCn": "https://hf-mirror.com/datasets/datxy/demo/resolve/main/win/WinDirStat-v2.2.2-x64.msi",
       "http": "https://kdirstat.sourceforge.net/"
     },
-    "isTop": true
+
   },
   {
     "cat": "image",
@@ -19,7 +19,7 @@
       "hfCn": "https://hf-mirror.com/datasets/datxy/demo/blob/main/test/eso1242a.psb",
       "http": "https://www.eso.org/public/images/eso1242a/"
     },
-    "isTop": true
+  
   },
   {
     "cat": "text",
@@ -125,6 +125,112 @@
     "desc": "腾讯朱雀文视图鉴伪。",
     "url": "https://matrix.tencent.com/ai-detect/"
   },
+    { "cat": "ad", "title": "Leaderboard", "desc": "模型排行榜", "url": "https://artificialanalysis.ai/", "isTop": true }, 
+  { "cat": "text", "title": "Artificial Intelligence", "desc": "人工智能领域相关论文", "url": "https://arxiv.org/list/cs.AI/recent" },
+  { "cat": "ad", "title": "Models", "desc": "HuggingFace 镜像站。", "url": "https://hf-mirror.com/", "isTop": true },
+  { "cat": "text", "title": "Codex", "desc": "代码编辑器。", "url": "https://chatgpt.com/codex/cloud", "isTop": true },
+  { "cat": "text", "title": "GPT-Image 2", "desc": "GPT-Image 2 图像生成模型", "url": "https://chat.openai.com/", "isTop": true },
+
+  { "cat": "video", "title": "Seedance 2.0", "desc": "每天5条10秒视频豆包免费生成。", "url": "https://www.doubao.com/chat/create-image", "isTop": true },
+  { "cat": "ad", "title": "API MD", "desc": "API 测试 MD 编辑", "url": "/aigc", "isTop": true },
+  
+  { "cat": "image", "title": "Mspaint", "desc": "在线画图工具。", "url": "https://datxy.com/mspaint", "isTop": true },
+  { "cat": "image", "title": "Photopea", "desc": "在线PS，图形图层在线编辑器。", "url": "https://www.photopea.com/"},
+  { "cat": "video", "title": "OpenCut", "desc": "在线视频编辑工具。", "url": "https://opencut.app/projects", "isTop": true },
+  { "cat": "ad", "title": "AI-工具集", "desc": "发现最新AI产品工具和使用技巧。", "url": "https://ai-bot.cn/ai-tools/"},
+  { "cat": "text", "title": "AI-吐槽", "desc": "AI 豆包等模型吐槽留言。", "url": "https://tcq233.com/btv", "isTop": true },
+
+  { "cat": "text", "title": "AI-信息", "desc": "AI 自动挑选的高价值内容。", "url": "https://aihot.virxact.com", "isTop": true },
+  { "cat": "tool", "title": "GPU Test", "desc": "GPU 显卡极限压力测试。", "url": "https://datxy.com/gpu", "isTop": true  },
+  { "cat": "ad", "title": "Cloud Studio", "desc": "每天免费领2小时T4-GPU算力。", "url": "https://cloudstudio.net/user-center", "isTop": true  },
+  { "cat": "tool", "title": "Web Ping", "desc": "网站负载时延情况。", "url": "https://ping.chinaz.com/datxy.com", "isTop": true  },
+
+
+
+  { "cat": "image", "title": "NanoBananaPro", "desc": "Banana 官网图像生成", "url": "https://labs.google/fx/zh/tools/flow"},
+
+  { "cat": "tool", "title": "Internet Speed Test", "desc": "网络速度测试。", "url": "https://speed.cloudflare.com/", "isTop": true  },
+  { "cat": "tool", "title": "BBN Speed Test", "desc": "北京联通宽带测速。", "url": "http://cs1.bbn.com.cn:8800/gzweb/", "isTop": true  },
+  
+  { "cat": "ad", "title": "Lighthouse", "desc": "腾讯跨境电商轻量云。", "url": "https://cloud.tencent.com/act/cps/redirect?redirect=5333&cps_key=615609c54e8bcced8b02c202a43b5570&from=console", "isTop": true  },
+
+  { "cat": "text", "title": "谷歌翻译", "desc": "谷歌文档文字在线翻译。", "url": "https://translate.google.com/", "isTop": true },
+  { "cat": "text", "title": "谷歌邮箱", "desc": "谷歌邮箱收件箱。", "url": "https://mail.google.com/mail/u/0/#inbox", "isTop": true },
+  { "cat": "tool", "title": "IP-地址查询", "desc": "高精度IP地址归属地查询。", "url": "http://ping0.cc/", "isTop": true },
+  { "cat": "tool", "title": "Ping", "desc": "网站时延测试", "url": "https://ping.pe/", "isTop": true  },
+  { "cat": "text", "title": "Claude", "desc": "文本编程模型", "url": "https://claude.ai/new", "isTop": true },
+  { "cat": "text", "title": "Gemini", "desc": "Google 图像视频分析模型。", "url": "https://gemini.google.com/", "isTop": true },
+
+  { "cat": "text", "title": "Codex Usage", "desc": "Codex 用量查询。", "url": "https://chatgpt.com/codex/cloud/settings/analytics#usage", "isTop": true },
+  { "cat": "text", "title": "Claude Code", "desc": "终端代码编辑器", "url": "https://claude.ai/code/disabled", "isTop": true },
+  { "cat": "text", "title": "Keys", "desc": "OpenAI API 密钥管理。", "url": "https://platform.openai.com/api-keys", "isTop": true },
+  
+  { "cat": "multi", "title": "Workflow", "desc": "ComfyUI 工作流", "url": "https://www.runninghub.ai/page-workflow", "isTop": true },
+  { "cat": "ad", "title": "Detection Fake", "desc": "腾讯朱雀文视图鉴伪。", "url": "https://matrix.tencent.com/ai-detect/", "isTop": true  },
+  { "cat": "ad", "title": "MagicArena", "desc": "在线图像与视频模型对战。", "url": "https://aigcarena.com/", "isTop": true  },
+  
+  { "cat": "multi", "title": "LightX2V", "desc": "图像视频生成平台。", "url": "https://x2v.light-ai.top/generate" },
+  { "cat": "multi", "title": "TapNow", "desc": "AI视觉创作引擎", "url":"https://www.tapnow.ai/referral/xEyLCori"},
+  { "cat": "ad", "title": "魔搭数据集", "desc": "最新多模态数据集。", "url": "https://www.modelscope.cn/datasets?page=1&sort=latest" },
+  { "cat": "ad", "title": "Kaggle", "desc": "Kaggle 综合数据集。", "url": "https://www.kaggle.com/datasets?sort=published" },
+  { "cat": "ad", "title": "Replicate", "desc": "Replicate 模型生成汇总。", "url": "https://replicate.com/explore" },
+  { "cat": "ad", "title": "fal.ai", "desc": "fal.ai 模型生成汇总。", "url": "https://fal.ai/explore" },
+  { "cat": "ad", "title": "Steam Info", "desc": "Steam 特价查询历史低价。", "url": "https://steamdb.info/sales/" },
+  
+  { "cat": "image", "title": "Z-Image-Turbo", "desc": "开源在线文生图模型。", "url": "https://huggingface.co/spaces/mrfakename/Z-Image-Turbo"},
+  { "cat": "image", "title": "FireRed-Image-Edit", "desc": "图像编辑模型。", "url": "https://huggingface.co/spaces/prithivMLmods/FireRed-Image-Edit-1.0-Fast"},
+  { "cat": "image", "title": "Midjourney", "desc": "艺术级 AI 绘图生成工具。", "url": "https://www.midjourney.com/explore?tab=top" },
+  { "cat": "image", "title": "FLUX.2-klein-9B", "desc": "在线图生图模型", "url": "https://huggingface.co/spaces/black-forest-labs/FLUX.2-klein-9B" },
+  { "cat": "image", "title": "Qwen-Image-Edit", "desc": "开源在线图像修改。", "url": "https://huggingface.co/spaces/multimodalart/Qwen-Image-Edit-Fast" },
+  { "cat": "image", "title": "bonsai-image-webgpu", "desc": "文生图网页端运行。", "url": "https://huggingface.co/spaces/webml-community/bonsai-image-webgpu" },
+
+
+  { "cat": "ad", "title": "Colab", "desc": "谷歌云端 Python 代码笔记。", "url": "https://colab.new/", "hideOnMobile": true },
+  { "cat": "tool", "title": "船舶定位", "desc": "全球船舶位置动态跟踪。", "url": "http://www.shipxy.com/" },
+  { "cat": "tool", "title": "航班定位", "desc": "实时航班跟踪。", "url": "https://zh.flightaware.com/live/" },
+  { "cat": "tool", "title": "koboldcpp", "desc": "电脑运行GGUF模型。", "url": "https://github.com/LostRuins/koboldcpp" },
+  { "cat": "tool", "title": "PocketPal", "desc": "手机运行GGUF模型。", "url": "https://github.com/a-ghorbani/pocketpal-ai" },
+  { "cat": "tool", "title": "YAY", "desc": "Android ADB 桌面应用。", "url": "https://github.com/liriliri/aya" },
+  { "cat": "tool", "title": "Disk Recovery", "desc": "磁盘数据恢复。", "url": "https://www.cgsecurity.org/wiki/TestDisk_Download" },
+  
+  { "cat": "tool", "title": "Termux", "desc": "Android 终端模拟器。", "url": "https://github.com/termux/termux-app" },
+  
+  { "cat": "tool", "title": "屏幕刷新", "desc": "显示器测试。", "url": "https://www.shijuezu.com/" },
+  { "cat": "tool", "title": "鼠标测试", "desc": "鼠标的轮询速率。", "url": "https://cps-check.com/cn/polling-rate-check" },
+  { "cat": "tool", "title": "手柄测试", "desc": "游戏手柄测试。", "url": "https://hardwaretester.com/gamepad" },
+  { "cat": "tool", "title": "分贝", "desc": "声音分贝查看", "url": "https://datxy.com/dB.html" },
+ 
+  { "cat": "tool", "title": "LLM 本地测试", "desc": "测你机器能部署哪些模型。", "url": "https://www.canirun.ai/" },
+  { "cat": "tool", "title": "Github", "desc": "Github 桌面版。", "url": "https://desktop.github.com/download/" },
+  { "cat": "tool", "title": "VS Code", "desc": "Visual Studio Code 桌面版。", "url": "https://code.visualstudio.com/" },
+  { "cat": "tool", "title": "7-Zip", "desc": "解压软件。", "url": "https://www.7-zip.org/" },
+  { "cat": "tool", "title": "PotPlayer", "desc": "视频播放器。", "url": "https://potplayer.tv/" },
+  { "cat": "tool", "title": "PDFgear ", "desc": "PDF免费转换编辑工具。", "url": "https://www.pdfgear.com/" },
+  { "cat": "tool", "title": "Everything", "desc": "文件搜索查找工具。", "url": "https://www.voidtools.com/zh-cn/" },
+  { "cat": "tool", "title": "Steam", "desc": "Steam 游戏平台。", "url": "https://store.steampowered.com/about/" },
+  { "cat": "tool", "title": "File Converter", "desc": "视频音频转换工具", "url": "https://file-converter.io/" },
+  { "cat": "tool", "title": "TrafficMonitor", "desc": "任务栏显示小工具", "url": "https://github.com/zhongyang219/TrafficMonitor" },
+  { "cat": "tool", "title": "Conda", "desc": "Conda 环境工具下载", "url": "https://docs.conda.io/projects/conda/en/stable/" },
+ 
+  { "cat": "audio", "title": "Suno", "desc": "AI音乐生成模型", "url": "https://suno.com/" },
+  { "cat": "audio", "title": "Fish Audio", "desc": "最佳AI文字转语音和免费语音克隆。", "url": "https://fish.audio/zh-CN/discovery/" },
+  { "cat": "audio", "title": "TTSMaker", "desc": "在线文本转换语音。", "url": "https://ttsmaker.com/" },
+  { "cat": "audio", "title": "VoxCPM2 ", "desc": "多语种免费语音克隆。", "url": "https://huggingface.co/spaces/openbmb/VoxCPM-Demo" },
+  { "cat": "audio", "title": "SoulX-Singer", "desc": "在线歌声克隆", "url": "https://huggingface.co/spaces/Soul-AILab/SoulX-Singer" },
+  { "cat": "audio", "title": "IndexTTS-2", "desc": "开源在线声音克隆。", "url": "https://huggingface.co/spaces/IndexTeam/IndexTTS-2-Demo" },
+  { "cat": "audio", "title": "VibeVoice", "desc": "微软在线语言识别。", "url": "https://aka.ms/vibevoice-asr" },
+  { "cat": "audio", "title": "Whisper", "desc": "开源语音转文字。", "url": "https://huggingface.co/spaces/openai/whisper" },
+  { "cat": "audio", "title": "Radio", "desc": "全球广播电台。", "url": "https://radio.garden/" },
+  { "cat": "audio", "title": "云听", "desc": "中央广播电台。", "url": "https://www.radio.cn/pc-portal/erji/radioStation.html" },
+  { "cat": "audio", "title": "有声书", "desc": "喜马拉雅有声故事。", "url": "https://www.ximalaya.com/youshengshu/updates/" }, 
+  { "cat": "audio", "title": "Spotify", "desc": "在线音乐博客。", "url": "https://open.spotify.com/" }, 
+  
+  { "cat": "video", "title": "LTX-2.3", "desc": "在线图生视频带音效。", "url": "https://huggingface.co/spaces/Lightricks/LTX-2-3" },
+  { "cat": "video", "title": "央视新闻", "desc": "央视频电视直播。", "url": "https://www.yangshipin.cn/tv/home?pid=600001811" },
+  { "cat": "video", "title": "虎牙直播", "desc": "虎牙影视轮播。", "url": "https://www.huya.com/g/2135" },
+  { "cat": "video", "title": "哔哩动漫", "desc": "最新更新的动漫。", "url": "https://www.bilibili.com/anime/index/?from_spmid=666.4.index.0#st=1&order=0&season_version=-1&spoken_language_type=-1&area=-1&is_finish=-1&copyright=-1&season_status=-1&season_month=-1&year=-1&style_id=-1&sort=0&page=1" },
+  { "cat": "video", "title": "腾讯电影", "desc": "最新更新的电影。", "url": "https://v.qq.com/tv-series-list/v-index.html?filter_params=sort%3D75&page_id=channel_list_second_page&channel_id=100173" },
+  { "cat": "video", "title": "Wan2.2", "desc": "开源在线首尾帧生成视频。", "url": "https://huggingface.co/spaces/multimodalart/wan-2-2-first-last-frame" },
   {
     "cat": "ad",
     "title": "MagicArena",
