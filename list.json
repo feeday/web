@@ -1,11 +1,11 @@
 [
-{"cat":"tool","title":"磁盘空间整理","desc":"WinDirStat-v2.2.2-x64.msi","links":{"hf":"https://huggingface.co/datasets/datxy/demo/resolve/main/win/WinDirStat-v2.2.2-x64.msi","hfCn":"https://hf-mirror.com/datasets/datxy/demo/resolve/main/win/WinDirStat-v2.2.2-x64.msi","http":"https://kdirstat.sourceforge.net/"}},
+{"cat":"tool","title":"磁盘空间整理","desc":"WinDirStat-v2.2.2-x64.msi","links":{"hf":"https://huggingface.co/datasets/datxy/demo/resolve/main/win/WinDirStat-v2.2.2-x64.msi","hfCn":"https://hf-mirror.com/datasets/datxy/demo/resolve/main/win/WinDirStat-v2.2.2-x64.msi","http":"https://kdirstat.sourceforge.net/","hideOnMobile":true}},
 {"cat":"image","title":"银河系全景图","desc":"eso1242a.psb","links":{"hf":"https://huggingface.co/datasets/datxy/demo/blob/main/test/eso1242a.psb","hfCn":"https://hf-mirror.com/datasets/datxy/demo/blob/main/test/eso1242a.psb","http":"https://www.eso.org/public/images/eso1242a/"}},
 
 {"cat":"ad","title":"Leaderboard","desc":"模型排行榜","url":"https://artificialanalysis.ai/?intelligence=coding-index","isTop":true},
 {"cat":"text","title":"GPT-Image 2","desc":"GPT-Image 2 图像生成模型","url":"https://chat.openai.com/","isTop":true},
 {"cat":"text","title":"Codex","desc":"代码编辑器。","url":"https://chatgpt.com/codex/cloud","isTop":true},
-{"cat":"image","title":"NanoBananaPro","desc":"Banana 官网图像生成","url":"https://labs.google/fx/zh/tools/flow","isTop":true},
+{"cat":"image","title":"NanoBananaPro","desc":"Banana 官网图像生成","url":"https://labs.google/fx/zh/tools/flow","isTop":true,"hideOnMobile":true},
 
 {"cat":"video","title":"Seedance 2.0","desc":"每天5条10秒视频豆包免费生成。","url":"https://www.doubao.com/chat/create-image","isTop":true},
 {"cat":"image","title":"Photopea","desc":"在线PS，图形图层在线编辑器。","url":"https://www.photopea.com/","isTop":true,"hideOnMobile":true},
