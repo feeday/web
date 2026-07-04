@@ -18,7 +18,7 @@
 {"cat":"multi","title":"弹幕视频留言","desc":"看剧听音乐吐槽。","url":"https://tcq233.com/btv","isTop":true},
 
 {"cat":"tool","title":"IP-Addrs","desc":"高精度IP地址归属地查询。","url":"http://ping0.cc/","isTop":true},
-{"cat":"tool","title":"Ping","desc":"网站时延测试","url":"https://ping.pe/datxy.com","isTop":true},
+{"cat":"tool","title":"Ping","desc":"网站时延测试","url":"https://ping.pe/datxy.com","isTop":true,"hideOnMobile":true},
 {"cat":"ad","title":"Colab","desc":"谷歌云端 Python 代码笔记。","url":"https://colab.new/","hideOnMobile":true},
 {"cat":"tool","title":"BBN Speed Test","desc":"北京联通宽带测速。","url":"http://cs1.bbn.com.cn:8800/gzweb/","isTop":true},
   
@@ -29,7 +29,7 @@
 {"cat":"image","title":"Mspaint","desc":"在线画图工具。","url":"https://datxy.com/mspaint","hideOnMobile":true},
 {"cat":"text","title":"谷歌翻译","desc":"谷歌文档文字在线翻译。","url":"https://translate.google.com/"},
 {"cat":"tool","title":"Internet Speed Test","desc":"网络速度测试。","url":"https://speed.cloudflare.com/","hideOnMobile":true},
-{"cat":"ad","title":"Lighthouse","desc":"腾讯跨境电商轻量云。","url":"https://cloud.tencent.com/act/cps/redirect?redirect=5333&cps_key=615609c54e8bcced8b02c202a43b5570&from=console"},
+{"cat":"ad","title":"Lighthouse","desc":"腾讯跨境电商轻量云。","url":"https://cloud.tencent.com/act/cps/redirect?redirect=5333&cps_key=615609c54e8bcced8b02c202a43b5570&from=console","hideOnMobile":true},
 
 {"cat":"text","title":"Claude","desc":"文本编程模型","url":"https://claude.ai/new"},
 {"cat":"text","title":"Gemini","desc":"Google 图像视频分析模型。","url":"https://gemini.google.com/"},
@@ -58,7 +58,7 @@
 {"cat":"tool","title":"屏幕刷新","desc":"显示器测试。","url":"https://www.shijuezu.com/","hideOnMobile":true},
 {"cat":"tool","title":"鼠标测试","desc":"鼠标的轮询速率。","url":"https://cps-check.com/cn/polling-rate-check","hideOnMobile":true},
 {"cat":"tool","title":"手柄测试","desc":"游戏手柄测试。","url":"https://hardwaretester.com/gamepad","hideOnMobile":true},
-{"cat":"tool","title":"分贝","desc":"声音分贝查看","url":"https://datxy.com/dB.html"},
+{"cat":"tool","title":"分贝","desc":"声音分贝查看","url":"https://datxy.com/dB.html","hideOnMobile":true},
 {"cat":"tool","title":"LLM 本地测试","desc":"测你机器能部署哪些模型。","url":"https://www.canirun.ai/","hideOnMobile":true},
 {"cat":"tool","title":"Github","desc":"Github 桌面版。","url":"https://desktop.github.com/download/","hideOnMobile":true},
 {"cat":"tool","title":"VS Code","desc":"Visual Studio Code 桌面版。","url":"https://code.visualstudio.com/","hideOnMobile":true},
@@ -72,7 +72,7 @@
 {"cat":"tool","title":"Conda","desc":"Conda 环境工具下载。","url":"https://docs.conda.io/projects/conda/en/stable/","hideOnMobile":true},
 {"cat":"audio","title":"Suno","desc":"AI音乐生成模型","url":"https://suno.com/"},
 {"cat":"audio","title":"Fish Audio","desc":"最佳AI文字转语音和免费语音克隆。","url":"https://fish.audio/zh-CN/discovery/","hideOnMobile":true},
-{"cat":"audio","title":"TTSMaker","desc":"在线文本转换语音。","url":"https://ttsmaker.com/"},
+{"cat":"audio","title":"TTSMaker","desc":"在线文本转换语音。","url":"https://ttsmaker.com/","hideOnMobile":true},
 {"cat":"audio","title":"VoxCPM2","desc":"多语种免费语音克隆。","url":"https://huggingface.co/spaces/openbmb/VoxCPM-Demo"},
 {"cat":"audio","title":"SoulX-Singer","desc":"在线歌声克隆","url":"https://huggingface.co/spaces/Soul-AILab/SoulX-Singer"},
 {"cat":"audio","title":"IndexTTS-2","desc":"开源在线声音克隆。","url":"https://huggingface.co/spaces/IndexTeam/IndexTTS-2-Demo"},
