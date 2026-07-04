@@ -44,7 +44,7 @@
 {"cat":"ad","title":"Steam Info","desc":"Steam 特价查询历史低价。","url":"https://steamdb.info/sales/","hideOnMobile":true},
 {"cat":"image","title":"Z-Image-Turbo","desc":"开源在线文生图模型。","url":"https://huggingface.co/spaces/mrfakename/Z-Image-Turbo"},
 {"cat":"image","title":"FireRed-Image-Edit","desc":"图像编辑模型。","url":"https://huggingface.co/spaces/prithivMLmods/FireRed-Image-Edit-1.0-Fast"},
-{"cat":"image","title":"Midjourney","desc":"艺术级 AI 绘图生成工具。","url":"https://www.midjourney.com/explore?tab=top","hideOnMobile":true"},
+{"cat":"image","title":"Midjourney","desc":"艺术级 AI 绘图生成工具。","url":"https://www.midjourney.com/explore?tab=top","hideOnMobile":true},
 {"cat":"image","title":"FLUX.2-klein-9B","desc":"在线图生图模型","url":"https://huggingface.co/spaces/black-forest-labs/FLUX.2-klein-9B"},
 {"cat":"image","title":"Qwen-Image-Edit","desc":"开源在线图像修改。","url":"https://huggingface.co/spaces/multimodalart/Qwen-Image-Edit-Fast"},
 {"cat":"image","title":"bonsai-image-webgpu","desc":"文生图网页端运行。","url":"https://huggingface.co/spaces/webml-community/bonsai-image-webgpu","hideOnMobile":true},
