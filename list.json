@@ -19,16 +19,17 @@
 {"cat":"tool","title":"BBN Speed Test","desc":"北京联通宽带测速。","url":"http://cs1.bbn.com.cn:8800/gzweb/","isTop":true},
   
 {"cat":"tool","title":"IP-Addrs","desc":"高精度IP地址归属地查询。","url":"http://ping0.cc/","isTop":true},
-{"cat":"text","title":"Artificial Intelligence","desc":"人工智能领域相关论文","url":"https://arxiv.org/list/cs.AI/recent"},
+{"cat":"tool","title":"Ping","desc":"网站时延测试","url":"https://ping.pe/datxy.com","isTop":true},
 {"cat":"ad","title":"Colab","desc":"谷歌云端 Python 代码笔记。","url":"https://colab.new/","hideOnMobile":true},
-{"cat":"ad","title":"Lighthouse","desc":"腾讯跨境电商轻量云。","url":"https://cloud.tencent.com/act/cps/redirect?redirect=5333&cps_key=615609c54e8bcced8b02c202a43b5570&from=console"},
-{"cat":"ad","title":"Cloud Studio","desc":"每天免费领2小时T4-GPU算力。","url":"https://cloudstudio.net/user-center"},
-
+{"cat":"ad","title":"Cloud Studio","desc":"每天免费领2小时T4-GPU算力。","url":"https://cloudstudio.net/user-center","hideOnMobile":true},
+  
+{"cat":"text","title":"Artificial Intelligence","desc":"人工智能领域相关论文","url":"https://arxiv.org/list/cs.AI/recent"},
 {"cat":"ad","title":"Detection Fake","desc":"腾讯朱雀文视图鉴伪。","url":"https://matrix.tencent.com/ai-detect/"},
 {"cat":"image","title":"Mspaint","desc":"在线画图工具。","url":"https://datxy.com/mspaint"},
 {"cat":"text","title":"谷歌翻译","desc":"谷歌文档文字在线翻译。","url":"https://translate.google.com/","isTop":true},
 {"cat":"tool","title":"Internet Speed Test","desc":"网络速度测试。","url":"https://speed.cloudflare.com/"},
-{"cat":"tool","title":"Ping","desc":"网站时延测试","url":"https://ping.pe/datxy.com","isTop":true},
+{"cat":"ad","title":"Lighthouse","desc":"腾讯跨境电商轻量云。","url":"https://cloud.tencent.com/act/cps/redirect?redirect=5333&cps_key=615609c54e8bcced8b02c202a43b5570&from=console"},
+
 {"cat":"text","title":"Claude","desc":"文本编程模型","url":"https://claude.ai/new","isTop":true},
 {"cat":"text","title":"Gemini","desc":"Google 图像视频分析模型。","url":"https://gemini.google.com/","isTop":true},
 {"cat":"multi","title":"Workflow","desc":"ComfyUI 工作流","url":"https://www.runninghub.ai/page-workflow","isTop":true},
