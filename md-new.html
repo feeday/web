@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+     <link rel="icon" type="image/png" href="/favicon.png">
+    <title>MD-Edit White</title>
+    <style>
+        :root {
+            --bg-body: #f7f9fc;
+            --bg-card: rgba(255, 255, 255, 0.88);
+            --bg-panel: rgba(248, 250, 252, 0.82);
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-tertiary: #94a3b8;
+            --theme-blue: #2563eb;
+            --theme-purple: #7c3aed;
+            --theme-green: #059669;
+            --theme-orange: #f97316;
+            --border-light: rgba(15, 23, 42, 0.1);
+            --soft-shadow: 0 22px 70px rgba(15, 23, 42, 0.10);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background-color: var(--bg-body);
+            background-image:
+                radial-gradient(circle at 8% 10%, rgba(37, 99, 235, 0.12), transparent 28%),
+                radial-gradient(circle at 90% 2%, rgba(249, 115, 22, 0.12), transparent 30%),
+                linear-gradient(135deg, #ffffff 0%, #f8fafc 42%, #eef4ff 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 18px;
+            overflow: hidden;
+        }
+
+        /* 核心布局修改：使用 Flexbox 实现侧边栏平滑折叠 */
+        .workspace {
+            display: flex;
+            width: 100%;
+            height: calc(100vh - 36px);
+            gap: 14px;
+        }
+
+        .panel {
+            width: 330px;
+            flex-shrink: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 22px;
+            box-shadow: var(--soft-shadow);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            display: flex;
+            flex-direction: column;
+            transition: margin-left 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s;
+            overflow: hidden;
+        }
+
+        /* 侧边栏折叠状态 */
+        .panel.collapsed {
+            margin-left: -344px; /* 330px 宽度 + 14px 间距 */
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .main {
+            flex-grow: 1;
+            min-width: 0;
+            display: grid;
+            grid-template-rows: auto minmax(0, 1fr);
+            gap: 14px;
+        }
+
+        .editor-card, .preview-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 22px;
+            box-shadow: var(--soft-shadow);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            overflow: hidden;
+        }
+
+        .panel-scroll { padding: 22px; overflow-y: auto; }
+        .panel-scroll::-webkit-scrollbar { width: 6px; }
+        .panel-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        
+        .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.1rem; margin-bottom: 18px; }
+        .brand-mark { width: 34px; height: 34px; border-radius: 12px; display: grid; place-items: center; background: linear-gradient(135deg, var(--theme-blue), var(--theme-purple)); color: #ffffff; }
+        .hint { color: var(--text-secondary); font-size: 0.82rem; line-height: 1.6; margin-bottom: 16px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 8px; font-size: 0.78rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em; }
+        
+        .glass-input, textarea, select {
+            width: 100%;
+            border: 1px solid rgba(15, 23, 42, 0.12);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.82);
+            color: var(--text-primary);
+            padding: 11px 13px;
+            font: inherit;
+            transition: 0.2s ease;
+        }
+        .glass-input:focus, textarea:focus, select:focus { border-color: rgba(56, 189, 248, 0.55); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.12); }
+        
+        .btn {
+            height: 40px; border: 0; border-radius: 12px; padding: 0 14px; font-weight: 800; cursor: pointer; color: #ffffff; background: var(--theme-blue); display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: 0.18s ease; text-decoration: none; white-space: nowrap;
+        }
+        .btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
+        .btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+        .btn.secondary { background: rgba(37, 99, 235, 0.08); color: var(--text-primary); border: 1px solid rgba(37, 99, 235, 0.16); }
+        .btn.purple { background: var(--theme-purple); color: white;}
+        .btn.full { width: 100%; }
+        .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .actions-vertical { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 10px;}
+        .divider { height: 1px; background: var(--border-light); margin: 18px 0; }
+
+        .topbar {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            padding: 10px 14px;
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .tool-btn { min-width: 36px; height: 36px; padding: 0 8px; border-radius: 10px; border: 1px solid rgba(15, 23, 42, 0.1); background: rgba(255, 255, 255, 0.76); color: var(--text-primary); cursor: pointer; font-weight: 800; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center;}
+        .tool-btn:hover { background: rgba(37, 99, 235, 0.10); border-color: rgba(37, 99, 235, 0.28); }
+        
+        .split { min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; }
+        .card-head { padding: 14px 16px; border-bottom: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .card-title { font-weight: 800; }
+        .status { color: var(--text-secondary); font-size: 0.8rem; }
+        #markdownInput { height: calc(100% - 57px); min-height: 240px; border: 0; border-radius: 0; resize: none; background: rgba(255, 255, 255, 0.72); line-height: 1.7; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+        
+        .preview-container { height: calc(100% - 57px); position: relative; }
+        .preview { height: 100%; overflow: auto; padding: 24px; background: rgba(255, 255, 255, 0.64); line-height: 1.75; }
+        .preview::-webkit-scrollbar { width: 8px; }
+        .preview::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+        
+        .preview h1, .preview h2, .preview h3 { margin: 1.1em 0 0.55em; line-height: 1.25; }
+        .preview h1 { font-size: 2rem; border-bottom: 1px solid var(--border-light); padding-bottom: 0.3em; }
+        .preview h2 { font-size: 1.45rem; }
+        .preview h3 { font-size: 1.18rem; }
+        .preview p, .preview ul, .preview ol, .preview blockquote, .preview pre, .preview table { margin: 0.8em 0; }
+        .preview ul, .preview ol { padding-left: 1.45em; }
+        .preview blockquote { border-left: 4px solid var(--theme-blue); padding: 0.25em 1em; color: #334155; background: rgba(37, 99, 235, 0.07); border-radius: 0 12px 12px 0; }
+        .preview code { background: rgba(148, 163, 184, 0.14); padding: 0.15em 0.35em; border-radius: 6px; color: #1d4ed8; }
+        .preview pre { background: rgba(248, 250, 252, 0.96); border: 1px solid var(--border-light); border-radius: 14px; padding: 14px; overflow-x: auto; }
+        .preview pre code { background: transparent; padding: 0; }
+        .preview table { width: 100%; border-collapse: collapse; overflow: hidden; border-radius: 12px; }
+        .preview th, .preview td { border: 1px solid var(--border-light); padding: 8px 10px; }
+        .preview th { background: rgba(56, 189, 248, 0.12); }
+        .preview img, .preview video { max-width: 100%; border-radius: 14px; border: 1px solid var(--border-light); margin: 10px 0; }
+        .preview a { color: #2563eb; }
+        .media-preview { display: grid; gap: 10px; margin-top: 10px; }
+        .media-preview img, .media-preview video { width: 100%; max-height: 170px; object-fit: contain; border: 1px solid var(--border-light); border-radius: 12px; background: rgba(0, 0, 0, 0.28); }
+        .small { font-size: 0.78rem; color: var(--text-tertiary); line-height: 1.55; }
+
+
+        .hero-illo { margin: 0 0 18px; padding: 18px; border-radius: 18px; background: linear-gradient(135deg, rgba(37,99,235,0.10), rgba(249,115,22,0.10)); border: 1px solid var(--border-light); }
+        .hero-illo svg { width: 100%; height: auto; display: block; }
+        .paste-tip { display: inline-flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 999px; background: rgba(5, 150, 105, 0.09); color: var(--theme-green); font-size: 0.78rem; font-weight: 800; }
+        .topbar { position: sticky; top: 0; z-index: 5; }
+
+        @media (max-width: 980px) {
+            body { padding: 0; overflow: auto; }
+            .workspace { height: auto; min-height: 100vh; flex-direction: column; padding: 12px; }
+            .panel { width: 100% !important; margin-left: 0 !important; }
+            .split { grid-template-columns: 1fr; }
+            .panel, .editor-card, .preview-card { border-radius: 18px; }
+            #markdownInput, .preview-container { height: 52vh; }
+        }
+    </style>
+</head>
+<body>
+    <div class="workspace">
+        
+        <aside class="panel" id="sidePanel">
+            <div class="panel-scroll">
+
+                <div class="hero-illo" aria-label="白色编辑器插图">
+                    <svg viewBox="0 0 360 180" role="img" aria-labelledby="heroTitle heroDesc">
+                        <title id="heroTitle">文档与插图编辑</title>
+                        <desc id="heroDesc">带有图片、文字和工具栏的白色 Markdown 编辑器插图。</desc>
+                        <rect x="18" y="24" width="324" height="132" rx="24" fill="#fff" stroke="#dbeafe"/>
+                        <rect x="42" y="50" width="130" height="14" rx="7" fill="#bfdbfe"/>
+                        <rect x="42" y="76" width="170" height="10" rx="5" fill="#e2e8f0"/>
+                        <rect x="42" y="96" width="145" height="10" rx="5" fill="#e2e8f0"/>
+                        <rect x="220" y="52" width="82" height="72" rx="18" fill="#eff6ff" stroke="#93c5fd"/>
+                        <circle cx="246" cy="78" r="13" fill="#f97316" opacity=".78"/>
+                        <path d="M229 116l23-25 14 15 10-11 19 21z" fill="#2563eb" opacity=".82"/>
+                        <rect x="68" y="130" width="216" height="10" rx="5" fill="#dcfce7"/>
+                    </svg>
+                </div>
+                <p class="hint">白色新版：左侧集成 AI、查找替换与图像管理；顶部编辑栏支持常用 Markdown 快捷操作。</p>
+
+                <div class="form-group">
+                    <label for="apiKey">🔑 API Key</label>
+                    <input id="apiKey" class="glass-input" type="password" placeholder="请输入你的 API Key">
+                </div>
+                <div class="form-group">
+                    <label for="apiBaseUrl">🌐 API URL</label>
+                    <input id="apiBaseUrl" class="glass-input" value="https://api.poixe.com/v1/" placeholder="https://api.poixe.com/v1/">
+                </div>
+                <div class="form-group">
+                    <label for="modelName">🤖 默认模型</label>
+                    <input id="modelName" class="glass-input" value="deepseek-v4-flash" placeholder="deepseek-v4-flash">
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="form-group">
+                    <label for="aiInstruction">✨ 模型编辑指令</label>
+                    <select id="aiInstruction" class="glass-input">
+                        <option value="请检查下面文档的错别字、语病、代码错误等，并直接输出修正后的正文。禁止输出解释废话，严禁使用 markdown 标记包裹。">🔍 纠错与格式检查</option>
+                        <option value="请将下面的文档润色为表达清晰、结构完整、排版规范的中文文档。保留原格式，只输出修改后的结果，严禁使用 markdown 标记包裹。">🪄 润色并规范排版</option>
+                        <option value="请扩写下面的内容，补充必要说明、层级标题、列表和示例。保留原格式，只输出结果，严禁使用 markdown 标记包裹。">📝 扩写丰富内容</option>
+                        <option value="请精简下面的内容，让内容更简洁但不丢失关键信息。保留原格式，只输出结果，严禁使用 markdown 标记包裹。">✂️ 精简提取核心</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="customInstruction">自定义补充要求</label>
+                    <textarea id="customInstruction" rows="6" placeholder="例如：改成产品说明书风格，增加 FAQ，保留代码块..."></textarea>
+                </div>
+                <div class="actions">
+                    <button class="btn" id="aiReplaceBtn" onclick="runAiEdit('replace')">全文替换</button>
+                    <button class="btn secondary" id="aiAppendBtn" onclick="runAiEdit('append')">追加结果</button>
+                </div>
+                <p class="small" id="aiStatus" style="margin-top:10px; color: var(--theme-green);"></p>
+
+                <div class="divider"></div>
+
+                <div class="form-group">
+                    <label>🔍 查找与替换</label>
+                    <input type="text" id="findInput" class="glass-input" placeholder="查找内容 (支持正则)" style="margin-bottom: 8px;">
+                    <input type="text" id="replaceInput" class="glass-input" placeholder="替换为...">
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <label style="margin:0; display:flex; align-items:center; gap:6px; cursor:pointer;">
+                        <input type="checkbox" id="useRegex" checked> 用正则
+                    </label>
+                    <button class="btn secondary" style="height:32px; padding:0 12px; font-size:0.8rem;" onclick="executeReplace()">🔄 替换</button>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="form-group">
+                    <label for="mediaFile">🖼️ 图床与媒体上传</label>
+                    <input id="mediaFile" class="glass-input" type="file" accept="image/*,video/*" onchange="handleMediaFile(event)">
+                    <div class="media-preview" id="mediaPreview"></div>
+                    <p class="small" id="uploadStatus" style="margin-top:8px; font-weight:bold;"></p>
+                </div>
+                
+                <div class="actions-vertical">
+                    <button class="btn purple full" id="imgurUploadBtn" onclick="uploadToImgurAndInsert()">
+                        🚀 传至 Imgur 图床并插入
+                    </button>
+                    <div class="actions">
+                        <button class="btn secondary" onclick="insertSelectedMedia()">插入本地</button>
+                        <a class="btn secondary" href="https://imgur.com/upload" target="_blank" rel="noopener noreferrer">官网传</a>
+                    </div>
+                </div>
+
+            </div>
+        </aside>
+
+        <main class="main">
+            
+            <div class="topbar">
+                <button class="tool-btn" title="展开/收起控制台" onclick="toggleSidebar()" style="font-size: 1.2rem; color: var(--theme-blue);">☰</button>
+                <div style="width: 1px; height: 20px; background: rgba(255,255,255,0.1); margin: 0 4px;"></div>
+                
+                <button class="tool-btn" title="标题" onclick="wrapLine('# ', '')">H1</button>
+                <button class="tool-btn" title="二级标题" onclick="wrapLine('## ', '')">H2</button>
+                <button class="tool-btn" title="加粗" onclick="wrapSelection('**', '**')">B</button>
+                <button class="tool-btn" title="斜体" onclick="wrapSelection('*', '*')"><em>I</em></button>
+                <button class="tool-btn" title="引用" onclick="wrapLine('> ', '')">❝</button>
+                <button class="tool-btn" title="无序列表" onclick="wrapLine('- ', '')">•</button>
+                <button class="tool-btn" title="有序列表" onclick="wrapLine('1. ', '')">1.</button>
+                <button class="tool-btn" title="代码块" onclick="wrapSelection('```\n', '\n```')">{ }</button>
+                <button class="tool-btn" title="链接" onclick="wrapSelection('[', '](https://)')">🔗</button>
+                <button class="tool-btn" title="插入图像" onclick="insertImageTemplate()">🖼️</button>
+                <button class="tool-btn" title="表格" onclick="insertAtCursor('\n| 项目 | 说明 |\n| --- | --- |\n| 示例 | 内容 |\n')">Table</button>
+                
+                <div style="flex-grow: 1;"></div>
+                
+                <span class="paste-tip" id="pasteStatus">支持粘贴图片</span>
+                <span class="status" id="docStats" style="font-family: ui-monospace, monospace; margin-right: 12px; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 8px;">
+                    总:0 汉:0 英:0 数:0 标:0
+                </span>
+                
+                <button class="tool-btn" title="在新标签页测试网页代码" onclick="openWebPreview()" style="font-size: 1.1rem; padding-bottom: 2px;">🌐</button>
+                <button class="tool-btn" title="下载 .md 文件" onclick="downloadFile()">💾</button>
+                <button class="tool-btn" title="复制全部源码" onclick="copyContent()">📋</button>
+                <div style="width: 1px; height: 20px; background: rgba(255,255,255,0.1); margin: 0 2px;"></div>
+                <button class="tool-btn" title="清空编辑器所有内容" onclick="clearDocument()" style="color: #fca5a5; font-size: 1.1rem; padding-bottom: 2px;">🗑️</button>
+            </div>
+
+            <section class="split">
+                <div class="editor-card">
+                    <div class="card-head"><span class="card-title">编辑器</span><span class="status">自动保存</span></div>
+                    <textarea id="markdownInput" spellcheck="false" oninput="handleInput()"></textarea>
+                </div>
+                <div class="preview-card">
+                    <div class="card-head"><span class="card-title">实时渲染</span><span class="status">MD Preview</span></div>
+                    <div class="preview-container">
+                        <article class="preview" id="previewPane"></article>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const DEFAULT_DOC = `# MD 白色智能编辑器\n\n欢迎！这个版本默认接入了 \`DeepSeek-V4-Flash\` 引擎，可直接帮你检查错别字与代码 bug。\n\n## 🚀 核心特性\n\n- **折叠面板**：点击左上角的 \`☰\` 按钮，可以沉浸式全屏写作！\n- **顶部编辑栏集成**：标题、加粗、列表、代码、链接、表格、插图、保存与清空都在顶部。\n- **图像粘贴**：直接 Ctrl/⌘ + V 粘贴剪贴板图片，自动插入本地预览链接。\n- **全维字数统计**：右上角可实时查看字数、标点、字母等详细数据。\n- **网页代码预览**：点击右上角 🌐 按钮，可将编辑器的代码作为网页在【新标签页】打开测试。\n- **正则替换**：左侧面板内置了查找替换功能。\n`;
+        const STORAGE_KEYS = {
+            doc: 'md_editor_document',
+            apiKey: 'md_editor_api_key',
+            apiBaseUrl: 'md_editor_api_base_url',
+            modelName: 'md_editor_model_name'
+        };
+        
+        const MAGIC_IMGUR_ID = '203da2f300125a1';
+        let selectedMedia = null;
+
+        window.addEventListener('load', () => {
+            document.getElementById('markdownInput').value = localStorage.getItem(STORAGE_KEYS.doc) || DEFAULT_DOC;
+            document.getElementById('apiKey').value = localStorage.getItem(STORAGE_KEYS.apiKey) || localStorage.getItem('frontend_api_key') || '';
+            document.getElementById('apiBaseUrl').value = localStorage.getItem(STORAGE_KEYS.apiBaseUrl) || localStorage.getItem('frontend_base_url') || 'https://api.poixe.com/v1/';
+            document.getElementById('modelName').value = localStorage.getItem(STORAGE_KEYS.modelName) || 'deepseek-v4-flash';
+            ['apiKey', 'apiBaseUrl', 'modelName'].forEach(id => {
+                document.getElementById(id).addEventListener('input', saveSettings);
+            });
+            getTextarea().addEventListener('paste', handlePasteImage);
+            renderPreview();
+        });
+
+        function saveSettings() {
+            localStorage.setItem(STORAGE_KEYS.apiKey, document.getElementById('apiKey').value.trim());
+            localStorage.setItem(STORAGE_KEYS.apiBaseUrl, document.getElementById('apiBaseUrl').value.trim());
+            localStorage.setItem(STORAGE_KEYS.modelName, document.getElementById('modelName').value.trim());
+        }
+
+        function handleInput() {
+            const text = document.getElementById('markdownInput').value;
+            localStorage.setItem(STORAGE_KEYS.doc, text);
+            renderPreview();
+        }
+
+        // --- 控制台平滑折叠 ---
+        function toggleSidebar() {
+            const panel = document.getElementById('sidePanel');
+            panel.classList.toggle('collapsed');
+        }
+
+        // --- 核心：在新标签打开网页预览 ---
+        function openWebPreview() {
+            const htmlContent = document.getElementById('markdownInput').value;
+            if(!htmlContent.trim()) return alert("请先在编辑器输入 HTML/JS 代码！");
+            
+            // 使用 Blob 生成安全的本地临时网页
+            const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+            // 稍作延迟释放内存
+            setTimeout(() => URL.revokeObjectURL(url), 10000); 
+        }
+
+        // --- 核心：强兼容版清空与复制 ---
+        function clearDocument() {
+            if (confirm('⚠️ 确定要彻底清空编辑器中的所有内容吗？')) {
+                const mdInput = document.getElementById('markdownInput');
+                mdInput.value = '';
+                handleInput();
+                mdInput.focus();
+            }
+        }
+
+        function copyContent() {
+            const text = document.getElementById('markdownInput').value;
+            if (!text) return alert('当前没有可复制的内容！');
+            
+            // 尝试现代 API
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text)
+                    .then(() => alert('✅ 已复制全文至剪贴板'))
+                    .catch(() => fallbackCopyTextToClipboard(text));
+            } else {
+                // 降级使用传统 API (解决 HTTP 环境下的兼容性问题)
+                fallbackCopyTextToClipboard(text);
+            }
+        }
+
+        function fallbackCopyTextToClipboard(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            // 防止页面滚动
+            textArea.style.top = "0";
+            textArea.style.left = "0";
+            textArea.style.position = "fixed";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                alert('✅ 已复制全文至剪贴板');
+            } catch (err) {
+                alert('❌ 复制失败，请在编辑器中手动全选复制 (Ctrl+A / Ctrl+C)');
+            }
+            document.body.removeChild(textArea);
+        }
+
+        function downloadFile() {
+            const text = document.getElementById('markdownInput').value;
+            if (!text) return alert('内容为空，无法下载');
+            const blob = new Blob([text], { type: `text/markdown;charset=utf-8` });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Document_${Date.now()}.md`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+
+        // --- 查找与正则替换 ---
+        function executeReplace() {
+            const findStr = document.getElementById("findInput").value;
+            const repStr = document.getElementById("replaceInput").value;
+            const useRegex = document.getElementById("useRegex").checked;
+            const inputEl = document.getElementById('markdownInput');
+            let text = inputEl.value;
+            
+            if(!findStr) return alert("请输入要查找的内容！");
+            
+            try {
+                if(useRegex) {
+                    const regex = new RegExp(findStr, 'g');
+                    text = text.replace(regex, repStr);
+                } else {
+                    text = text.split(findStr).join(repStr);
+                }
+                inputEl.value = text;
+                handleInput(); 
+                alert("✅ 替换执行完毕！");
+            } catch(e) {
+                alert("❌ 正则表达式错误: " + e.message);
+            }
+        }
+
+        // --- 多维度详细统计 ---
+        function updateStats() {
+            const text = document.getElementById('markdownInput').value || "";
+            const total = text.length;
+            const cn = (text.match(/[\u4e00-\u9fa5]/g) || []).length;
+            const en = (text.match(/[a-zA-Z]/g) || []).length;
+            const num = (text.match(/\d/g) || []).length;
+            // 匹配常见中英文标点及特殊符号
+            const punc = (text.match(/[.,\/#!$%\^&\*;:{}=\-_`~()。\n\s,、；：？！…—·「」『』（）［］【】《》〈〉"']/g) || []).length;
+            
+            document.getElementById('docStats').innerHTML = `总:${total} &nbsp;汉:${cn} &nbsp;英:${en} &nbsp;数:${num} &nbsp;标:${punc}`;
+        }
+
+        // --- Imgur 直传（含 Base64 防拦截修复） ---
+        function uploadToImgurAndInsert() {
+            if (!selectedMedia) { 
+                alert('请先选择一张图片'); 
+                return; 
+            }
+            if (selectedMedia.type.startsWith('video/')) {
+                alert('提示：Imgur 的图片接口主要支持图像。如果是视频，建议使用【插入本地】或通过官方页面上传。');
+            }
+
+            const btn = document.getElementById('imgurUploadBtn');
+            const statusBox = document.getElementById('uploadStatus');
+            const file = selectedMedia.file;
+            
+            btn.disabled = true;
+            btn.innerHTML = '⏳ 上传网络图床中...';
+            statusBox.style.color = 'var(--theme-blue)';
+            statusBox.innerText = '正在封装数据并传输...';
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            
+            reader.onload = async function(event) {
+                try {
+                    const base64Data = event.target.result.split(',')[1];
+                    const formData = new FormData();
+                    formData.append('image', base64Data);
+                    formData.append('type', 'base64'); // 明确告知 base64 格式，防拦截
+
+                    const response = await fetch('https://api.imgur.com/3/image', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Client-ID ${MAGIC_IMGUR_ID}`
+                        },
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        const imageUrl = data.data.link;
+                        const name = file.name.replace(/[\]\[()]/g, '-');
+                        
+                        // 始终插入 Markdown 语法
+                        insertAtCursor(`\n![${name}](${imageUrl})\n`);
+                        
+                        statusBox.style.color = 'var(--theme-green)';
+                        statusBox.innerText = '✅ 上传成功！已插入直链。';
+                    } else {
+                        throw new Error(data.data.error || '图床接口拒绝了该请求');
+                    }
+                } catch (error) {
+                    statusBox.style.color = '#ef4444';
+                    statusBox.innerText = `❌ 上传失败: ${error.message}`;
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = '🚀 传至 Imgur 图床并插入';
+                    setTimeout(() => {
+                        if(statusBox.innerText.includes('成功')) statusBox.innerText = '';
+                    }, 4000);
+                }
+            };
+        }
+
+
+        function insertImageTemplate() {
+            wrapSelection('![', '](https://example.com/image.png)');
+        }
+
+        function setPasteStatus(message, isError = false) {
+            const el = document.getElementById('pasteStatus');
+            el.textContent = message;
+            el.style.color = isError ? '#dc2626' : 'var(--theme-green)';
+            el.style.background = isError ? 'rgba(220,38,38,0.09)' : 'rgba(5,150,105,0.09)';
+            clearTimeout(setPasteStatus.timer);
+            setPasteStatus.timer = setTimeout(() => {
+                el.textContent = '支持粘贴图片';
+                el.style.color = 'var(--theme-green)';
+                el.style.background = 'rgba(5,150,105,0.09)';
+            }, 3200);
+        }
+
+        function handlePasteImage(event) {
+            const items = Array.from(event.clipboardData?.items || []);
+            const imageItem = items.find(item => item.type.startsWith('image/'));
+            if (!imageItem) return;
+
+            event.preventDefault();
+            const file = imageItem.getAsFile();
+            if (!file) {
+                setPasteStatus('未读取到图片', true);
+                return;
+            }
+            const ext = (file.type.split('/')[1] || 'png').replace('jpeg', 'jpg');
+            const pastedFile = new File([file], `pasted-${Date.now()}.${ext}`, { type: file.type });
+            const url = URL.createObjectURL(pastedFile);
+            selectedMedia = { file: pastedFile, url, type: pastedFile.type };
+            renderSelectedMediaPreview();
+            insertAtCursor(`
+![${pastedFile.name}](${url})
+`);
+            setPasteStatus('图片已粘贴插入');
+        }
+
+        function renderSelectedMediaPreview() {
+            const preview = document.getElementById('mediaPreview');
+            if (!selectedMedia || !preview) return;
+            preview.innerHTML = '';
+            const el = selectedMedia.type.startsWith('video/') ? document.createElement('video') : document.createElement('img');
+            el.src = selectedMedia.url;
+            if (el.tagName === 'VIDEO') el.controls = true;
+            preview.appendChild(el);
+            const info = document.createElement('p');
+            info.className = 'small';
+            info.innerText = `${selectedMedia.file.name} · ${(selectedMedia.file.size / 1024 / 1024).toFixed(2)} MB`;
+            preview.appendChild(info);
+        }
+
+        // --- 本地文件预览与处理 ---
+        function handleMediaFile(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('mediaPreview');
+            const statusBox = document.getElementById('uploadStatus');
+            
+            preview.innerHTML = '';
+            statusBox.innerText = '';
+            selectedMedia = null;
+            if (!file) return;
+
+            const url = URL.createObjectURL(file);
+            selectedMedia = { file, url, type: file.type };
+            renderSelectedMediaPreview();
+        }
+
+        function insertSelectedMedia() {
+            if (!selectedMedia) { alert('请先选择图片或视频'); return; }
+            const name = selectedMedia.file.name.replace(/[\]\[()]/g, '-');
+            
+            if (selectedMedia.type.startsWith('video/')) {
+                insertAtCursor(`\n<video src="${selectedMedia.url}" controls></video>\n`);
+            } else {
+                insertAtCursor(`\n![${name}](${selectedMedia.url})\n`);
+            }
+            
+            document.getElementById('uploadStatus').style.color = 'var(--text-tertiary)';
+            document.getElementById('uploadStatus').innerText = '已插入本地缓存链接 (页面刷新后失效)';
+        }
+
+        // --- 基础工具与 Markdown 解析 ---
+        function escapeHtml(text) {
+            return String(text)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function inlineMarkdown(text) {
+            return escapeHtml(text)
+                .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">')
+                .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
+                .replace(/`([^`]+)`/g, '<code>$1</code>')
+                .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*([^*]+)\*/g, '<em>$1</em>');
+        }
+
+        function renderMarkdown(markdown) {
+            const lines = markdown.split('\n');
+            const html = [];
+            let inCode = false; let codeLines = [];
+            let inUl = false; let inOl = false; let inTable = false;
+
+            const closeLists = () => { if (inUl) { html.push('</ul>'); inUl = false; } if (inOl) { html.push('</ol>'); inOl = false; } };
+            const closeTable = () => { if (inTable) { html.push('</tbody></table>'); inTable = false; } };
+
+            lines.forEach((line) => {
+                if (line.trim().startsWith('```')) {
+                    if (inCode) {
+                        html.push(`<pre><code>${escapeHtml(codeLines.join('\n'))}</code></pre>`);
+                        codeLines = []; inCode = false;
+                    } else { closeLists(); closeTable(); inCode = true; }
+                    return;
+                }
+                if (inCode) { codeLines.push(line); return; }
+
+                const trimmed = line.trim();
+                if (!trimmed) { closeLists(); closeTable(); return; }
+
+                if (/^\|(.+)\|$/.test(trimmed)) {
+                    closeLists();
+                    const cells = trimmed.slice(1, -1).split('|').map(cell => inlineMarkdown(cell.trim()));
+                    if (cells.every(cell => /^:?-{3,}:?$/.test(cell))) return;
+                    if (!inTable) { html.push('<table><tbody>'); inTable = true; }
+                    const tag = html.join('').includes('<tr>') ? 'td' : 'th';
+                    html.push(`<tr>${cells.map(cell => `<${tag}>${cell}</${tag}>`).join('')}</tr>`);
+                    return;
+                }
+                closeTable();
+
+                const rawVideo = trimmed.match(/^<video\s+src=["']([^"']+)["']\s+controls><\/video>$/i);
+                if (rawVideo && /^(blob:|https?:|data:video\/)/i.test(rawVideo[1])) {
+                    closeLists(); html.push(`<video src="${escapeHtml(rawVideo[1])}" controls></video>`); return;
+                }
+
+                const heading = trimmed.match(/^(#{1,6})\s+(.+)$/);
+                if (heading) {
+                    closeLists();
+                    const level = heading[1].length;
+                    html.push(`<h${level}>${inlineMarkdown(heading[2])}</h${level}>`);
+                    return;
+                }
+                if (/^>\s?/.test(trimmed)) {
+                    closeLists(); html.push(`<blockquote>${inlineMarkdown(trimmed.replace(/^>\s?/, ''))}</blockquote>`); return;
+                }
+                if (/^[-*+]\s+/.test(trimmed)) {
+                    if (!inUl) { closeLists(); html.push('<ul>'); inUl = true; }
+                    html.push(`<li>${inlineMarkdown(trimmed.replace(/^[-*+]\s+/, ''))}</li>`); return;
+                }
+                if (/^\d+\.\s+/.test(trimmed)) {
+                    if (!inOl) { closeLists(); html.push('<ol>'); inOl = true; }
+                    html.push(`<li>${inlineMarkdown(trimmed.replace(/^\d+\.\s+/, ''))}</li>`); return;
+                }
+                closeLists(); html.push(`<p>${inlineMarkdown(trimmed)}</p>`);
+            });
+
+            if (inCode) html.push(`<pre><code>${escapeHtml(codeLines.join('\n'))}</code></pre>`);
+            closeLists(); closeTable();
+            return html.join('\n');
+        }
+
+        // --- 统一渲染与状态 ---
+        function renderPreview() {
+            const text = document.getElementById('markdownInput').value;
+            document.getElementById('previewPane').innerHTML = renderMarkdown(text);
+            updateStats();
+        }
+
+        function getTextarea() { return document.getElementById('markdownInput'); }
+        
+        function insertAtCursor(text) {
+            const area = getTextarea();
+            const start = area.selectionStart;
+            const end = area.selectionEnd;
+            area.value = area.value.slice(0, start) + text + area.value.slice(end);
+            area.focus();
+            area.selectionStart = area.selectionEnd = start + text.length;
+            handleInput();
+        }
+        
+        function wrapSelection(prefix, suffix) {
+            const area = getTextarea();
+            const start = area.selectionStart;
+            const end = area.selectionEnd;
+            const selected = area.value.slice(start, end) || '文本';
+            const next = prefix + selected + suffix;
+            area.value = area.value.slice(0, start) + next + area.value.slice(end);
+            area.focus();
+            area.selectionStart = start + prefix.length;
+            area.selectionEnd = start + prefix.length + selected.length;
+            handleInput();
+        }
+        
+        function wrapLine(prefix, suffix) {
+            const area = getTextarea();
+            const lineStart = area.value.lastIndexOf('\n', area.selectionStart - 1) + 1;
+            area.value = area.value.slice(0, lineStart) + prefix + area.value.slice(lineStart) + suffix;
+            area.focus();
+            area.selectionStart = area.selectionEnd = lineStart + prefix.length;
+            handleInput();
+        }
+
+        // --- AI API 调用逻辑 ---
+        async function runAiEdit(mode) {
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const baseUrl = document.getElementById('apiBaseUrl').value.trim().replace(/\/+$/, '/') || '[https://api.poixe.com/v1/](https://api.poixe.com/v1/)';
+            const model = document.getElementById('modelName').value.trim() || 'deepseek-v4-flash';
+            const doc = getTextarea().value.trim();
+            const instruction = document.getElementById('aiInstruction').value;
+            const customInstruction = document.getElementById('customInstruction').value.trim();
+            const status = document.getElementById('aiStatus');
+            const buttons = [document.getElementById('aiReplaceBtn'), document.getElementById('aiAppendBtn')];
+
+            if (!apiKey) { alert('请先填写 API Key'); return; }
+            if (!doc) { alert('请先输入内容'); return; }
+
+            buttons.forEach(btn => btn.disabled = true);
+            status.innerText = '引擎解析处理中...';
+            saveSettings();
+
+            try {
+                const response = await fetch(baseUrl + 'chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model,
+                        messages: [
+                            { role: 'system', content: '你是专业的文档排版与处理助手。直接输出修改后的结果内容，严禁输出任何寒暄或废话。除非用户文本当中本身包含 markdown 代码块包裹，否则你绝对不要使用 ``` 标记来包裹你的回复全文。' },
+                            { role: 'user', content: `${instruction}\n${customInstruction ? `补充要求：${customInstruction}\n` : ''}\n---\n${doc}` }
+                        ],
+                        max_tokens: 8192
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errData = await response.json().catch(() => ({}));
+                    throw new Error(errData?.error?.message || `HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                let result = data.choices?.[0]?.message?.content?.trim();
+                
+                // 去除可能被大模型错误包裹的代码块标记
+                if(result && result.startsWith('```') && result.endsWith('```')){
+                    result = result.replace(/^```[\w-]*\n/, '').replace(/\n```$/, '');
+                }
+
+                if (!result) throw new Error('API 未返回有效内容');
+                
+                if (mode === 'replace') getTextarea().value = result;
+                else getTextarea().value += `\n\n---\n\n${result}`;
+                
+                handleInput();
+                status.innerText = `完成：耗费 ${data.usage?.total_tokens || '未知'} Tokens`;
+            } catch (err) {
+                status.innerText = `失败：${err.message}`;
+                alert(`模型处理失败：${err.message}`);
+            } finally {
+                buttons.forEach(btn => btn.disabled = false);
+            }
+        }
+    </script>
+</body>
+</html>
