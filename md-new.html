@@ -182,23 +182,6 @@
         
         <aside class="panel" id="sidePanel">
             <div class="panel-scroll">
-
-                <div class="hero-illo" aria-label="白色编辑器插图">
-                    <svg viewBox="0 0 360 180" role="img" aria-labelledby="heroTitle heroDesc">
-                        <title id="heroTitle">文档与插图编辑</title>
-                        <desc id="heroDesc">带有图片、文字和工具栏的白色 Markdown 编辑器插图。</desc>
-                        <rect x="18" y="24" width="324" height="132" rx="24" fill="#fff" stroke="#dbeafe"/>
-                        <rect x="42" y="50" width="130" height="14" rx="7" fill="#bfdbfe"/>
-                        <rect x="42" y="76" width="170" height="10" rx="5" fill="#e2e8f0"/>
-                        <rect x="42" y="96" width="145" height="10" rx="5" fill="#e2e8f0"/>
-                        <rect x="220" y="52" width="82" height="72" rx="18" fill="#eff6ff" stroke="#93c5fd"/>
-                        <circle cx="246" cy="78" r="13" fill="#f97316" opacity=".78"/>
-                        <path d="M229 116l23-25 14 15 10-11 19 21z" fill="#2563eb" opacity=".82"/>
-                        <rect x="68" y="130" width="216" height="10" rx="5" fill="#dcfce7"/>
-                    </svg>
-                </div>
-                <p class="hint">白色新版：左侧集成 AI、查找替换与图像管理；顶部编辑栏支持常用 Markdown 快捷操作。</p>
-
                 <div class="form-group">
                     <label for="apiKey">🔑 API Key</label>
                     <input id="apiKey" class="glass-input" type="password" placeholder="请输入你的 API Key">
@@ -260,10 +243,6 @@
                     <button class="btn purple full" id="imgurUploadBtn" onclick="uploadToImgurAndInsert()">
                         🚀 传至 Imgur 图床并插入
                     </button>
-                    <div class="actions">
-                        <button class="btn secondary" onclick="insertSelectedMedia()">插入本地</button>
-                        <a class="btn secondary" href="https://imgur.com/upload" target="_blank" rel="noopener noreferrer">官网传</a>
-                    </div>
                 </div>
 
             </div>
@@ -285,7 +264,6 @@
                 
                 <div style="flex-grow: 1;"></div>
                 
-                <span class="paste-tip" id="pasteStatus">支持粘贴图片</span>
                 <span class="status" id="docStats" style="font-family: ui-monospace, monospace; margin-right: 12px; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 8px;">
                     总:0 汉:0 英:0 数:0 标:0
                 </span>
