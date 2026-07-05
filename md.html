@@ -7,16 +7,18 @@
     <title>MD-Edit</title>
     <style>
         :root {
-            --bg-body: #020617;
-            --bg-card: rgba(15, 23, 42, 0.78);
-            --bg-panel: rgba(30, 41, 59, 0.48);
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --text-tertiary: #64748b;
-            --theme-blue: #38bdf8;
-            --theme-purple: #a78bfa;
-            --theme-green: #34d399;
-            --border-light: rgba(255, 255, 255, 0.1);
+            --bg-body: #f7f9fc;
+            --bg-card: rgba(255, 255, 255, 0.88);
+            --bg-panel: rgba(248, 250, 252, 0.82);
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-tertiary: #94a3b8;
+            --theme-blue: #2563eb;
+            --theme-purple: #7c3aed;
+            --theme-green: #059669;
+            --theme-orange: #f97316;
+            --border-light: rgba(15, 23, 42, 0.1);
+            --soft-shadow: 0 22px 70px rgba(15, 23, 42, 0.10);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -25,9 +27,9 @@
             font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             background-color: var(--bg-body);
             background-image:
-                radial-gradient(circle at 20% -10%, rgba(56, 189, 248, 0.18), transparent 35%),
-                radial-gradient(circle at 85% 15%, rgba(167, 139, 250, 0.16), transparent 38%),
-                linear-gradient(135deg, rgba(15, 23, 42, 0.75), rgba(2, 6, 23, 1));
+                radial-gradient(circle at 8% 10%, rgba(37, 99, 235, 0.12), transparent 28%),
+                radial-gradient(circle at 90% 2%, rgba(249, 115, 22, 0.12), transparent 30%),
+                linear-gradient(135deg, #ffffff 0%, #f8fafc 42%, #eef4ff 100%);
             color: var(--text-primary);
             min-height: 100vh;
             padding: 18px;
@@ -48,7 +50,7 @@
             background: var(--bg-card);
             border: 1px solid var(--border-light);
             border-radius: 22px;
-            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.34);
+            box-shadow: var(--soft-shadow);
             backdrop-filter: blur(18px);
             -webkit-backdrop-filter: blur(18px);
             display: flex;
@@ -76,7 +78,7 @@
             background: var(--bg-card);
             border: 1px solid var(--border-light);
             border-radius: 22px;
-            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.34);
+            box-shadow: var(--soft-shadow);
             backdrop-filter: blur(18px);
             -webkit-backdrop-filter: blur(18px);
             overflow: hidden;
@@ -87,16 +89,16 @@
         .panel-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
         
         .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.1rem; margin-bottom: 18px; }
-        .brand-mark { width: 34px; height: 34px; border-radius: 12px; display: grid; place-items: center; background: linear-gradient(135deg, var(--theme-blue), var(--theme-purple)); color: #020617; }
+        .brand-mark { width: 34px; height: 34px; border-radius: 12px; display: grid; place-items: center; background: linear-gradient(135deg, var(--theme-blue), var(--theme-purple)); color: #ffffff; }
         .hint { color: var(--text-secondary); font-size: 0.82rem; line-height: 1.6; margin-bottom: 16px; }
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 8px; font-size: 0.78rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em; }
         
         .glass-input, textarea, select {
             width: 100%;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(15, 23, 42, 0.12);
             border-radius: 12px;
-            background: rgba(0, 0, 0, 0.28);
+            background: rgba(255, 255, 255, 0.82);
             color: var(--text-primary);
             padding: 11px 13px;
             font: inherit;
@@ -105,11 +107,11 @@
         .glass-input:focus, textarea:focus, select:focus { border-color: rgba(56, 189, 248, 0.55); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.12); }
         
         .btn {
-            height: 40px; border: 0; border-radius: 12px; padding: 0 14px; font-weight: 800; cursor: pointer; color: #020617; background: var(--theme-blue); display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: 0.18s ease; text-decoration: none; white-space: nowrap;
+            height: 40px; border: 0; border-radius: 12px; padding: 0 14px; font-weight: 800; cursor: pointer; color: #ffffff; background: var(--theme-blue); display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: 0.18s ease; text-decoration: none; white-space: nowrap;
         }
         .btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
         .btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
-        .btn.secondary { background: rgba(255, 255, 255, 0.09); color: var(--text-primary); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .btn.secondary { background: rgba(37, 99, 235, 0.08); color: var(--text-primary); border: 1px solid rgba(37, 99, 235, 0.16); }
         .btn.purple { background: var(--theme-purple); color: white;}
         .btn.full { width: 100%; }
         .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -126,17 +128,17 @@
             align-items: center;
             flex-wrap: wrap;
         }
-        .tool-btn { min-width: 36px; height: 36px; padding: 0 8px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.06); color: var(--text-primary); cursor: pointer; font-weight: 800; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center;}
-        .tool-btn:hover { background: rgba(56, 189, 248, 0.16); border-color: rgba(56, 189, 248, 0.34); }
+        .tool-btn { min-width: 36px; height: 36px; padding: 0 8px; border-radius: 10px; border: 1px solid rgba(15, 23, 42, 0.1); background: rgba(255, 255, 255, 0.76); color: var(--text-primary); cursor: pointer; font-weight: 800; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center;}
+        .tool-btn:hover { background: rgba(37, 99, 235, 0.10); border-color: rgba(37, 99, 235, 0.28); }
         
         .split { min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; }
         .card-head { padding: 14px 16px; border-bottom: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
         .card-title { font-weight: 800; }
         .status { color: var(--text-secondary); font-size: 0.8rem; }
-        #markdownInput { height: calc(100% - 57px); min-height: 240px; border: 0; border-radius: 0; resize: none; background: rgba(2, 6, 23, 0.58); line-height: 1.7; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+        #markdownInput { height: calc(100% - 57px); min-height: 240px; border: 0; border-radius: 0; resize: none; background: rgba(255, 255, 255, 0.72); line-height: 1.7; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
         
         .preview-container { height: calc(100% - 57px); position: relative; }
-        .preview { height: 100%; overflow: auto; padding: 24px; background: rgba(255, 255, 255, 0.025); line-height: 1.75; }
+        .preview { height: 100%; overflow: auto; padding: 24px; background: rgba(255, 255, 255, 0.64); line-height: 1.75; }
         .preview::-webkit-scrollbar { width: 8px; }
         .preview::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
         
@@ -146,18 +148,24 @@
         .preview h3 { font-size: 1.18rem; }
         .preview p, .preview ul, .preview ol, .preview blockquote, .preview pre, .preview table { margin: 0.8em 0; }
         .preview ul, .preview ol { padding-left: 1.45em; }
-        .preview blockquote { border-left: 4px solid var(--theme-blue); padding: 0.25em 1em; color: #cbd5e1; background: rgba(56, 189, 248, 0.08); border-radius: 0 12px 12px 0; }
-        .preview code { background: rgba(148, 163, 184, 0.14); padding: 0.15em 0.35em; border-radius: 6px; color: #bae6fd; }
-        .preview pre { background: rgba(0, 0, 0, 0.36); border: 1px solid var(--border-light); border-radius: 14px; padding: 14px; overflow-x: auto; }
+        .preview blockquote { border-left: 4px solid var(--theme-blue); padding: 0.25em 1em; color: #334155; background: rgba(37, 99, 235, 0.07); border-radius: 0 12px 12px 0; }
+        .preview code { background: rgba(148, 163, 184, 0.14); padding: 0.15em 0.35em; border-radius: 6px; color: #1d4ed8; }
+        .preview pre { background: rgba(248, 250, 252, 0.96); border: 1px solid var(--border-light); border-radius: 14px; padding: 14px; overflow-x: auto; }
         .preview pre code { background: transparent; padding: 0; }
         .preview table { width: 100%; border-collapse: collapse; overflow: hidden; border-radius: 12px; }
         .preview th, .preview td { border: 1px solid var(--border-light); padding: 8px 10px; }
         .preview th { background: rgba(56, 189, 248, 0.12); }
         .preview img, .preview video { max-width: 100%; border-radius: 14px; border: 1px solid var(--border-light); margin: 10px 0; }
-        .preview a { color: #7dd3fc; }
+        .preview a { color: #2563eb; }
         .media-preview { display: grid; gap: 10px; margin-top: 10px; }
         .media-preview img, .media-preview video { width: 100%; max-height: 170px; object-fit: contain; border: 1px solid var(--border-light); border-radius: 12px; background: rgba(0, 0, 0, 0.28); }
         .small { font-size: 0.78rem; color: var(--text-tertiary); line-height: 1.55; }
+
+
+        .hero-illo { margin: 0 0 18px; padding: 18px; border-radius: 18px; background: linear-gradient(135deg, rgba(37,99,235,0.10), rgba(249,115,22,0.10)); border: 1px solid var(--border-light); }
+        .hero-illo svg { width: 100%; height: auto; display: block; }
+        .paste-tip { display: inline-flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 999px; background: rgba(5, 150, 105, 0.09); color: var(--theme-green); font-size: 0.78rem; font-weight: 800; }
+        .topbar { position: sticky; top: 0; z-index: 5; }
 
         @media (max-width: 980px) {
             body { padding: 0; overflow: auto; }
@@ -174,8 +182,6 @@
         
         <aside class="panel" id="sidePanel">
             <div class="panel-scroll">
-                <p class="hint">文档编写与排版，查找替换、Imgur 图床直传。</p>
-
                 <div class="form-group">
                     <label for="apiKey">🔑 API Key</label>
                     <input id="apiKey" class="glass-input" type="password" placeholder="请输入你的 API Key">
@@ -237,10 +243,6 @@
                     <button class="btn purple full" id="imgurUploadBtn" onclick="uploadToImgurAndInsert()">
                         🚀 传至 Imgur 图床并插入
                     </button>
-                    <div class="actions">
-                        <button class="btn secondary" onclick="insertSelectedMedia()">插入本地</button>
-                        <a class="btn secondary" href="https://imgur.com/upload" target="_blank" rel="noopener noreferrer">官网传</a>
-                    </div>
                 </div>
 
             </div>
@@ -257,10 +259,7 @@
                 <button class="tool-btn" title="加粗" onclick="wrapSelection('**', '**')">B</button>
                 <button class="tool-btn" title="斜体" onclick="wrapSelection('*', '*')"><em>I</em></button>
                 <button class="tool-btn" title="引用" onclick="wrapLine('> ', '')">❝</button>
-                <button class="tool-btn" title="无序列表" onclick="wrapLine('- ', '')">•</button>
-                <button class="tool-btn" title="有序列表" onclick="wrapLine('1. ', '')">1.</button>
                 <button class="tool-btn" title="代码块" onclick="wrapSelection('```\n', '\n```')">{ }</button>
-                <button class="tool-btn" title="链接" onclick="wrapSelection('[', '](https://)')">🔗</button>
                 <button class="tool-btn" title="表格" onclick="insertAtCursor('\n| 项目 | 说明 |\n| --- | --- |\n| 示例 | 内容 |\n')">Table</button>
                 
                 <div style="flex-grow: 1;"></div>
@@ -292,7 +291,7 @@
     </div>
 
     <script>
-        const DEFAULT_DOC = `# MD 智能全能编辑器\n\n欢迎！这个版本默认接入了 \`DeepSeek-V4-Flash\` 引擎，可直接帮你检查错别字与代码 bug。\n\n## 🚀 核心特性\n\n- **折叠面板**：点击左上角的 \`☰\` 按钮，可以沉浸式全屏写作！\n- **高级快捷栏**：右上角集成了网页沙盒🌐、下载💾、复制📋、清空🗑️等核心功能。\n- **原生图床直传**：左下角选择图片，一键上传 Imgur 图床！\n- **全维字数统计**：右上角可实时查看字数、标点、字母等详细数据。\n- **网页代码预览**：点击右上角 🌐 按钮，可将编辑器的代码作为网页在【新标签页】打开测试。\n- **正则替换**：左侧面板内置了查找替换功能。\n`;
+        const DEFAULT_DOC = `# MD 白色智能编辑器\n\n欢迎！这个版本默认接入了 \`DeepSeek-V4-Flash\` 引擎，可直接帮你检查错别字与代码 bug。\n\n## 🚀 核心特性\n\n- **折叠面板**：点击左上角的 \`☰\` 按钮，可以沉浸式全屏写作！\n- **顶部编辑栏集成**：标题、加粗、列表、代码、链接、表格、插图、保存与清空都在顶部。\n- **图像粘贴**：直接 Ctrl/⌘ + V 粘贴剪贴板图片，自动插入本地预览链接。\n- **全维字数统计**：右上角可实时查看字数、标点、字母等详细数据。\n- **网页代码预览**：点击右上角 🌐 按钮，可将编辑器的代码作为网页在【新标签页】打开测试。\n- **正则替换**：左侧面板内置了查找替换功能。\n`;
         const STORAGE_KEYS = {
             doc: 'md_editor_document',
             apiKey: 'md_editor_api_key',
@@ -311,6 +310,7 @@
             ['apiKey', 'apiBaseUrl', 'modelName'].forEach(id => {
                 document.getElementById(id).addEventListener('input', saveSettings);
             });
+            getTextarea().addEventListener('paste', handlePasteImage);
             renderPreview();
         });
 
@@ -504,6 +504,60 @@
             };
         }
 
+
+        function insertImageTemplate() {
+            wrapSelection('![', '](https://example.com/image.png)');
+        }
+
+        function setPasteStatus(message, isError = false) {
+            const el = document.getElementById('pasteStatus');
+            el.textContent = message;
+            el.style.color = isError ? '#dc2626' : 'var(--theme-green)';
+            el.style.background = isError ? 'rgba(220,38,38,0.09)' : 'rgba(5,150,105,0.09)';
+            clearTimeout(setPasteStatus.timer);
+            setPasteStatus.timer = setTimeout(() => {
+                el.textContent = '支持粘贴图片';
+                el.style.color = 'var(--theme-green)';
+                el.style.background = 'rgba(5,150,105,0.09)';
+            }, 3200);
+        }
+
+        function handlePasteImage(event) {
+            const items = Array.from(event.clipboardData?.items || []);
+            const imageItem = items.find(item => item.type.startsWith('image/'));
+            if (!imageItem) return;
+
+            event.preventDefault();
+            const file = imageItem.getAsFile();
+            if (!file) {
+                setPasteStatus('未读取到图片', true);
+                return;
+            }
+            const ext = (file.type.split('/')[1] || 'png').replace('jpeg', 'jpg');
+            const pastedFile = new File([file], `pasted-${Date.now()}.${ext}`, { type: file.type });
+            const url = URL.createObjectURL(pastedFile);
+            selectedMedia = { file: pastedFile, url, type: pastedFile.type };
+            renderSelectedMediaPreview();
+            insertAtCursor(`
+![${pastedFile.name}](${url})
+`);
+            setPasteStatus('图片已粘贴插入');
+        }
+
+        function renderSelectedMediaPreview() {
+            const preview = document.getElementById('mediaPreview');
+            if (!selectedMedia || !preview) return;
+            preview.innerHTML = '';
+            const el = selectedMedia.type.startsWith('video/') ? document.createElement('video') : document.createElement('img');
+            el.src = selectedMedia.url;
+            if (el.tagName === 'VIDEO') el.controls = true;
+            preview.appendChild(el);
+            const info = document.createElement('p');
+            info.className = 'small';
+            info.innerText = `${selectedMedia.file.name} · ${(selectedMedia.file.size / 1024 / 1024).toFixed(2)} MB`;
+            preview.appendChild(info);
+        }
+
         // --- 本地文件预览与处理 ---
         function handleMediaFile(event) {
             const file = event.target.files[0];
@@ -517,14 +571,7 @@
 
             const url = URL.createObjectURL(file);
             selectedMedia = { file, url, type: file.type };
-            const el = file.type.startsWith('video/') ? document.createElement('video') : document.createElement('img');
-            el.src = url;
-            if (el.tagName === 'VIDEO') el.controls = true;
-            preview.appendChild(el);
-            const info = document.createElement('p');
-            info.className = 'small';
-            info.innerText = `${file.name} · ${(file.size / 1024 / 1024).toFixed(2)} MB`;
-            preview.appendChild(info);
+            renderSelectedMediaPreview();
         }
 
         function insertSelectedMedia() {
