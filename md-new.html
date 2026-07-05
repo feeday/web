@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
      <link rel="icon" type="image/png" href="/favicon.png">
-    <title>MD-Edit White</title>
+    <title>MD-Edit</title>
     <style>
         :root {
             --bg-body: #f7f9fc;
@@ -280,11 +280,7 @@
                 <button class="tool-btn" title="加粗" onclick="wrapSelection('**', '**')">B</button>
                 <button class="tool-btn" title="斜体" onclick="wrapSelection('*', '*')"><em>I</em></button>
                 <button class="tool-btn" title="引用" onclick="wrapLine('> ', '')">❝</button>
-                <button class="tool-btn" title="无序列表" onclick="wrapLine('- ', '')">•</button>
-                <button class="tool-btn" title="有序列表" onclick="wrapLine('1. ', '')">1.</button>
                 <button class="tool-btn" title="代码块" onclick="wrapSelection('```\n', '\n```')">{ }</button>
-                <button class="tool-btn" title="链接" onclick="wrapSelection('[', '](https://)')">🔗</button>
-                <button class="tool-btn" title="插入图像" onclick="insertImageTemplate()">🖼️</button>
                 <button class="tool-btn" title="表格" onclick="insertAtCursor('\n| 项目 | 说明 |\n| --- | --- |\n| 示例 | 内容 |\n')">Table</button>
                 
                 <div style="flex-grow: 1;"></div>
