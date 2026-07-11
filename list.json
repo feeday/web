@@ -12,6 +12,9 @@
 {"cat":"video","title":"OpenCut","desc":"在线视频编辑工具。","url":"https://opencut.app/projects","isTop":true,"hideOnMobile":true},
 {"cat":"ad","title":"MD Edit","desc":"MD 在线编辑器","url":"https://datxy.com/md","isTop":true},
 
+{"cat":"text","title":"腾讯文档","desc":"在线腾讯文档。","url":"https://docs.qq.com/desktop/","isTop":true},
+{"cat":"text","title":"飞书文档","desc":"在线飞书文档。","url":"https://www.feishu.cn/drive/home/","isTop":true},
+  
 {"cat":"text","title":"AI-信息","desc":"AI 自动挑选的高价值内容。","url":"https://aihot.virxact.com","isTop":true},
 {"cat":"ad","title":"AI-工具集","desc":"发现最新AI产品工具和使用技巧。","url":"https://ai-bot.cn/ai-tools/","isTop":true},
 {"cat":"tool","title":"GPU Test","desc":"GPU 显卡极限压力测试。","url":"https://datxy.com/gpu","isTop":true},
