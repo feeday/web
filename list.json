@@ -10,7 +10,7 @@
 {"cat":"video","title":"Seedance 2.0","desc":"每天5条10秒视频豆包免费生成。","url":"https://www.doubao.com/chat/create-image","isTop":true},
 {"cat":"image","title":"Photopea","desc":"在线PS，图形图层在线编辑器。","url":"https://www.photopea.com/","isTop":true,"hideOnMobile":true},
 {"cat":"video","title":"OpenCut","desc":"在线视频编辑工具。","url":"https://opencut.app/projects","isTop":true,"hideOnMobile":true},
-{"cat":"ad","title":"MD Edit","desc":"MD 在线编辑器","url":"https://datxy.com/md","isTop":true},
+{"cat":"ad","title":"Aigx","desc":"模型测试文档编辑器","url":"https://datxy.com/aigx-x.html","isTop":true},
 
 {"cat":"text","title":"腾讯文档","desc":"在线腾讯文档。","url":"https://docs.qq.com/desktop/","isTop":true},
 {"cat":"text","title":"飞书文档","desc":"在线飞书文档。","url":"https://www.feishu.cn/drive/home/","isTop":true},
@@ -18,7 +18,6 @@
 {"cat":"text","title":"AI-信息","desc":"AI 自动挑选的高价值内容。","url":"https://aihot.virxact.com","isTop":true},
 {"cat":"ad","title":"AI-工具集","desc":"发现最新AI产品工具和使用技巧。","url":"https://ai-bot.cn/ai-tools/","isTop":true},
 {"cat":"tool","title":"GPU Test","desc":"GPU 显卡极限压力测试。","url":"https://datxy.com/gpu","isTop":true},
-{"cat":"tool","title":"MD Demo","desc":"MD 文档示例","url":"https://md.datxy.com","isTop":true},
   
 {"cat":"multi","title":"弹幕视频留言","desc":"看剧听音乐吐槽。","url":"https://tcq233.com/btv","isTop":true},
 
