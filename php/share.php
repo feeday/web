@@ -417,6 +417,50 @@ textarea.input-style.is-empty { white-space: pre; overflow-x: auto; }
 textarea.input-style.is-empty::placeholder { white-space: pre; }
 textarea.input-style::placeholder { color: #555; font-family: 'Share Tech Mono', monospace; font-size: 12px; line-height: 1.4; }
 
+/* Search bar: keep the same dark terminal treatment as the form controls below. */
+.search-wrapper {
+    position: relative; display: flex; align-items: center; width: 100%; min-height: 44px;
+    margin-bottom: 12px; background: #000; border: 1px solid #333; border-radius: 6px;
+    transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+}
+.search-wrapper:focus-within { border-color: #00f0ff; background: #050505; box-shadow: 0 0 10px rgba(0, 240, 255, 0.2); }
+.custom-select { position: relative; flex: 0 0 auto; align-self: stretch; }
+.select-trigger {
+    height: 100%; min-width: 92px; padding: 0 10px 0 13px; display: flex; align-items: center;
+    justify-content: space-between; gap: 6px; color: #00ff41; font-size: 13px; cursor: pointer;
+    user-select: none;
+}
+.arrow-icon { width: 15px; height: 15px; fill: currentColor; transition: transform 0.2s ease; }
+.custom-select.open .arrow-icon { transform: rotate(180deg); }
+.select-options {
+    display: none; position: absolute; z-index: 100; top: calc(100% + 7px); left: 0; min-width: 130px;
+    padding: 5px; background: #080808; border: 1px solid #333; border-radius: 6px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.85);
+}
+.custom-select.open .select-options { display: block; }
+.option-item { padding: 8px 10px; border-radius: 4px; color: #888; font-size: 13px; cursor: pointer; }
+.option-item:hover { background: rgba(255, 255, 255, 0.07); color: #d4d4d4; }
+.option-item.selected { background: rgba(0, 255, 65, 0.08); color: #00ff41; }
+.search-inner-divider { width: 1px; height: 22px; flex: 0 0 1px; background: #333; }
+.search-input {
+    min-width: 0; flex: 1; height: 42px; padding: 0 36px 0 12px; border: 0; outline: 0;
+    background: transparent; color: #00f0ff; font: 14px 'Share Tech Mono', monospace;
+}
+.search-input::placeholder { color: #555; }
+.search-clear {
+    display: none; position: absolute; right: 45px; padding: 7px; color: #666; font-size: 12px;
+    line-height: 1; cursor: pointer;
+}
+.search-clear:hover { color: #d4d4d4; }
+.search-input:not(:placeholder-shown) + .search-clear { display: block; }
+.external-search-btn {
+    width: 43px; height: 42px; flex: 0 0 43px; display: grid; place-items: center; color: #00f0ff;
+    border-left: 1px solid #333; cursor: pointer; transition: background 0.2s ease, color 0.2s ease;
+}
+.external-search-btn:hover { background: rgba(0, 240, 255, 0.1); color: #00ff41; }
+.external-search-btn:active { background: rgba(0, 240, 255, 0.18); }
+.external-search-btn svg { width: 18px; height: 18px; }
+
 .button-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(85px, 1fr)); gap: 10px; margin-bottom: 5px; }
 .btn { 
     background: rgba(255, 255, 255, 0.05); color: #888; border: 1px solid #333; 
@@ -646,6 +690,39 @@ audio { outline: none; filter: invert(0.8) hue-rotate(180deg); }
 </div>
 
 <script>
+const customSelect = document.getElementById('customSelect');
+const searchInput = document.getElementById('searchInput');
+
+function toggleSelect(event) {
+    event.stopPropagation();
+    customSelect.classList.toggle('open');
+}
+
+function selectEngine(url, label, option) {
+    document.getElementById('searchEngineValue').value = url;
+    document.getElementById('currentEngineText').textContent = label;
+    document.querySelectorAll('.option-item').forEach(item => item.classList.toggle('selected', item === option));
+    customSelect.classList.remove('open');
+    searchInput.focus();
+}
+
+function clearSearch() {
+    searchInput.value = '';
+    searchInput.focus();
+}
+
+function runExternalSearch() {
+    const query = searchInput.value.trim();
+    if (query) window.open(document.getElementById('searchEngineValue').value + encodeURIComponent(query), '_blank', 'noopener,noreferrer');
+}
+
+document.addEventListener('click', () => customSelect.classList.remove('open'));
+document.getElementById('externalSearchBtn').addEventListener('click', runExternalSearch);
+searchInput.addEventListener('keydown', event => {
+    if (event.key === 'Enter') runExternalSearch();
+    if (event.key === 'Escape') clearSearch();
+});
+
 const universalText = document.getElementById("universalText");
 const universalFile = document.getElementById("universalFile");
 const response = document.getElementById("response");
