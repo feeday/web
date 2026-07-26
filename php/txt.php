@@ -281,7 +281,7 @@ if ($config['enforceWechatOnly']) {
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <meta name="referrer" content="same-origin" />
 <title>─=≡Σ((( つ•̀ω•́)つ</title>
 <?php echo $wechatScript; ?>
@@ -294,7 +294,6 @@ if ($config['enforceWechatOnly']) {
 
 <style>
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html { width: 100%; }
 body { 
     font-family: 'Share Tech Mono', -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; 
     margin: 0; padding: 15px 10px; 
@@ -306,7 +305,7 @@ body {
     color: #d4d4d4; 
     min-height: 100vh; 
 }
-.app-container { width: 100%; max-width: 600px; margin: 0 auto; padding-bottom: 20px; position: relative; z-index: 10; }
+.app-container { max-width: 600px; margin: 0 auto; padding-bottom: 20px; position: relative; z-index: 10; }
 
 .card { 
     background: rgba(10, 10, 10, 0.8); 
@@ -391,24 +390,6 @@ canvas#chart { width: 100%; height: 100%; display: block; }
 audio { outline: none; filter: invert(0.8) hue-rotate(180deg); }
 .sub-text { color: #888 !important; }
 
-/* 手机端保持紧凑易点按，电脑端充分利用整个浏览器宽度。 */
-@media (max-width: 767px) {
-    body { padding: 10px 8px; }
-    .card { padding: 14px 12px; margin-bottom: 10px; }
-    .button-grid { grid-template-columns: repeat(auto-fit, minmax(78px, 1fr)); gap: 8px; }
-    .btn { min-height: 42px; padding: 9px 4px; letter-spacing: 0; }
-    #stats { grid-template-columns: repeat(2, 1fr); }
-    .ping-container { padding: 12px; }
-}
-
-@media (min-width: 768px) {
-    body { padding: 24px; }
-    .app-container { max-width: none; margin: 0; }
-    .card { padding: 24px; }
-    .button-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
-    textarea.input-style { min-height: 140px; }
-    .ping-sheet { max-width: calc(100% - 48px); }
-}
 
 </style>
 </head>
