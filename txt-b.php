@@ -15,6 +15,7 @@ date_default_timezone_set('Asia/Shanghai');
 $config = [
     'poixeApiKey'        => getenv('POIXE_API_KEY') ?: 'sk-',
     'apimartApiKey'      => getenv('APIMART_API_KEY') ?: 'x',
+    'imgurClientId'      => getenv('IMGUR_CLIENT_ID') ?: '203da2f300125a1',
     'enforceWechatOnly'  => false,                       // 是否强制仅允许微信内打开
     'enforceAntihack'    => false,                       // 是否开启域名白名单防盗链防护
     'redirectUrl'        => 'https://tcq233.com/btv',
@@ -129,6 +130,50 @@ if ($config['enforceAntihack'] && !empty($checkUrl)) {
  */
 if ($apiParam !== null) {
     $requestHeaders = getallheaders();
+
+    if ($apiParam === 'share_image') {
+        try {
+            $file = isset($_FILES['image']) && is_array($_FILES['image']) ? $_FILES['image'] : null;
+            if (!$file || ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+                throw new RuntimeException('请选择需要分享的图像');
+            }
+            if ((int) ($file['size'] ?? 0) < 1 || (int) $file['size'] > 50 * 1024 * 1024) {
+                throw new RuntimeException('图像大小须在 50 MB 以内');
+            }
+
+            $mime = function_exists('mime_content_type') ? mime_content_type((string) $file['tmp_name']) : (string) ($file['type'] ?? '');
+            if (!in_array($mime, ['image/jpeg', 'image/png'], true)) {
+                throw new RuntimeException('分享图像仅支持 PNG 和 JPG');
+            }
+            if (!function_exists('curl_init') || !class_exists('CURLFile')) {
+                throw new RuntimeException('服务器未启用图像分享所需的 cURL 扩展');
+            }
+
+            $ch = curl_init('https://api.imgur.com/3/image');
+            curl_setopt_array($ch, [
+                CURLOPT_POST => true,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_CONNECTTIMEOUT => 15,
+                CURLOPT_TIMEOUT => 120,
+                CURLOPT_HTTPHEADER => ['Authorization: Client-ID ' . $config['imgurClientId']],
+                CURLOPT_POSTFIELDS => [
+                    'image' => new CURLFile((string) $file['tmp_name'], $mime, basename((string) ($file['name'] ?? 'shared-image'))),
+                ],
+            ]);
+            $imgurResponse = curl_exec($ch);
+            $imgurStatus = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $imgurError = curl_error($ch);
+            curl_close($ch);
+            $imgurPayload = json_decode((string) $imgurResponse, true);
+            if ($imgurStatus < 200 || $imgurStatus >= 300 || empty($imgurPayload['success']) || empty($imgurPayload['data']['link'])) {
+                $reason = $imgurPayload['data']['error'] ?? ($imgurError ?: 'Imgur 接口暂时不可用');
+                throw new RuntimeException('图像分享失败：' . (is_string($reason) ? $reason : '请求被拒绝'));
+            }
+            sendJson(['url' => (string) $imgurPayload['data']['link']]);
+        } catch (Throwable $error) {
+            sendJson(['error' => ['message' => $error->getMessage()]], 400);
+        }
+    }
     
     $userTextKey = isset($requestHeaders['X-User-Key']) ? $requestHeaders['X-User-Key'] : (isset($requestHeaders['x-user-key']) ? $requestHeaders['x-user-key'] : '');
     $userImageKey = isset($requestHeaders['X-Image-Key']) ? $requestHeaders['X-Image-Key'] : (isset($requestHeaders['x-image-key']) ? $requestHeaders['x-image-key'] : '');
@@ -381,6 +426,7 @@ audio { outline: none; filter: invert(0.8) hue-rotate(180deg); }
       <button class="btn" id="btnFrames">视频分离</button>
       <button class="btn" id="optimize-btn">自然排版</button>
       <button class="btn" id="btnDecodeQR">识别二维码</button>
+      <button class="btn btn-tucao" id="btnShareImage">上传分享图像</button>
     </div>
 
     <div id="responseWrap">
@@ -1408,6 +1454,50 @@ bindEvent("btnHtmlPreview", "click", () => {
     const htmlContent = universalText.value; if(!htmlContent.trim()) return alert("SYS_PROMPT: 缓冲区为空，请装载 HTML 源码。");
     const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
     window.open(URL.createObjectURL(blob), '_blank');
+});
+
+bindEvent("btnShareImage", "click", async () => {
+    const btn = document.getElementById("btnShareImage");
+    const selectedFile = universalFile.files[0];
+    let imageBlob = selectedFile && selectedFile.type.startsWith("image/") ? selectedFile : null;
+    let fileName = imageBlob ? imageBlob.name : "shared-image.png";
+
+    try {
+        if (!imageBlob) {
+            const imageSource = modifiedImgSrc || originalImgSrc || displayedImage.src;
+            if (!imageSource) throw new Error("请先挂载或生成一张图像");
+            const sourceResponse = await fetch(imageSource);
+            if (!sourceResponse.ok) throw new Error("无法读取当前图像，请先保存后重新挂载");
+            imageBlob = await sourceResponse.blob();
+        }
+        if (!['image/png', 'image/jpeg'].includes(imageBlob.type)) {
+            throw new Error("分享图像仅支持 PNG 和 JPG");
+        }
+
+        const oldText = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = "上传中...";
+        const formData = new FormData();
+        formData.append("image", imageBlob, fileName);
+        const uploadResponse = await fetch("?api=share_image", { method: "POST", body: formData });
+        const payload = await uploadResponse.json();
+        if (!uploadResponse.ok || !payload.url) {
+            throw new Error(payload.error?.message || "图像分享失败");
+        }
+
+        universalText.value = payload.url;
+        universalText.dispatchEvent(new Event("input"));
+        responseWrap.style.display = "block";
+        respStatus.textContent = "✅ 图像分享成功";
+        respStatus.style.color = "#00ff41";
+        response.textContent = payload.url;
+        btn.textContent = "✅ 链接已写入 TXT";
+        setTimeout(() => { btn.textContent = oldText; btn.disabled = false; }, 2000);
+    } catch (error) {
+        alert("SYS_ERR: " + error.message);
+        btn.textContent = "上传分享图像";
+        btn.disabled = false;
+    }
 });
 
 bindEvent("btnGenerateQR", "click", () => {
