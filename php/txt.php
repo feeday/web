@@ -71,6 +71,82 @@ function performCurl($url, $method, $headers, $body = null) {
     return ['status' => $status, 'body' => $response];
 }
 
+function resolvePublicRemoteHost($host) {
+    if (filter_var($host, FILTER_VALIDATE_IP)) {
+        return filter_var($host, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) ? $host : false;
+    }
+
+    $addresses = gethostbynamel($host);
+    if (!$addresses) return false;
+    foreach ($addresses as $address) {
+        if (!filter_var($address, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+            return false;
+        }
+    }
+    return $addresses[0];
+}
+
+function relayRemoteImage($url) {
+    for ($redirects = 0; $redirects <= 4; $redirects++) {
+        $parts = parse_url($url);
+        $scheme = strtolower((string) ($parts['scheme'] ?? ''));
+        $host = (string) ($parts['host'] ?? '');
+        $publicAddress = $host ? resolvePublicRemoteHost($host) : false;
+        if (!in_array($scheme, ['http', 'https'], true) || !$publicAddress) {
+            throw new RuntimeException('仅支持公网 HTTP/HTTPS 图像网址');
+        }
+        $port = (int) ($parts['port'] ?? ($scheme === 'https' ? 443 : 80));
+
+        $body = '';
+        $tooLarge = false;
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => false,
+            CURLOPT_FOLLOWLOCATION => false,
+            CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_USERAGENT => 'Mozilla/5.0 QRImageReader/1.0',
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYHOST => 2,
+            // Pin the validated public address so DNS rebinding cannot reach an internal service.
+            CURLOPT_RESOLVE => ["{$host}:{$port}:{$publicAddress}"],
+            CURLOPT_WRITEFUNCTION => function ($curl, $chunk) use (&$body, &$tooLarge) {
+                if (strlen($body) + strlen($chunk) > 20 * 1024 * 1024) {
+                    $tooLarge = true;
+                    return 0;
+                }
+                $body .= $chunk;
+                return strlen($chunk);
+            },
+        ]);
+        curl_exec($ch);
+        $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $contentType = strtolower(trim(explode(';', (string) curl_getinfo($ch, CURLINFO_CONTENT_TYPE))[0]));
+        $redirectUrl = (string) curl_getinfo($ch, CURLINFO_REDIRECT_URL);
+        $curlError = curl_error($ch);
+        curl_close($ch);
+
+        if ($tooLarge) throw new RuntimeException('远程图像不能超过 20 MB');
+        if ($status >= 300 && $status < 400 && $redirectUrl) {
+            $url = $redirectUrl;
+            continue;
+        }
+        if ($curlError || $status < 200 || $status >= 300) {
+            throw new RuntimeException('远程图像读取失败' . ($status ? "（HTTP {$status}）" : ''));
+        }
+        if (strpos($contentType, 'image/') !== 0) {
+            throw new RuntimeException('TXT 中的网址不是可识别的图像');
+        }
+
+        header('Content-Type: ' . $contentType);
+        header('Content-Length: ' . strlen($body));
+        header('Cache-Control: private, max-age=300');
+        echo $body;
+        exit;
+    }
+    throw new RuntimeException('远程图像重定向次数过多');
+}
+
 // 解析路由请求
 $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $apiParam = isset($_GET['api']) ? $_GET['api'] : null;
@@ -130,6 +206,16 @@ if ($config['enforceAntihack'] && !empty($checkUrl)) {
  */
 if ($apiParam !== null) {
     $requestHeaders = getallheaders();
+
+    if ($apiParam === 'qr_image') {
+        try {
+            $remoteUrl = trim((string) ($_GET['url'] ?? ''));
+            if ($remoteUrl === '') throw new RuntimeException('请在 TXT 中输入图像网址');
+            relayRemoteImage($remoteUrl);
+        } catch (Throwable $error) {
+            sendJson(['error' => ['message' => $error->getMessage()]], 400);
+        }
+    }
 
     if ($apiParam === 'share_image') {
         try {
@@ -1510,17 +1596,17 @@ bindEvent("btnGenerateQR", "click", () => {
 
 bindEvent("btnDecodeQR", "click", () => {
     const textVal = universalText.value.trim(); const file = universalFile.files[0];
-    let imgSrc = ""; const isUrl = /^https?:\/\/.+/i.test(textVal);
+    const urlMatch = textVal.match(/https?:\/\/[^\s<>"']+/i);
+    let imgSrc = ""; const isUrl = !!urlMatch;
     
-    if (isUrl) imgSrc = textVal;
+    if (isUrl) imgSrc = "?api=qr_image&url=" + encodeURIComponent(urlMatch[0]);
     else if (file && file.type.startsWith("image/")) imgSrc = URL.createObjectURL(file);
-    else return alert("SYS_PROMPT: 挂载包含阵列图(二维码)的物料，或注入其超链接。");
+    else return alert("SYS_PROMPT: 请挂载二维码图片，或在 TXT 中输入图片网址。");
 
     const btn = document.getElementById("btnDecodeQR"); const old = btn.innerHTML; 
     btn.innerHTML = "解析中..."; btn.disabled = true;
 
     const img = new Image();
-    if (isUrl) img.crossOrigin = "Anonymous"; 
     
     img.onload = () => {
         try {
@@ -1532,8 +1618,7 @@ bindEvent("btnDecodeQR", "click", () => {
                 universalText.value = code.data; updateStats(); checkEmptyState(); copyToClipboard(code.data, btn); 
             } else { alert("❌ SYS_ERR: 矩阵解密失败，未发现标准通讯码象。"); }
         } catch (err) {
-            if (err.name === "SecurityError" || err.message.includes("cross-origin")) alert("❌ 跨域锁：源服务器防盗链启用。请转储本地后通过物料层读取！");
-            else alert("❌ CORE_DUMP：" + err.message);
+            alert("❌ CORE_DUMP：" + err.message);
         }
         btn.innerHTML = old; btn.disabled = false;
     };
