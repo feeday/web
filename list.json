@@ -16,17 +16,17 @@
 {"cat":"text","title":"Translate","desc":"谷歌文档文字在线翻译。","url":"https://translate.google.com/"},
 {"cat":"tool","title":"BBN Speed Test","desc":"北京联通宽带测速。","url":"http://cs1.bbn.com.cn:8800/gzweb/","isTop":true},
 
-{"cat":"ad","title":"Wormhole","desc":"文件分享","url":"https://wormhole.app/","isTop":true},
+{"cat":"ad","title":"Wormhole","desc":"端到端限时文件分享","url":"https://wormhole.app/","isTop":true},
 
 {"cat":"ad","title":"Aigx","desc":"模型测试文档编辑器","url":"https://datxy.com/aigx-x.html","isTop":true},
   
 
-{"cat":"text","title":"图像鉴伪","desc":"图像特征分析真伪。","url":"https://realfake.top/","isTop":true},
+
 {"cat":"text","title":"在线表格","desc":"在线表格查询。","url":"https://datxy.com/xlsx.html","isTop":true},
   
 {"cat":"text","title":"AI-信息","desc":"AI 自动挑选的高价值内容。","url":"https://aihot.virxact.com","isTop":true},
 {"cat":"ad","title":"AI-工具集","desc":"发现最新AI产品工具和使用技巧。","url":"https://ai-bot.cn/ai-tools/","isTop":true},
-
+{"cat":"text","title":"图像鉴伪","desc":"图像特征分析真伪。","url":"https://realfake.top/","isTop":true},
   
 {"cat":"multi","title":"弹幕视频留言","desc":"看剧听音乐吐槽。","url":"https://tcq233.com/btv","isTop":true},
 
