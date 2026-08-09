@@ -10,6 +10,9 @@
 {"cat":"video","title":"Seedance 2.0","desc":"每天5条10秒视频豆包免费生成。","url":"https://www.doubao.com/chat/create-image","isTop":true},
 {"cat":"image","title":"Photopea","desc":"在线PS，图形图层在线编辑器。","url":"https://www.photopea.com/","isTop":true,"hideOnMobile":true},
 {"cat":"video","title":"OpenCut","desc":"在线视频编辑工具。","url":"https://opencut.app/projects","isTop":true,"hideOnMobile":true},
+{"cat":"tool","title":"GPU Test","desc":"GPU 显卡极限压力测试。","url":"https://datxy.com/gpu","isTop":true},
+{"cat":"tool","title":"Ping","desc":"网站时延测试","url":"https://ping.pe/datxy.com","isTop":true,"hideOnMobile":true},
+
 {"cat":"ad","title":"Aigx","desc":"模型测试文档编辑器","url":"https://datxy.com/aigx-x.html","isTop":true},
 
 {"cat":"text","title":"图像鉴伪","desc":"图像特征分析真伪。","url":"https://realfake.top/","isTop":true},
@@ -17,12 +20,11 @@
   
 {"cat":"text","title":"AI-信息","desc":"AI 自动挑选的高价值内容。","url":"https://aihot.virxact.com","isTop":true},
 {"cat":"ad","title":"AI-工具集","desc":"发现最新AI产品工具和使用技巧。","url":"https://ai-bot.cn/ai-tools/","isTop":true},
-{"cat":"tool","title":"GPU Test","desc":"GPU 显卡极限压力测试。","url":"https://datxy.com/gpu","isTop":true},
+
   
 {"cat":"multi","title":"弹幕视频留言","desc":"看剧听音乐吐槽。","url":"https://tcq233.com/btv","isTop":true},
 
 {"cat":"tool","title":"IP-Addrs","desc":"高精度IP地址归属地查询。","url":"http://ping0.cc/","isTop":true},
-{"cat":"tool","title":"Ping","desc":"网站时延测试","url":"https://ping.pe/datxy.com","isTop":true,"hideOnMobile":true},
 {"cat":"ad","title":"Colab","desc":"谷歌云端 Python 代码笔记。","url":"https://colab.new/","hideOnMobile":true},
 {"cat":"tool","title":"BBN Speed Test","desc":"北京联通宽带测速。","url":"http://cs1.bbn.com.cn:8800/gzweb/","isTop":true},
   
