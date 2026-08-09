@@ -12,8 +12,10 @@
 {"cat":"video","title":"OpenCut","desc":"在线视频编辑工具。","url":"https://opencut.app/projects","isTop":true,"hideOnMobile":true},
 {"cat":"tool","title":"GPU Test","desc":"GPU 显卡极限压力测试。","url":"https://datxy.com/gpu","isTop":true},
 {"cat":"tool","title":"Ping","desc":"网站时延测试","url":"https://ping.pe/datxy.com","isTop":true,"hideOnMobile":true},
+{"cat":"ad","title":"Wormhole","desc":"文件分享","url":"https://wormhole.app/","isTop":true},
 
 {"cat":"ad","title":"Aigx","desc":"模型测试文档编辑器","url":"https://datxy.com/aigx-x.html","isTop":true},
+  
 
 {"cat":"text","title":"图像鉴伪","desc":"图像特征分析真伪。","url":"https://realfake.top/","isTop":true},
 {"cat":"text","title":"飞书文档","desc":"在线飞书文档。","url":"https://www.feishu.cn/drive/home/","isTop":true},
