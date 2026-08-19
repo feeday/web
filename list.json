@@ -10,23 +10,22 @@
 {"cat":"video","title":"Seedance 2.0","desc":"每天5条10秒视频豆包免费生成。","url":"https://www.doubao.com/chat/create-image","isTop":true},
 {"cat":"image","title":"Photopea","desc":"在线PS，图形图层在线编辑器。","url":"https://www.photopea.com/","isTop":true,"hideOnMobile":true},
 {"cat":"video","title":"OpenCut","desc":"在线视频编辑工具。","url":"https://opencut.app/projects","isTop":true,"hideOnMobile":true},
-{"cat":"tool","title":"GPU Test","desc":"GPU 显卡极限压力测试。","url":"https://datxy.com/gpu","isTop":true},
-{"cat":"tool","title":"Ping","desc":"网站时延测试","url":"https://ping.pe/datxy.com","isTop":true,"hideOnMobile":true},
+{"cat":"tool","title":"GPU Test","desc":"GPU 显卡极限压力测试。","url":"/gpu","isTop":true},
+{"cat":"tool","title":"Ping","desc":"网站时延测试","url":"https://ping.pe//","isTop":true,"hideOnMobile":true},
 {"cat":"tool","title":"IP-Addrs","desc":"高精度IP地址归属地查询。","url":"http://ping0.cc/","isTop":true},
 {"cat":"text","title":"Translate","desc":"谷歌文档文字在线翻译。","url":"https://translate.google.com/"},
 {"cat":"tool","title":"BBN Speed Test","desc":"北京联通宽带测速。","url":"http://cs1.bbn.com.cn:8800/gzweb/","isTop":true},
 
 {"cat":"ad","title":"Wormhole","desc":"端到端限时文件分享","url":"https://wormhole.app/","isTop":true},
 
-{"cat":"ad","title":"Aigx","desc":"模型测试文档编辑器","url":"https://datxy.com/aigx-x.html","isTop":true},
+{"cat":"ad","title":"Aigx","desc":"模型测试文档编辑器","url":"/aigx-x.html","isTop":true},
   
 
 
-{"cat":"text","title":"在线表格","desc":"在线表格查询。","url":"https://datxy.com/xlsx.html","isTop":true},
+{"cat":"text","title":"在线表格","desc":"在线表格查询。","url":"/xlsx.html","isTop":true},
   
 {"cat":"text","title":"AI-信息","desc":"AI 自动挑选的高价值内容。","url":"https://aihot.virxact.com","isTop":true},
 {"cat":"ad","title":"AI-工具集","desc":"发现最新AI产品工具和使用技巧。","url":"https://ai-bot.cn/ai-tools/","isTop":true},
-{"cat":"text","title":"图像鉴伪","desc":"图像特征分析真伪。","url":"https://realfake.top/","isTop":true},
   
 {"cat":"multi","title":"弹幕视频留言","desc":"看剧听音乐吐槽。","url":"https://tcq233.com/btv","isTop":true},
 
@@ -36,7 +35,7 @@
   
 {"cat":"text","title":"Artificial Intelligence","desc":"人工智能领域相关论文","url":"https://arxiv.org/list/cs.AI/recent"},
 {"cat":"ad","title":"Detection Fake","desc":"腾讯朱雀文视图鉴伪。","url":"https://matrix.tencent.com/ai-detect/","hideOnMobile":true},
-{"cat":"image","title":"Mspaint","desc":"在线画图工具。","url":"https://datxy.com/mspaint","hideOnMobile":true},
+{"cat":"image","title":"Mspaint","desc":"在线画图工具。","url":"/mspaint","hideOnMobile":true},
 {"cat":"tool","title":"Internet Speed Test","desc":"网络速度测试。","url":"https://speed.cloudflare.com/","hideOnMobile":true},
 {"cat":"ad","title":"Lighthouse","desc":"腾讯跨境电商轻量云。","url":"https://cloud.tencent.com/act/cps/redirect?redirect=5333&cps_key=615609c54e8bcced8b02c202a43b5570&from=console","hideOnMobile":true},
 
@@ -67,7 +66,7 @@
 {"cat":"tool","title":"屏幕刷新","desc":"显示器测试。","url":"https://www.shijuezu.com/","hideOnMobile":true},
 {"cat":"tool","title":"鼠标测试","desc":"鼠标的轮询速率。","url":"https://cps-check.com/cn/polling-rate-check","hideOnMobile":true},
 {"cat":"tool","title":"手柄测试","desc":"游戏手柄测试。","url":"https://hardwaretester.com/gamepad","hideOnMobile":true},
-{"cat":"tool","title":"分贝","desc":"声音分贝查看","url":"https://datxy.com/dB.html","hideOnMobile":true},
+{"cat":"tool","title":"分贝","desc":"声音分贝查看","url":"/dB.html","hideOnMobile":true},
 {"cat":"tool","title":"LLM 本地测试","desc":"测你机器能部署哪些模型。","url":"https://www.canirun.ai/","hideOnMobile":true},
 {"cat":"tool","title":"Github","desc":"Github 桌面版。","url":"https://desktop.github.com/download/","hideOnMobile":true},
 {"cat":"tool","title":"VS Code","desc":"Visual Studio Code 桌面版。","url":"https://code.visualstudio.com/","hideOnMobile":true},
