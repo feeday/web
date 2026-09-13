@@ -10,7 +10,7 @@
  {"cat":"ad","title":"Aigx","desc":"模型测试文档编辑器","url":"/aigx-x.html","isTop":true},
  {
   "cat": "tool",
-  "title": "WebCut",
+  "title": "OpenCut",
   "desc": "视频编辑工具",
   "links": {
     "http": "https://opencut.app/projects",
