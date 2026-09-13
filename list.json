@@ -17,8 +17,8 @@
   "desc": "电脑性能测试",
   "links": {
     "http": "/gpu",
-    "hfCn": "https://hf-mirror.com/datasets/feeday/datxy/tree/main/win/CPUCKTest.exe",
-    "hf": "https://hf-mirror.com/datasets/feeday/datxy/tree/main/win"
+    "hfCn": "https://hf-mirror.com/datasets/feeday/datxy/blob/main/win/CPUCKTest.exe",
+    "hf": "https://hf-mirror.com/datasets/feeday/datxy/blob/main/win"
   },
   "isTop": true,
   "hideOnMobile": true
