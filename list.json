@@ -7,9 +7,22 @@
 
 {"cat":"video","title":"Seedance 2.0","desc":"每天5条10秒视频豆包免费生成。","url":"https://www.doubao.com/chat/create-image","isTop":true},
 {"cat":"image","title":"Photopea","desc":"在线PS，图形图层在线编辑器。","url":"https://www.photopea.com/","isTop":true,"hideOnMobile":true},
-{"cat":"video","title":"OpenCut","desc":"在线视频编辑工具。","url":"https://opencut.app/projects","isTop":true,"hideOnMobile":true},
+ {"cat":"ad","title":"Aigx","desc":"模型测试文档编辑器","url":"/aigx-x.html","isTop":true},
+ {
+  "cat": "tool",
+  "title": "WebCut",
+  "desc": "视频编辑工具",
+  "links": {
+    "http": "https://opencut.app/projects",
+    "hfCn": "https://hf-mirror.com/datasets/feeday/datxy/blob/main/win/webCut-windows-x64-portable.exe",
+    "hf": "https://feeday.github.io/webCut/"
+  },
+  "isTop": true,
+  "hideOnMobile": true
+},
 
-  {"cat":"ad","title":"Aigx","desc":"模型测试文档编辑器","url":"/aigx-x.html","isTop":true},
+
+ 
  
  {
   "cat": "tool",
