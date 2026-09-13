@@ -31,7 +31,7 @@
   "links": {
     "http": "/gpu",
     "hfCn": "https://hf-mirror.com/datasets/feeday/datxy/blob/main/win/CPUCKTest.exe",
-    "hf": "https://hf-mirror.com/datasets/feeday/datxy/blob/main/win"
+    "hf": "https://hf-mirror.com/datasets/feeday/datxy/tree/main/win"
   },
   "isTop": true,
   "hideOnMobile": true
