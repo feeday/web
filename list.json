@@ -1,6 +1,6 @@
 [
-{"cat":"tool","title":"磁盘空间整理","desc":"WinDirStat-v2.2.2-x64.msi","links":{"hf":"https://huggingface.co/datasets/datxy/demo/resolve/main/win/WinDirStat-v2.2.2-x64.msi","hfCn":"https://hf-mirror.com/datasets/datxy/demo/resolve/main/win/WinDirStat-v2.2.2-x64.msi","http":"https://kdirstat.sourceforge.net/","hideOnMobile":true}},
 {"cat":"image","title":"银河系全景图","desc":"eso1242a.psb","links":{"hf":"https://huggingface.co/datasets/datxy/demo/blob/main/test/eso1242a.psb","hfCn":"https://hf-mirror.com/datasets/datxy/demo/blob/main/test/eso1242a.psb","http":"https://www.eso.org/public/images/eso1242a/"}},
+{"cat":"tool","title":"电脑性能测试","desc":"CPU GPU TEST","links":{"GPU":"https://url.cpuck.com/gpu","EXE":"https://hf-mirror.com/datasets/feeday/datxy/tree/main/win","CPU":"http://cpu.jy6d.com/","hideOnMobile":true}},
 
 {"cat":"ad","title":"Leaderboard","desc":"模型排行榜","url":"https://artificialanalysis.ai/?intelligence=coding-index","isTop":true},
 {"cat":"text","title":"GPT-Image 2","desc":"GPT-Image 2 图像生成模型","url":"https://chat.openai.com/","isTop":true},
