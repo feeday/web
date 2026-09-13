@@ -18,7 +18,7 @@
   "links": {
     "http": "/gpu",
     "hfCn": "https://hf-mirror.com/datasets/feeday/datxy/tree/main/win/CPUCKTest.exe",
-    "hf": "https://huggingface.co/datasets/feeday/datxy/blob/main/win/CPUCKTest.exe"
+    "hf": "http://cpu.jy6d.com/"
   },
   "isTop": true,
   "hideOnMobile": true
