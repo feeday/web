@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Feeday Search Demo</title>
+<style>
+body{font-family:system-ui;background:#020617;color:#fff;padding:40px;max-width:900px;margin:auto}input{width:100%;padding:14px;border-radius:10px;border:1px solid #334155;background:#111827;color:white;font-size:18px}.item{margin-top:15px;padding:18px;background:#1e293b;border-radius:12px}.item a{color:#38bdf8;text-decoration:none}
+</style>
+</head>
+<body>
+<h1>🔍 Feeday 内容搜索</h1>
+<input id="q" placeholder="搜索 feeday.xyz 发布内容...">
+<div id="out"></div>
+<script>
+let data=[];
+// 临时读取 logs 仓库已有发布索引
+fetch('https://raw.githubusercontent.com/feeday/logs/main/blogBase.json')
+.then(r=>r.json()).then(d=>{data=Array.isArray(d)?d:(d.data||[]);render('');});
+function render(k){
+ let s=k.toLowerCase();
+ let arr=data.filter(x=>JSON.stringify(x).toLowerCase().includes(s)).slice(0,50);
+ out.innerHTML=arr.map(x=>`<div class="item"><b>${x.title||x.name||'Feeday内容'}</b><br><small>${x.desc||x.description||''}</small></div>`).join('')||'暂无结果';
+}
+q.oninput=e=>render(e.target.value);
+</script>
+</body>
+</html>
