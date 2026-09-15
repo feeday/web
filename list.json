@@ -14,7 +14,7 @@
   "desc": "视频编辑工具",
   "links": {
     "http": "https://opencut.app/projects",
-    "hfCn": "https://hf-mirror.com/datasets/feeday/datxy/blob/main/win/webCut-windows-x64-portable.exe",
+    "hfCn": "https://hf-mirror.com/datasets/feeday/datxy/blob/main/win/",
     "hf": "https://feeday.github.io/webCut/"
   },
   "isTop": true,
@@ -26,12 +26,12 @@
  
  {
   "cat": "tool",
-  "title": "GPU Test",
-  "desc": "电脑性能测试",
+  "title": "CPU Test",
+  "desc": "终端性能测试",
   "links": {
     "http": "/gpu",
-    "hfCn": "https://hf-mirror.com/datasets/feeday/datxy/blob/main/win/CPUCKTest.exe",
-    "hf": "https://hf-mirror.com/datasets/feeday/datxy/tree/main/win"
+    "hfCn": "http://cpu.jy6d.com/",
+    "hf": "http://gpu.jy6d.com/"
   },
   "isTop": true,
   "hideOnMobile": true
